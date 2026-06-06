@@ -1,0 +1,31 @@
+{
+    "name": "activelayer/activelayer-plugin",
+    "description": "ActiveLayer anti-spam plugin for WordPress forms and comments",
+    "type": "wordpress-plugin",
+    "keywords": [
+        "wordpress",
+        "plugin",
+        "antispam",
+        "spam",
+        "protection",
+        "activelayer"
+    ],
+    "homepage": "https://activelayer.com",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "ActiveLayer Team",
+            "email": "support@activelayer.com",
+            "homepage": "https://activelayer.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "ActiveLayer\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.2",
+        "woocommerce/action-scheduler": "^3.6"
+    }
+}

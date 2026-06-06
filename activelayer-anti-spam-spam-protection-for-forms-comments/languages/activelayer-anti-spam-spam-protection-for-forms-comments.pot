@@ -1,0 +1,1574 @@
+# Copyright (C) 2026 ActiveLayer
+# This file is distributed under the same license as the ActiveLayer package.
+msgid ""
+msgstr ""
+"Project-Id-Version: ActiveLayer\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language-Team: ActiveLayer Team <support@activelayer.com>\n"
+"POT-Creation-Date: 2026-05-25 10:01+0000\n"
+"Report-Msgid-Bugs-To: https://github.com/activelayer/activelayer-plugin/issues\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: activelayer-anti-spam-spam-protection-for-forms-comments.php:199
+msgid "ActiveLayer:"
+msgstr ""
+
+#: activelayer-anti-spam-spam-protection-for-forms-comments.php:200
+msgid "Failed to create the submissions database table. Please deactivate and reactivate the plugin, or contact support if the issue persists."
+msgstr ""
+
+#: src/Plugin.php:287
+msgid "ActiveLayer sends form submission details (such as names, email addresses, form field values, IP addresses, and user agent strings) to the ActiveLayer API for spam analysis. This data is used exclusively to determine whether a submission is spam and may be stored temporarily in accordance with the ActiveLayer Privacy Policy."
+msgstr ""
+
+#: src/Plugin.php:288
+msgid "Data shared with ActiveLayer is transmitted over HTTPS. Site owners should ensure their own privacy policy explains this processing and references the ActiveLayer service (https://activelayer.com/privacy) for additional information."
+msgstr ""
+
+#: src/Admin/AdminPages.php:209
+msgid "Create your ActiveLayer account"
+msgstr ""
+
+#: src/Admin/AdminPages.php:210
+msgid "Get ActiveLayer Account"
+msgstr ""
+
+#: src/Admin/AdminPages.php:203
+msgid "Manage Account"
+msgstr ""
+
+#: src/Admin/AdminPages.php:219, src/Admin/AdminPages.php:297, src/Admin/AdminPages.php:298, src/Admin/Onboarding/OnboardingManager.php:110, src/Admin/Pages/SettingsPage.php:107
+msgid "Settings"
+msgstr ""
+
+#: src/Admin/AdminPages.php:224
+msgid "Docs"
+msgstr ""
+
+#: src/Admin/AdminPages.php:243, src/Admin/AdminPages.php:263, src/Admin/Components/DashboardWidget.php:84, src/Integrations/ContactForm7/AdminSettings.php:57, src/Integrations/Forminator/Addon/ForminatorAddonFormSettings.php:81
+msgid "ActiveLayer"
+msgstr ""
+
+#: src/Admin/AdminPages.php:247
+msgid "Help"
+msgstr ""
+
+#: src/Admin/AdminPages.php:262, src/Admin/AdminPages.php:274, src/Admin/AdminPages.php:275, src/Admin/Pages/DashboardPage.php:216
+msgid "Dashboard"
+msgstr ""
+
+#: src/Admin/AdminPages.php:284, src/Admin/AdminPages.php:285, src/Admin/Pages/SubmissionsPage.php:118
+msgid "Submissions"
+msgstr ""
+
+#: src/Admin/AdminPages.php:307, src/Admin/AdminPages.php:308, src/Admin/Onboarding/OnboardingManager.php:122, src/Admin/Pages/DashboardPage.php:387, src/Admin/Pages/IntegrationsPage.php:176
+msgid "Integrations"
+msgstr ""
+
+#: src/Admin/AdminPages.php:317, src/Admin/AdminPages.php:318, src/Admin/Pages/ToolsPage.php:59
+msgid "Tools"
+msgstr ""
+
+#: src/Admin/AdminPages.php:328, src/Admin/AdminPages.php:329
+msgid "Logs"
+msgstr ""
+
+#: src/Admin/AdminPages.php:343, src/Admin/Pages/DashboardPage.php:468, src/Admin/Pages/SettingsPage.php:327
+msgid "Upgrade to Pro"
+msgstr ""
+
+#: src/Admin/AdminPages.php:404, src/Admin/Pages/SettingsPage.php:617
+msgid "Please enter an API key"
+msgstr ""
+
+#: src/Admin/AdminPages.php:405
+msgid "Verifying..."
+msgstr ""
+
+#: src/Admin/AdminPages.php:406, src/Admin/Pages/SettingsPage.php:335
+msgid "Verify Key"
+msgstr ""
+
+#: src/Admin/AdminPages.php:407
+msgid "Connection error. Please try again."
+msgstr ""
+
+#: src/Admin/AdminPages.php:408, src/Api/ApiClient.php:171, src/Admin/Pages/SettingsPage.php:322
+msgid "API key is valid"
+msgstr ""
+
+#. translators: %s: number of selected submissions.
+#: src/Admin/AdminPages.php:410
+msgid "Are you sure you want to delete %s submission(s)? This action cannot be undone."
+msgstr ""
+
+#: src/Admin/AdminPages.php:411
+msgid "Are you sure you want to delete this submission? This action cannot be undone."
+msgstr ""
+
+#: src/Admin/AdminPages.php:412
+msgid "Are you sure you want to skip the setup guide?"
+msgstr ""
+
+#: src/Admin/AdminPages.php:413
+msgid "Installing..."
+msgstr ""
+
+#: src/Admin/AdminPages.php:414
+msgid "Activating..."
+msgstr ""
+
+#: src/Admin/AdminPages.php:415
+msgid "Installation failed. Please try again."
+msgstr ""
+
+#: src/Admin/AdminPages.php:416
+msgid "Copied!"
+msgstr ""
+
+#: src/Admin/AdminPages.php:438
+msgid "Saving..."
+msgstr ""
+
+#: src/Admin/AdminPages.php:439, src/Admin/Pages/IntegrationsPage.php:796, src/Admin/Pages/IntegrationsPage.php:845, src/Admin/Pages/IntegrationsPage.php:913, src/Admin/Settings/SettingsPersistor.php:124, src/Integrations/WooCommerce/Admin/AdminController.php:230
+msgid "Settings saved."
+msgstr ""
+
+#: src/Admin/AdminPages.php:440
+msgid "Save failed. Please try again."
+msgstr ""
+
+#: src/Admin/AdminPages.php:441, src/Admin/Pages/IntegrationsPage.php:441, src/Admin/Pages/IntegrationsPage.php:516, src/Integrations/WooCommerce/Admin/AdminController.php:171
+msgid "Save Settings"
+msgstr ""
+
+#: src/Admin/AdminPages.php:442, src/Admin/Pages/DashboardPage.php:410, src/Admin/Pages/IntegrationsPage.php:226
+msgid "Active"
+msgstr ""
+
+#: src/Admin/AdminPages.php:443, src/Admin/Pages/DashboardPage.php:411, src/Admin/Pages/IntegrationsPage.php:227
+msgid "Paused"
+msgstr ""
+
+#: src/Admin/AdminPages.php:444, src/Admin/Pages/IntegrationsPage.php:487
+msgid "Select All"
+msgstr ""
+
+#: src/Admin/AdminPages.php:445
+msgid "Deselect All"
+msgstr ""
+
+#: src/Admin/AdminPages.php:580, src/Admin/Components/DashboardWidget.php:269, src/Admin/Components/PluginInstaller.php:61, src/Admin/Components/UsageLimitNotice.php:173, src/Admin/Pages/IntegrationsPage.php:97
+msgid "Permission denied."
+msgstr ""
+
+#: src/Api/ApiClient.php:137
+msgid "API key is required"
+msgstr ""
+
+#: src/Api/ApiClient.php:154
+msgid "Invalid API key"
+msgstr ""
+
+#. translators: %s: error message.
+#: src/Api/ApiClient.php:162
+msgid "Connection error: %s"
+msgstr ""
+
+#: src/Helpers/FormDisplayResolver.php:59, src/Admin/Components/SubmissionsTable.php:476
+msgid "Unknown Registration"
+msgstr ""
+
+#: src/Helpers/FormDisplayResolver.php:88, src/Admin/Components/SubmissionsTable.php:466
+msgid "Unknown Product"
+msgstr ""
+
+#. translators: %s: form name.
+#: src/Helpers/FormDisplayResolver.php:91, src/Admin/Components/SubmissionsTable.php:486, src/Admin/Components/SubmissionsTable.php:493
+msgid "Unknown Form"
+msgstr ""
+
+#: src/Integrations/BaseFormIntegration.php:493
+msgid "Your submission was flagged as spam. Please try again or contact support."
+msgstr ""
+
+#: src/Privacy/PrivacyManager.php:70, src/Privacy/PrivacyManager.php:89
+msgid "ActiveLayer Spam Check Data"
+msgstr ""
+
+#: src/Privacy/PrivacyManager.php:118
+msgid "ActiveLayer Form Submissions"
+msgstr ""
+
+#: src/Privacy/PrivacyManager.php:119
+msgid "Data collected during spam analysis of form submissions."
+msgstr ""
+
+#: src/Privacy/PrivacyManager.php:149
+msgid "Submission ID"
+msgstr ""
+
+#: src/Privacy/PrivacyManager.php:153
+msgid "Form Provider"
+msgstr ""
+
+#: src/Privacy/PrivacyManager.php:157
+msgid "Form ID"
+msgstr ""
+
+#: src/Privacy/PrivacyManager.php:161, src/Admin/Components/SubmissionsTable.php:78
+msgid "Status"
+msgstr ""
+
+#: src/Privacy/PrivacyManager.php:165, src/Admin/Components/SingleSubmissionView.php:199, src/Admin/Components/SingleSubmissionView.php:179
+msgid "Verdict"
+msgstr ""
+
+#: src/Privacy/PrivacyManager.php:166
+msgid "Not yet processed"
+msgstr ""
+
+#: src/Privacy/PrivacyManager.php:169
+msgid "Submitted At"
+msgstr ""
+
+#: src/Privacy/PrivacyManager.php:190, src/Admin/Components/SubmissionsTable.php:76
+msgid "Email"
+msgstr ""
+
+#: src/Privacy/PrivacyManager.php:191
+msgid "Name"
+msgstr ""
+
+#: src/Privacy/PrivacyManager.php:192, src/Admin/Pages/LogsPage.php:67
+msgid "Message"
+msgstr ""
+
+#: src/Privacy/PrivacyManager.php:193
+msgid "Website URL"
+msgstr ""
+
+#: src/Privacy/PrivacyManager.php:194
+msgid "IP Address"
+msgstr ""
+
+#: src/Privacy/PrivacyManager.php:195
+msgid "User Agent"
+msgstr ""
+
+#. translators: %d: submission ID that could not be deleted.
+#: src/Privacy/PrivacyManager.php:238
+msgid "Could not delete submission #%d."
+msgstr ""
+
+#: src/Queue/QueueWatchdog.php:93
+msgid "Every 15 Minutes (ActiveLayer)"
+msgstr ""
+
+#: src/Queue/QueueWatchdog.php:251
+msgid "unknown"
+msgstr ""
+
+#. translators: 1: number of pending submissions, 2: watchdog threshold duration, 3: time since last queue run.
+#: src/Queue/QueueWatchdog.php:259
+msgid "%1$s submission(s) have been pending for more than %2$s. Last successful queue run: %3$s ago."
+msgstr ""
+
+#: src/Queue/QueueWatchdog.php:255
+msgid "Background processing is unavailable. Please ensure Action Scheduler is installed and WP Cron can run."
+msgstr ""
+
+#: src/Queue/QueueWatchdog.php:268
+msgid "ActiveLayer queue warning:"
+msgstr ""
+
+#: src/Queue/QueueWatchdog.php:270
+msgid "Check that WP Cron is enabled and the Action Scheduler queue is processing. Pending submissions will stay blocked until background jobs resume."
+msgstr ""
+
+#: src/Storage/SubmissionRepository.php:135
+msgid "Database operation failed. Please contact support."
+msgstr ""
+
+#: src/Subscription/SubscriptionStats.php:179
+msgid "API key not configured"
+msgstr ""
+
+#: src/Admin/Components/ConnectionBar.php:75
+msgid "ActiveLayer is not connected."
+msgstr ""
+
+#: src/Admin/Components/ConnectionBar.php:76
+msgid "Connect your site to enable spam protection."
+msgstr ""
+
+#: src/Admin/Components/ConnectionBar.php:80, src/Admin/Components/DashboardWidget.php:187
+msgid "Connect Your Account"
+msgstr ""
+
+#: src/Admin/Components/ConnectionBar.php:83, src/Admin/Components/DashboardWidget.php:193
+msgid "Create Free Account"
+msgstr ""
+
+#. translators: %d: number of days.
+#: src/Admin/Components/DashboardWidget.php:134, src/Admin/Pages/DashboardPage.php:268
+msgid "Last %d days"
+msgstr ""
+
+#: src/Admin/Components/DashboardWidget.php:144, src/Integrations/ContactForm7/AdminSettings.php:112
+msgid "ActiveLayer Settings"
+msgstr ""
+
+#: src/Admin/Components/DashboardWidget.php:163
+msgid "View all submissions"
+msgstr ""
+
+#: src/Admin/Components/DashboardWidget.php:183
+msgid "Connect your site to ActiveLayer to start protecting your forms from spam."
+msgstr ""
+
+#: src/Admin/Components/PluginInstaller.php:69
+msgid "Plugin slug is required."
+msgstr ""
+
+#: src/Admin/Components/PluginInstaller.php:73
+msgid "Plugin not allowed."
+msgstr ""
+
+#: src/Admin/Components/PluginInstaller.php:90
+msgid "Plugin installed and activated successfully."
+msgstr ""
+
+#: src/Admin/Components/PluginInstaller.php:165
+msgid "Installation failed."
+msgstr ""
+
+#: src/Admin/Components/PluginInstaller.php:173
+msgid "Plugin installed but could not be located."
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:56, src/Admin/Pages/SubmissionsPage.php:155, src/Admin/Pages/SubmissionsPage.php:298
+msgid "Sorry, you are not allowed to access this page."
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:62
+msgid "Submission not found."
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:68
+msgid "View Submission"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:72
+msgid "Back to Submissions"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:105
+msgid "Submission"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:167
+msgid "The API request failed. No additional details are available for this submission."
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:174
+msgid "API Response"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:193
+msgid "Detection ID"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:202, src/Admin/Components/StatsBlock.php:69, src/Admin/Components/SubmissionsTable.php:190, src/Admin/Pages/DashboardPage.php:287
+msgid "Spam"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:202, src/Admin/Components/StatsBlock.php:64, src/Admin/Components/SubmissionsTable.php:183, src/Admin/Pages/DashboardPage.php:293
+msgid "Clean"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:209
+msgid "Score"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:182, src/Admin/Components/StatsBlock.php:74, src/Admin/Components/SubmissionsTable.php:197
+msgid "Failed"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:187
+msgid "Error"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:231
+msgid "Details"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:238
+msgid "ID:"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:243
+msgid "Submitted:"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:249
+msgid "Processed:"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:255
+msgid "Provider:"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:271
+msgid "Form:"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:269
+msgid "Customer:"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:267
+msgid "Product:"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:265
+msgid "Post:"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:284
+msgid "Status:"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:294, src/Admin/Components/SubmissionsTable.php:204, src/Admin/Components/SubmissionsTable.php:640
+msgid "Trash"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:370, src/Admin/Components/SubmissionsTable.php:612
+msgid "Mark Clean"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:352, src/Admin/Components/SubmissionsTable.php:621
+msgid "Mark Spam"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:334, src/Admin/Components/SubmissionsTable.php:603
+msgid "Recheck"
+msgstr ""
+
+#: src/Admin/Components/StatsBlock.php:59
+msgid "Total"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:75
+msgid "ID"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:77
+msgid "Provider"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:79
+msgid "Processed"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:109, src/Admin/Components/SubmissionsTable.php:560
+msgid "Restore"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:110, src/Admin/Components/SubmissionsTable.php:578
+msgid "Delete Permanently"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:117
+msgid "Recheck with API"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:121
+msgid "Mark as Clean"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:125
+msgid "Mark as Spam"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:128
+msgid "Move to Trash"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:169
+msgid "All"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:176
+msgid "Pending"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:301
+msgid "No Submissions Yet"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:303
+msgid "Submissions will appear here once you start receiving entries."
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:305
+msgid "Make sure ActiveLayer protection is enabled on your forms settings."
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:311
+msgid "View Setup Guide"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:296
+msgid "No Submissions Found"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:298
+msgid "No submissions match your current filters or search."
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:347
+msgid "Filter by provider"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:350
+msgid "All Providers"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:357
+msgid "Filter"
+msgstr ""
+
+#. translators: %s: form name.
+#. translators: %s: form name or identifier.
+#: src/Admin/Components/SubmissionsTable.php:450, src/Admin/Components/SubmissionsTable.php:489, src/Admin/Components/SubmissionsTable.php:493
+msgid "Form name: %s"
+msgstr ""
+
+#. translators: %s: post name.
+#: src/Admin/Components/SubmissionsTable.php:457
+msgid "Unknown Post"
+msgstr ""
+
+#. translators: %s: post name or identifier.
+#: src/Admin/Components/SubmissionsTable.php:460
+msgid "Post Name: %s"
+msgstr ""
+
+#. translators: %s: product name.
+#: src/Admin/Components/SubmissionsTable.php:469
+msgid "Product: %s"
+msgstr ""
+
+#. translators: %s: customer login or email.
+#: src/Admin/Components/SubmissionsTable.php:479
+msgid "Customer: %s"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:529
+msgid "N/A"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:577
+msgid "Delete this submission permanently?"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:595, src/Admin/Pages/LogsPage.php:78
+msgid "View"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:639
+msgid "Move this submission to the trash?"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:649
+msgid "Copy API ID"
+msgstr ""
+
+#: src/Admin/Components/SubmissionsTable.php:771, src/Admin/Components/SubmissionsTable.php:777
+msgid "Not processed"
+msgstr ""
+
+#. translators: %s: human readable time difference.
+#: src/Admin/Components/SubmissionsTable.php:790
+msgid "%s ago"
+msgstr ""
+
+#. translators: %d: number of submissions.
+#: src/Admin/Components/SubmissionsTable.php:823
+msgid "%d submission queued for recheck."
+msgid_plural "%d submissions queued for recheck."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of submissions.
+#: src/Admin/Components/SubmissionsTable.php:830
+msgid "%d submission marked as clean."
+msgid_plural "%d submissions marked as clean."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of submissions.
+#: src/Admin/Components/SubmissionsTable.php:837
+msgid "%d submission marked as spam."
+msgid_plural "%d submissions marked as spam."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of submissions.
+#: src/Admin/Components/SubmissionsTable.php:844
+msgid "%d submission moved to trash."
+msgid_plural "%d submissions moved to trash."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of submissions.
+#: src/Admin/Components/SubmissionsTable.php:851
+msgid "%d submission restored."
+msgid_plural "%d submissions restored."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of submissions.
+#: src/Admin/Components/SubmissionsTable.php:858
+msgid "%d submission deleted permanently."
+msgid_plural "%d submissions deleted permanently."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Admin/Components/UsageLimitNotice.php:65
+msgid "Dismiss"
+msgstr ""
+
+#: src/Admin/Components/UsageLimitNotice.php:119
+msgid "current"
+msgstr ""
+
+#. translators: 1: plan name, 2: opening anchor tag, 3: closing anchor tag.
+#: src/Admin/Components/UsageLimitNotice.php:127
+msgid "You've reached your <strong>%1$s</strong> plan limit. %2$sUpgrade your plan%3$s to resume spam protection!"
+msgstr ""
+
+#. translators: 1: plan name, 2: opening anchor tag, 3: closing anchor tag.
+#: src/Admin/Components/UsageLimitNotice.php:137
+msgid "You've reached your <strong>%1$s</strong> plan limit. Your usage will reset next month, or %2$supgrade your plan%3$s for more usage to resume spam protection!"
+msgstr ""
+
+#. translators: 1: plan name, 2: opening anchor tag, 3: closing anchor tag.
+#: src/Admin/Components/UsageLimitNotice.php:147
+msgid "You're nearing your <strong>%1$s</strong> plan limit. Consider %2$supgrading to pro%3$s for uninterrupted access to ActiveLayer!"
+msgstr ""
+
+#. translators: 1: plan name, 2: opening anchor tag, 3: closing anchor tag.
+#: src/Admin/Components/UsageLimitNotice.php:156
+msgid "You're nearing your <strong>%1$s</strong> plan limit for this month. Consider %2$supgrading your plan%3$s for uninterrupted access to ActiveLayer!"
+msgstr ""
+
+#: src/Admin/Onboarding/OnboardingBanner.php:55
+msgid "Dismiss setup guide"
+msgstr ""
+
+#: src/Admin/Onboarding/OnboardingBanner.php:63
+msgid "Get Started with ActiveLayer"
+msgstr ""
+
+#. translators: %s: documentation URL.
+#: src/Admin/Onboarding/OnboardingBanner.php:88
+msgid "Need more help? Check out our <a href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">Documentation here</a>"
+msgstr ""
+
+#: src/Admin/Onboarding/OnboardingBanner.php:98
+msgid "ActiveLayer onboarding"
+msgstr ""
+
+#: src/Admin/Onboarding/OnboardingManager.php:106
+msgid "Create and connect your free account"
+msgstr ""
+
+#. translators: %s: settings page link.
+#: src/Admin/Onboarding/OnboardingManager.php:109
+msgid "Sign up for a free account, copy your API key, and paste it on the %s page to connect."
+msgstr ""
+
+#: src/Admin/Onboarding/OnboardingManager.php:114
+msgid "Create Account"
+msgstr ""
+
+#: src/Admin/Onboarding/OnboardingManager.php:118
+msgid "Enable spam protection for your forms"
+msgstr ""
+
+#. translators: %s: integrations page link.
+#: src/Admin/Onboarding/OnboardingManager.php:121
+msgid "Enable form integrations in %s, then configure which forms to protect."
+msgstr ""
+
+#: src/Admin/Onboarding/OnboardingManager.php:130
+msgid "Receive your first submission"
+msgstr ""
+
+#: src/Admin/Onboarding/OnboardingManager.php:131
+msgid "Once protection is enabled, submissions will appear automatically as your forms receive entries."
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:56
+msgid "The most beginner-friendly WordPress form plugin."
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:63
+msgid "Fix email deliverability issues for WordPress."
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:70
+msgid "The best Google Analytics plugin for WordPress."
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:77
+msgid "The best WordPress SEO plugin and toolkit."
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:84
+msgid "Powerful lead generation and conversion optimization."
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:91
+msgid "The best drag-and-drop landing page builder."
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:112
+msgid "Getting Started"
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:117
+msgid "API Documentation"
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:122
+msgid "Support"
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:127
+msgid "Account Dashboard"
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:132
+msgid "ActiveLayer Status"
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:151
+msgid "25,000 checks/month"
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:152
+msgid "Full API access"
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:153
+msgid "Email support"
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:154
+msgid "Unlimited sites"
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:155
+msgid "Priority queue"
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:156
+msgid "Advanced analytics"
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:281
+msgid "Total Requests"
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:389
+msgid "Manage"
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:450
+msgid "Upgrade to Pro to Unlock Full Spam Protection"
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:471
+msgid "Learn more about all features"
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:545, src/Admin/Pages/IntegrationsPage.php:611
+msgid "Install & Activate"
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:539, src/Integrations/Forminator/Addon/ForminatorAddon.php:206, src/Integrations/Forminator/Addon/ForminatorAddonFormSettings.php:102
+msgid "Activate"
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:533
+msgid "Installed"
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:562
+msgid "Extend Your Website"
+msgstr ""
+
+#: src/Admin/Pages/DashboardPage.php:585
+msgid "Quick Access"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:127
+msgid "Invalid type."
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:178
+msgid "Configure spam protection settings for different form providers and WordPress features."
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:182
+msgid "No integrations available."
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:270
+msgid "Configure"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:283
+msgid "Enable spam protection"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:349
+msgid "Tracking Mode"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:353, src/Integrations/WPForms/AdminSettings.php:224
+msgid "Enable tracking mode (log only)"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:355
+msgid "Analyze and log comments without auto-blocking spam verdicts."
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:360, src/Integrations/WooCommerce/Admin/AdminController.php:85
+msgid "Logged-in Users"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:364
+msgid "Check comments from logged-in users"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:366
+msgid "Also analyze comments from logged-in users (administrators are always excluded)."
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:370, src/Integrations/WooCommerce/Admin/AdminController.php:103
+msgid "Auto-approve"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:374
+msgid "Auto-approve clean comments"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:376
+msgid "Automatically approve comments that are marked as clean by the spam filter."
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:380, src/Integrations/WooCommerce/Admin/AdminController.php:112
+msgid "Auto-spam"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:384
+msgid "Auto-spam detected comments"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:386
+msgid "Automatically move comments detected as spam to the spam folder."
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:390, src/Integrations/WooCommerce/Admin/AdminController.php:121
+msgid "Silently Discard"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:394
+msgid "Silently delete high-confidence spam instead of storing it"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:396
+msgid "When the spam score is at or above the threshold below, the comment is removed from your site entirely (it cannot be recovered or un-spammed)."
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:400, src/Integrations/WooCommerce/Admin/AdminController.php:131
+msgid "Discard Threshold"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:404, src/Integrations/WooCommerce/Admin/AdminController.php:135
+msgid "Score 0–100 (default 95)."
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:409
+msgid "Comment Length"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:412
+msgid "Minimum:"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:414, src/Admin/Pages/IntegrationsPage.php:420
+msgid "characters"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:418
+msgid "Maximum:"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:425
+msgid "Trackbacks & Pingbacks"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:429
+msgid "Check trackbacks for spam"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:434
+msgid "Check pingbacks for spam"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:485
+msgid "Select which forms to protect"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:498
+msgid "Edit"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:510
+msgid "Enable protection"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:471
+msgid "No forms found."
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:479
+msgid "Create a Form"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:602
+msgid "Recommended"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:605
+msgid "The #1 form builder for WordPress, now with AI spam protection"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:769
+msgid "Integration not found."
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:819
+msgid "Invalid integration for comment settings."
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:868
+msgid "Integration slug is required."
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:879
+msgid "Integration not found or does not support per-form settings."
+msgstr ""
+
+#: src/Admin/Pages/LogsPage.php:31
+msgid "Logs cleared."
+msgstr ""
+
+#: src/Admin/Pages/LogsPage.php:39
+msgid "ActiveLayer Logs"
+msgstr ""
+
+#: src/Admin/Pages/LogsPage.php:43
+msgid "Total:"
+msgstr ""
+
+#. translators: %d: number of log entries.
+#: src/Admin/Pages/LogsPage.php:47
+msgid "%d entries (last 200)"
+msgstr ""
+
+#: src/Admin/Pages/LogsPage.php:54
+msgid "Clear all logs?"
+msgstr ""
+
+#: src/Admin/Pages/LogsPage.php:55
+msgid "Clear Logs"
+msgstr ""
+
+#: src/Admin/Pages/LogsPage.php:66
+msgid "Time"
+msgstr ""
+
+#: src/Admin/Pages/LogsPage.php:68
+msgid "Data"
+msgstr ""
+
+#: src/Admin/Pages/LogsPage.php:61
+msgid "No logs. Enable logging in Settings."
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:121
+msgid "Advanced Settings"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:126
+msgid "Synchronous Mode"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:131
+msgid "Enable synchronous spam checking"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:135
+msgid "Applies to WPForms, Ninja Forms, and Formidable Forms. Other integrations (Contact Form 7, Gravity Forms, Fluent Forms, Elementor Forms, SureForms) always use synchronous checking."
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:140
+msgid "When enabled, submissions are checked for spam immediately during form submission. This blocks spam before emails are sent, but may slightly increase form submission time."
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:143
+msgid "When disabled (default), submissions are processed asynchronously in the background for faster form submissions."
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:149
+msgid "Environment Detection"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:154
+msgid "Enable environment detection"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:157
+msgid "Detects headless browsers and automation frameworks (Puppeteer, Selenium, etc.) to identify bot submissions."
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:163
+msgid "Behavioral Analysis"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:168
+msgid "Enable behavioral analysis"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:171
+msgid "Collects anonymous behavioral signals (mouse movements, typing patterns, scroll behavior) to improve spam detection accuracy. No personal data is stored."
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:177
+msgid "Submission Retention"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:181
+msgid "Never (keep all)"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:182
+msgid "30 days"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:183
+msgid "60 days"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:184
+msgid "90 days"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:185
+msgid "180 days"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:186
+msgid "1 year"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:189
+msgid "Automatically delete submissions older than the selected period. Runs daily. Set to \"Never\" to keep all submissions indefinitely."
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:196
+msgid "Debug Logging"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:201
+msgid "Enable debug logging"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:204
+msgid "Logs plugin activity to database. Only available when WP_DEBUG is enabled. View logs in Anti-Spam → Logs menu."
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:314
+msgid "API Key"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:318
+msgid "Enter your API key..."
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:320
+msgid "API usage limit reached"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:327
+msgid "Upgrade Plan"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:330
+msgid "Remove the current API key?"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:331
+msgid "Remove Key"
+msgstr ""
+
+#. translators: 1: Account dashboard URL.
+#: src/Admin/Pages/SettingsPage.php:347
+msgid "Your API key can be found in your <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">ActiveLayer Account Dashboard</a>."
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:390
+msgid "API key required to enable spam protection"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:385
+msgid "API key configured"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:378
+msgid "Your API usage has run out!"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:426
+msgid "API Usage"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:440
+msgid "Used"
+msgstr ""
+
+#. translators: %s: bold text about monthly reset.
+#: src/Admin/Pages/SettingsPage.php:473
+msgid "Usage credits allow you to access ActiveLayer's spam protection checks. These limits depend on your plan and can be increased by upgrading. <br />%s"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:474
+msgid "API usage resets every month on the 1st."
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:467
+msgid "Usage credits allow you to access ActiveLayer's spam protection checks. These limits depend on your plan and can be increased by upgrading."
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:507
+msgid "Usage"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:503
+msgid "%s Usage"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:512
+msgid "Upgrade for More"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:536
+msgid "You've hit your usage limit!"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:540
+msgid "Spam protection will be temporarily disabled until your usage resets next month or your limit is increased."
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:538
+msgid "Spam protection will be temporarily disabled until your usage limit is increased."
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:596, src/Admin/Pages/SubmissionsPage.php:179, src/Admin/Pages/SubmissionsPage.php:303
+msgid "Security check failed"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:603
+msgid "Insufficient permissions"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:659
+msgid "API key verification failed"
+msgstr ""
+
+#: src/Admin/Pages/SettingsPage.php:647
+msgid "API key verified and saved!"
+msgstr ""
+
+#: src/Admin/Pages/SubmissionsPage.php:97
+msgid "Submission ID is invalid."
+msgstr ""
+
+#: src/Admin/Pages/SubmissionsPage.php:123
+msgid "Search emails"
+msgstr ""
+
+#: src/Admin/Pages/SubmissionsPage.php:309
+msgid "Recheck is only available for failed submissions."
+msgstr ""
+
+#: src/Admin/Pages/SubmissionsPage.php:313
+msgid "Submission queued for recheck."
+msgstr ""
+
+#: src/Admin/Pages/SubmissionsPage.php:318, src/Admin/Pages/SubmissionsPage.php:327
+msgid "Status change not allowed for this submission."
+msgstr ""
+
+#: src/Admin/Pages/SubmissionsPage.php:322
+msgid "Submission marked as clean."
+msgstr ""
+
+#: src/Admin/Pages/SubmissionsPage.php:331
+msgid "Submission marked as spam."
+msgstr ""
+
+#: src/Admin/Pages/SubmissionsPage.php:336
+msgid "Submission deleted."
+msgstr ""
+
+#: src/Admin/Pages/SubmissionsPage.php:341
+msgid "Submission deleted permanently."
+msgstr ""
+
+#: src/Admin/Pages/SubmissionsPage.php:346
+msgid "Submission moved to trash."
+msgstr ""
+
+#: src/Admin/Pages/SubmissionsPage.php:351
+msgid "Submission restored."
+msgstr ""
+
+#: src/Admin/Pages/ToolsPage.php:64
+msgid "Bulk Delete Old Submissions"
+msgstr ""
+
+#: src/Admin/Pages/ToolsPage.php:66
+msgid "Delete all submissions older than the selected number of days. This helps prevent database bloat for high-volume sites."
+msgstr ""
+
+#: src/Admin/Pages/ToolsPage.php:75
+msgid "Delete submissions older than"
+msgstr ""
+
+#. translators: %d: number of days.
+#: src/Admin/Pages/ToolsPage.php:84
+msgid "%d day"
+msgid_plural "%d days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Admin/Pages/ToolsPage.php:100
+msgid "Are you sure you want to delete all submissions older than the selected period? This action cannot be undone."
+msgstr ""
+
+#: src/Admin/Pages/ToolsPage.php:102
+msgid "Delete Old Submissions"
+msgstr ""
+
+#: src/Admin/Pages/ToolsPage.php:119
+msgid "Automatic deletion is disabled. Submissions are kept indefinitely."
+msgstr ""
+
+#: src/Admin/Pages/ToolsPage.php:115
+msgid "Submissions are automatically deleted after %d days."
+msgstr ""
+
+#: src/Admin/Pages/ToolsPage.php:123
+msgid "Change retention settings"
+msgstr ""
+
+#: src/Admin/Pages/ToolsPage.php:129, src/Admin/Pages/ToolsPage.php:142
+msgid "Empty Trash"
+msgstr ""
+
+#: src/Admin/Pages/ToolsPage.php:131
+msgid "Permanently delete all trashed submissions. This action cannot be undone."
+msgstr ""
+
+#: src/Admin/Pages/ToolsPage.php:140
+msgid "Are you sure you want to permanently delete all trashed submissions? This action cannot be undone."
+msgstr ""
+
+#: src/Admin/Pages/ToolsPage.php:149, src/Admin/Pages/ToolsPage.php:162
+msgid "Delete All Spam"
+msgstr ""
+
+#: src/Admin/Pages/ToolsPage.php:151
+msgid "Permanently delete all submissions marked as spam. This action cannot be undone."
+msgstr ""
+
+#: src/Admin/Pages/ToolsPage.php:160
+msgid "Are you sure you want to permanently delete all spam submissions? This action cannot be undone."
+msgstr ""
+
+#: src/Admin/Pages/ToolsPage.php:216, src/Admin/Pages/ToolsPage.php:269, src/Admin/Pages/ToolsPage.php:311
+msgid "Security check failed. Please try again."
+msgstr ""
+
+#: src/Admin/Pages/ToolsPage.php:225, src/Admin/Pages/ToolsPage.php:278, src/Admin/Pages/ToolsPage.php:320
+msgid "You do not have permission to perform this action."
+msgstr ""
+
+#: src/Admin/Pages/ToolsPage.php:236
+msgid "Invalid retention period selected."
+msgstr ""
+
+#. translators: %d: number of deleted submissions.
+#: src/Admin/Pages/ToolsPage.php:248
+msgid "%d submission deleted successfully."
+msgid_plural "%d submissions deleted successfully."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of deleted submissions.
+#: src/Admin/Pages/ToolsPage.php:290
+msgid "%d trashed submission deleted."
+msgid_plural "%d trashed submissions deleted."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of deleted submissions.
+#: src/Admin/Pages/ToolsPage.php:332
+msgid "%d spam submission deleted."
+msgid_plural "%d spam submissions deleted."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/Admin/Settings/SettingsPersistor.php:121
+msgid "API key removed."
+msgstr ""
+
+#: src/ClientSignals/Fields/HoneypotField.php:100
+msgid "Leave this field empty"
+msgstr ""
+
+#: src/Integrations/Comments/AdminSettings.php:146
+msgid "Analyze WordPress comments for spam detection"
+msgstr ""
+
+#. translators: %d: minimum required comment length in characters.
+#: src/Integrations/Comments/SubmissionHandler.php:164
+msgid "Error: Comment must be at least %d characters long."
+msgstr ""
+
+#: src/Integrations/Comments/SubmissionHandler.php:167
+msgid "Comment Too Short"
+msgstr ""
+
+#. translators: %d: maximum allowed comment length in characters.
+#: src/Integrations/Comments/SubmissionHandler.php:180
+msgid "Error: Comment must be no longer than %d characters."
+msgstr ""
+
+#: src/Integrations/Comments/SubmissionHandler.php:183
+msgid "Comment Too Long"
+msgstr ""
+
+#: src/Integrations/ContactForm7/AdminSettings.php:77, src/Integrations/GravityForms/GravityFormsIntegration.php:231, src/Integrations/Forminator/Addon/ForminatorAddonFormSettings.php:113
+msgid "ActiveLayer Spam Protection"
+msgstr ""
+
+#: src/Integrations/ContactForm7/AdminSettings.php:81
+msgid "Enable ActiveLayer anti-spam protection for this form"
+msgstr ""
+
+#: src/Integrations/ContactForm7/AdminSettings.php:91
+msgid "Enable ActiveLayer spam protection"
+msgstr ""
+
+#: src/Integrations/ContactForm7/AdminSettings.php:97
+msgid "When enabled, form submissions will be checked for spam using ActiveLayer AI before sending email notifications."
+msgstr ""
+
+#. translators: %s: settings page URL.
+#: src/Integrations/ContactForm7/AdminSettings.php:116
+msgid "ActiveLayer API key is not configured. Please configure it in %s to enable spam protection."
+msgstr ""
+
+#: src/Integrations/ContactForm7/AdminSettings.php:204, src/Integrations/ElementorForms/AdminSettings.php:246, src/Integrations/FluentForms/AdminSettings.php:74, src/Integrations/FormidableForms/AdminSettings.php:246, src/Integrations/Forminator/AdminSettings.php:167, src/Integrations/GravityForms/AdminSettings.php:124, src/Integrations/NinjaForms/AdminSettings.php:212, src/Integrations/SureForms/AdminSettings.php:74, src/Integrations/WPForms/AdminSettings.php:141
+msgid "Untitled"
+msgstr ""
+
+#: src/Integrations/FormidableForms/AdminSettings.php:151
+msgid "ActiveLayer Protection"
+msgstr ""
+
+#: src/Integrations/FormidableForms/AdminSettings.php:157
+msgid "Enable ActiveLayer spam filtering for this form."
+msgstr ""
+
+#: src/Integrations/FormidableForms/AdminSettings.php:160
+msgid "Submissions stay pending until ActiveLayer marks them as clean."
+msgstr ""
+
+#: src/Integrations/GravityForms/GravityFormsIntegration.php:232
+msgid "Check submissions for spam using ActiveLayer AI before creating entries."
+msgstr ""
+
+#: src/Integrations/NinjaForms/AdminSettings.php:113, src/Integrations/WPForms/AdminSettings.php:199
+msgid "Enable ActiveLayer Protection"
+msgstr ""
+
+#: src/Integrations/NinjaForms/AdminSettings.php:117
+msgid "When enabled, submissions are screened by ActiveLayer before form actions run."
+msgstr ""
+
+#: src/Integrations/Traits/RegistrationProtectionTrait.php:107
+msgid "Registration blocked: your submission was flagged as spam."
+msgstr ""
+
+#: src/Integrations/WPForms/AdminSettings.php:204
+msgid "Enable AI-powered spam filtering for this form. Emails will be blocked until API verification completes."
+msgstr ""
+
+#: src/Integrations/WPForms/AdminSettings.php:233
+msgid "Analyze submissions without delaying notifications. Spam verdicts will not block the form."
+msgstr ""
+
+#: src/Integrations/Forminator/Addon/ForminatorAddon.php:91
+msgid "AI-powered spam protection for your forms."
+msgstr ""
+
+#: src/Integrations/Forminator/Addon/ForminatorAddon.php:190
+msgid "is connected successfully."
+msgstr ""
+
+#: src/Integrations/Forminator/Addon/ForminatorAddon.php:214
+msgid "Connect ActiveLayer"
+msgstr ""
+
+#. translators: %1$s opening a tag, %2$s closing a tag.
+#: src/Integrations/Forminator/Addon/ForminatorAddon.php:219
+msgid "Please configure your API key in %1$sActiveLayer Settings%2$s first."
+msgstr ""
+
+#: src/Integrations/Forminator/Addon/ForminatorAddon.php:198
+msgid "ActiveLayer is connected"
+msgstr ""
+
+#: src/Integrations/Forminator/Addon/ForminatorAddon.php:200
+msgid "AI spam protection is ready. Enable it per form in the Integrations tab."
+msgstr ""
+
+#: src/Integrations/Forminator/Addon/ForminatorAddonFormSettings.php:82
+msgid "spam protection is now active for this form."
+msgstr ""
+
+#: src/Integrations/Forminator/Addon/ForminatorAddonFormSettings.php:92
+msgid "Deactivate"
+msgstr ""
+
+#: src/Integrations/Forminator/Addon/ForminatorAddonFormSettings.php:94
+msgid "Deactivate ActiveLayer for this form."
+msgstr ""
+
+#: src/Integrations/Forminator/Addon/ForminatorAddonFormSettings.php:101
+msgid "OK"
+msgstr ""
+
+#: src/Integrations/Forminator/Addon/ForminatorAddonFormSettings.php:108
+msgid "AI spam protection is active for this form. Submissions are being checked before notifications are sent."
+msgstr ""
+
+#: src/Integrations/Forminator/Addon/ForminatorAddonFormSettings.php:109
+msgid "Click Activate to enable AI-powered spam filtering for this form. Submissions will be checked for spam before email notifications are sent."
+msgstr ""
+
+#: src/Integrations/Forminator/Addon/ForminatorAddonFormSettings.php:112
+msgid "ActiveLayer is Active"
+msgstr ""
+
+#: src/Integrations/WooCommerce/Admin/AdminController.php:72
+msgid "Product Reviews"
+msgstr ""
+
+#: src/Integrations/WooCommerce/Admin/AdminController.php:76, src/Integrations/WooCommerce/Admin/AdminController.php:148
+msgid "Enabled"
+msgstr ""
+
+#: src/Integrations/WooCommerce/Admin/AdminController.php:80
+msgid "Enable spam detection for product reviews"
+msgstr ""
+
+#: src/Integrations/WooCommerce/Admin/AdminController.php:89
+msgid "Check reviews from logged-in users"
+msgstr ""
+
+#: src/Integrations/WooCommerce/Admin/AdminController.php:94
+msgid "Verified Owners"
+msgstr ""
+
+#: src/Integrations/WooCommerce/Admin/AdminController.php:98
+msgid "Check reviews from verified product owners"
+msgstr ""
+
+#: src/Integrations/WooCommerce/Admin/AdminController.php:107
+msgid "Auto-approve clean reviews"
+msgstr ""
+
+#: src/Integrations/WooCommerce/Admin/AdminController.php:116
+msgid "Auto-spam detected reviews"
+msgstr ""
+
+#: src/Integrations/WooCommerce/Admin/AdminController.php:125
+msgid "Silently delete high-confidence spam reviews instead of storing them"
+msgstr ""
+
+#: src/Integrations/WooCommerce/Admin/AdminController.php:127
+msgid "When the spam score is at or above the threshold below, the review is removed from your site entirely (it cannot be recovered or un-spammed)."
+msgstr ""
+
+#: src/Integrations/WooCommerce/Admin/AdminController.php:144
+msgid "Customer Registration"
+msgstr ""
+
+#: src/Integrations/WooCommerce/Admin/AdminController.php:152
+msgid "Enable spam detection for customer registration"
+msgstr ""
+
+#: src/Integrations/WooCommerce/Admin/AdminController.php:157
+msgid "Checkout"
+msgstr ""
+
+#: src/Integrations/WooCommerce/Admin/AdminController.php:161
+msgid "Also protect register-during-checkout"
+msgstr ""
+
+#: src/Integrations/WooCommerce/Admin/AdminController.php:163
+msgid "Run the spam check when a customer creates an account during checkout. Disable to never block checkout flows."
+msgstr ""
+
+#: src/Integrations/WooCommerce/Admin/AdminController.php:195
+msgid "Invalid integration for WooCommerce settings."
+msgstr ""
+
+#: src/Integrations/WooCommerce/Admin/AdminController.php:217
+msgid "WooCommerce integration is not available."
+msgstr ""
+
+#: src/Integrations/WooCommerce/Registration/RegistrationAdminSettings.php:111
+msgid "Block spam registrations on the WooCommerce My Account form and the checkout register flow."
+msgstr ""
+
+#: src/Integrations/WooCommerce/Reviews/ReviewsAdminSettings.php:128
+msgid "Analyze WooCommerce product reviews for spam detection"
+msgstr ""
