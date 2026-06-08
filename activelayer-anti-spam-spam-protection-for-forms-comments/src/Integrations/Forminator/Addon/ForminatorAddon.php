@@ -17,6 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use ActiveLayer\Helpers\SettingsHelper;
+use ActiveLayer\Integrations\Forminator\AdminSettings;
 
 /**
  * Class Forminator_Activelayer extends Forminator_Integration.
@@ -283,6 +284,7 @@ final class Forminator_Activelayer extends Forminator_Integration {
 	 * Get ActiveLayer form settings via our AdminSettings.
 	 *
 	 * @since 1.1.0
+	 * @since 1.3.0 Delegate to AdminSettings so Forminator-native UI reflects the opt-out default.
 	 *
 	 * @param int $form_id Form ID.
 	 *
@@ -290,11 +292,6 @@ final class Forminator_Activelayer extends Forminator_Integration {
 	 */
 	private function get_activelayer_form_settings( int $form_id ): array {
 
-		// Read directly from the option to avoid infinite recursion:
-		// AdminSettings::get_form_settings() falls back to is_addon_connected_for_form()
-		// which calls this method, creating a loop for unconfigured forms.
-		$all_settings = get_option( 'activelayer_forminator_form_settings', [] );
-
-		return isset( $all_settings[ $form_id ] ) ? $all_settings[ $form_id ] : [ 'enabled' => false ];
+		return ( new AdminSettings() )->get_form_settings( $form_id );
 	}
 }

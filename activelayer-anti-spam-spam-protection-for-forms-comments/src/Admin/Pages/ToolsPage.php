@@ -51,12 +51,12 @@ class ToolsPage {
 		AdminPages::render_header();
 		?>
 		<div class="wrap activelayer-admin-wrap activelayer-page-tools">
+			<h1><?php esc_html_e( 'Tools', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></h1>
 			<?php
 			$onboarding_banner = new OnboardingBanner( new OnboardingManager() );
 
 			$onboarding_banner->render();
 			?>
-			<h1><?php esc_html_e( 'Tools', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></h1>
 
 			<?php $this->render_notice(); ?>
 

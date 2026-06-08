@@ -153,6 +153,7 @@ class AdminSettings implements \ActiveLayer\Integrations\FormAdminSettingsInterf
 	 * Get form settings.
 	 *
 	 * @since 1.0.0
+	 * @since 1.3.0 Default flipped to opt-out — protection enabled when no explicit toggle stored.
 	 *
 	 * @param int $form_id Form ID.
 	 *
@@ -161,7 +162,7 @@ class AdminSettings implements \ActiveLayer\Integrations\FormAdminSettingsInterf
 	public function get_form_settings( int $form_id ): array {
 
 		$default_settings = [
-			'enabled' => false,
+			'enabled' => true,
 		];
 
 		$saved_settings = get_post_meta( $form_id, '_activelayer_settings', true );

@@ -171,7 +171,7 @@ class SubmissionHandler {
 	 * empty `{all_fields}` merge tags.
 	 *
 	 * @since 1.1.0
-	 * @since 1.2.0 Return $entry so downstream notifications/confirmations receive the saved entry instead of null. Previously registered as an action and returned void, which broke `{all_fields}` and other entry-aware merge tags.
+	 * @since 1.3.0 Return $entry so downstream notifications/confirmations receive the saved entry instead of null. Previously registered as an action and returned void, which broke `{all_fields}` and other entry-aware merge tags.
 	 *
 	 * @param array $entry Saved entry array.
 	 * @param array $form  Form object.

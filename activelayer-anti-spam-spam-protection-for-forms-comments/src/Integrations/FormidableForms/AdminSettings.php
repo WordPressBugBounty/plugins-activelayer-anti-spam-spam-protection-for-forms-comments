@@ -107,6 +107,7 @@ class AdminSettings implements \ActiveLayer\Integrations\FormAdminSettingsInterf
 	 * Normalize the boolean option value for builder payloads.
 	 *
 	 * @since 1.0.0
+	 * @since 1.3.0 Default flipped to opt-out — protection enabled when no explicit toggle stored.
 	 *
 	 * @param array  $values Form builder values.
 	 * @param string $key    Option key to inspect.
@@ -122,14 +123,16 @@ class AdminSettings implements \ActiveLayer\Integrations\FormAdminSettingsInterf
 		$form_id = isset( $values['id'] ) ? (int) $values['id'] : 0;
 
 		if ( $form_id <= 0 ) {
-			return 0;
+			// New / unsaved form (no ID yet) — use opt-out default so the builder
+			// checkbox renders ON and the first save persists `enabled = 1`.
+			return 1;
 		}
 
 		$option_exists = false;
 		$stored_value  = $this->get_option_value( $form_id, $key, $option_exists );
 
 		if ( $stored_value === null ) {
-			return 0;
+			return 1;
 		}
 
 		return (int) (bool) $stored_value;
@@ -196,6 +199,7 @@ class AdminSettings implements \ActiveLayer\Integrations\FormAdminSettingsInterf
 	 * Get form settings for runtime checks.
 	 *
 	 * @since 1.0.0
+	 * @since 1.3.0 Default flipped to opt-out — protection enabled when no explicit toggle stored.
 	 *
 	 * @param int $form_id Form ID.
 	 *
@@ -205,6 +209,12 @@ class AdminSettings implements \ActiveLayer\Integrations\FormAdminSettingsInterf
 
 		$enabled_exists = false;
 		$enabled_value  = $this->get_option_value( $form_id, self::OPTION_KEY, $enabled_exists );
+
+		if ( ! $enabled_exists ) {
+			return [
+				'enabled' => true,
+			];
+		}
 
 		return [
 			'enabled' => (bool) $enabled_value,

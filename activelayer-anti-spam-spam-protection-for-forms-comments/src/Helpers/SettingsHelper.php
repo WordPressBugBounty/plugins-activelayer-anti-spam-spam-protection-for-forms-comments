@@ -23,6 +23,15 @@ class SettingsHelper {
 	private const OPTION_NAME = 'activelayer_global_settings';
 
 	/**
+	 * Option name for the API key validation record.
+	 *
+	 * Shape: { key: string, is_valid: bool, verified_at: int }.
+	 *
+	 * @since 1.3.0
+	 */
+	public const OPTION_API_KEY_VALIDATED = 'activelayer_api_key_validated';
+
+	/**
 	 * Setting key for API key.
 	 *
 	 * @since 1.0.0
@@ -113,6 +122,54 @@ class SettingsHelper {
 		}
 
 		return wp_parse_args( $settings, self::DEFAULT_SETTINGS );
+	}
+
+	/**
+	 * Persist the API key into global settings, preserving other values.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param string $api_key API key to store.
+	 *
+	 * @return void
+	 */
+	public static function save_api_key( string $api_key ): void {
+
+		$settings                  = self::get_global_settings();
+		$settings[ self::KEY_API ] = trim( $api_key );
+
+		update_option( self::OPTION_NAME, $settings );
+	}
+
+	/**
+	 * Persist an API key and mark it validated in a single step.
+	 *
+	 * Stores the key in global settings and records the validation entry the
+	 * settings screen reads to show the "valid" indicator. Shared by the manual
+	 * verify handler and the one-click Connect flow so the record shape stays in
+	 * sync. Stats refreshing is intentionally left to callers to avoid coupling
+	 * this helper to the subscription service.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param string $api_key Verified API key to persist.
+	 *
+	 * @return void
+	 */
+	public static function persist_validated_key( string $api_key ): void {
+
+		$api_key = trim( $api_key );
+
+		self::save_api_key( $api_key );
+
+		update_option(
+			self::OPTION_API_KEY_VALIDATED,
+			[
+				'key'         => $api_key,
+				'is_valid'    => true,
+				'verified_at' => time(),
+			]
+		);
 	}
 
 	/**

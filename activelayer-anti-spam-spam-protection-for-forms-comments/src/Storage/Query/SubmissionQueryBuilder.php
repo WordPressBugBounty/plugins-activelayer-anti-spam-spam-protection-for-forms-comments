@@ -19,6 +19,8 @@ class SubmissionQueryBuilder {
 	 * @since 1.0.0
 	 * @since 1.2.0 Added `wc_reviews` provider.
 	 * @since 1.2.0 Added `wc_registration` provider.
+	 * @since 1.3.0 Added `buddypress` provider.
+	 * @since 1.3.0 Added `buddyboss` provider (BuddyBoss Platform signup integration).
 	 *
 	 * @var array
 	 */
@@ -35,6 +37,8 @@ class SubmissionQueryBuilder {
 		'elementor_forms',
 		'wc_reviews',
 		'wc_registration',
+		'buddypress',
+		'buddyboss',
 	];
 
 	/**

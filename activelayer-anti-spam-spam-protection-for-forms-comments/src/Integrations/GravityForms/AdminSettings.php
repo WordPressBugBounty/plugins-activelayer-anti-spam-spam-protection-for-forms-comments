@@ -38,6 +38,7 @@ class AdminSettings implements \ActiveLayer\Integrations\FormAdminSettingsInterf
 	 * Get settings for a specific form.
 	 *
 	 * @since 1.1.0
+	 * @since 1.3.0 Default flipped to opt-out — protection enabled when no explicit toggle stored.
 	 *
 	 * @param int $form_id Gravity Forms form ID.
 	 *
@@ -49,12 +50,19 @@ class AdminSettings implements \ActiveLayer\Integrations\FormAdminSettingsInterf
 
 		if ( $form_id <= 0 ) {
 			return [
-				'enabled' => false,
+				'enabled' => true,
 			];
 		}
 
-		$all_settings  = $this->get_all_settings();
-		$form_settings = isset( $all_settings[ $form_id ] ) ? $all_settings[ $form_id ] : [];
+		$all_settings = $this->get_all_settings();
+
+		if ( ! isset( $all_settings[ $form_id ] ) ) {
+			return [
+				'enabled' => true,
+			];
+		}
+
+		$form_settings = $all_settings[ $form_id ];
 
 		return [
 			'enabled' => ! empty( $form_settings['enabled'] ),

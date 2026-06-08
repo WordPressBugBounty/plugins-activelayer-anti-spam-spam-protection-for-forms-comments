@@ -267,6 +267,8 @@ class SingleSubmissionView {
 								esc_html_e( 'Product:', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
 							} elseif ( $submission['provider'] === 'wc_registration' ) {
 								esc_html_e( 'Customer:', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
+							} elseif ( $submission['provider'] === 'buddypress' || $submission['provider'] === 'buddyboss' ) {
+								esc_html_e( 'Member:', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
 							} else {
 								esc_html_e( 'Form:', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
 							}

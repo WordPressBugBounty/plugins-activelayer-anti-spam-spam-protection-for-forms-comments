@@ -17,8 +17,9 @@ use ActiveLayer\Admin\Pages\LogsPage;
 use ActiveLayer\Admin\Pages\SettingsPage;
 use ActiveLayer\Admin\Pages\SubmissionsPage;
 use ActiveLayer\Admin\Pages\ToolsPage;
+use ActiveLayer\Admin\UpgradeRunner;
+use ActiveLayer\Connect\ConnectFlow;
 use ActiveLayer\Integrations\IntegrationRegistry;
-use ActiveLayer\Helpers\AppUrlHelper;
 use ActiveLayer\Helpers\SettingsHelper;
 use ActiveLayer\Helpers\UpgradeHelper;
 /**
@@ -120,6 +121,9 @@ class AdminPages {
 
 		// Initialize API connection bar.
 		ConnectionBar::hooks();
+
+		// Handle the one-click Connect return on admin_init (before output).
+		ConnectFlow::hooks();
 	}
 
 
@@ -131,6 +135,7 @@ class AdminPages {
 	public function hooks(): void {
 
 		add_action( 'admin_init', [ $this, 'maybe_redirect_after_activation' ] );
+		add_action( 'admin_init', [ $this->settings_page, 'maybe_redirect_legacy_integration' ] );
 		add_action( 'admin_menu', [ $this, 'add_menu_pages' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
 		add_action( 'admin_print_scripts', [ $this, 'hide_unrelated_notices' ] );
@@ -138,6 +143,7 @@ class AdminPages {
 		add_action( 'wp_ajax_activelayer_verify_api_key', [ $this->settings_page, 'ajax_verify_api_key' ] );
 		add_action( 'wp_ajax_activelayer_save_integration_settings', [ $this->integrations_page, 'ajax_save_settings' ] );
 		add_action( 'wp_ajax_activelayer_dismiss_onboarding', [ $this, 'ajax_dismiss_onboarding' ] );
+		add_action( 'wp_ajax_activelayer_dismiss_opt_out_announce', [ $this, 'ajax_dismiss_opt_out_announce' ] );
 		add_action( 'admin_enqueue_scripts', [ $this->dashboard_page, 'enqueue_chart_assets' ] );
 
 		add_filter(
@@ -182,6 +188,7 @@ class AdminPages {
 	 *
 	 * @since 1.1.0
 	 * @since 1.2.0 Build register URL via AppUrlHelper and normalize UTM shape.
+	 * @since 1.3.0 Account link now builds a one-click Connect URL.
 	 *
 	 * @param array $links Existing plugin action links.
 	 *
@@ -205,7 +212,7 @@ class AdminPages {
 		} else {
 			$account_link = sprintf(
 				'<a href="%1$s" target="_blank" rel="noopener noreferrer" aria-label="%2$s" style="color: #008537; font-weight: 700;">%3$s</a>',
-				esc_url( AppUrlHelper::get_register_url( 'plugins-page', 'create_account' ) ),
+				esc_url( ( new ConnectFlow() )->start( 'plugins-page', 'create_account' ) ),
 				esc_attr__( 'Create your ActiveLayer account', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 				esc_html__( 'Get ActiveLayer Account', 'activelayer-anti-spam-spam-protection-for-forms-comments' )
 			);
@@ -583,6 +590,24 @@ class AdminPages {
 		$manager = new OnboardingManager();
 
 		$manager->dismiss();
+
+		wp_send_json_success();
+	}
+
+	/**
+	 * Handle AJAX request to dismiss the opt-out announce notice.
+	 *
+	 * @since 1.3.0
+	 */
+	public function ajax_dismiss_opt_out_announce(): void {
+
+		check_ajax_referer( 'activelayer_admin', 'nonce' );
+
+		if ( ! current_user_can( 'manage_activelayer' ) ) {
+			wp_send_json_error( [ 'message' => esc_html__( 'Permission denied.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) ], 403 );
+		}
+
+		delete_option( UpgradeRunner::OPTION_ANNOUNCE_REQUIRED );
 
 		wp_send_json_success();
 	}

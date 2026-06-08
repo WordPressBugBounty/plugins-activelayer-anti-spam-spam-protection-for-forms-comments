@@ -137,6 +137,7 @@ class AdminSettings implements FormAdminSettingsInterface {
 	 * Get per-form settings.
 	 *
 	 * @since 1.1.0
+	 * @since 1.3.0 Default flipped to opt-out — protection enabled when no explicit toggle stored.
 	 *
 	 * @param int $form_id Form ID.
 	 *
@@ -145,7 +146,7 @@ class AdminSettings implements FormAdminSettingsInterface {
 	public function get_form_settings( int $form_id ): array {
 
 		$defaults = [
-			'enabled' => false,
+			'enabled' => true,
 		];
 
 		$saved = get_option( 'activelayer_fluentforms_form_' . $form_id, [] );

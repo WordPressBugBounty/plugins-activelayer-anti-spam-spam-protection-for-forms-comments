@@ -63,6 +63,32 @@ class UpgradeHelper {
 	}
 
 	/**
+	 * Build the URL where a user connects a payment method.
+	 *
+	 * Points at the ActiveLayer billing page. If the route changes,
+	 * only this base URL needs to be updated.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param string $utm_content Identifies the CTA placement.
+	 *
+	 * @return string Full billing URL.
+	 */
+	public static function get_billing_url( string $utm_content = 'connect_payment_method' ): string {
+
+		return add_query_arg(
+			[
+				'utm_campaign' => 'plugin',
+				'utm_source'   => 'WordPress',
+				'utm_medium'   => 'freeplugin',
+				'utm_content'  => $utm_content,
+				'utm_locale'   => get_locale(),
+			],
+			'https://app.activelayer.com/account/billing'
+		);
+	}
+
+	/**
 	 * Check if current plan is a free plan.
 	 *
 	 * @since 1.1.0
@@ -82,6 +108,37 @@ class UpgradeHelper {
 		$plan_name = strtolower( $stats['plan_name'] ?? '' );
 
 		return strpos( $plan_name, 'free' ) !== false;
+	}
+
+	/**
+	 * Check whether the user should be prompted to connect a payment method.
+	 *
+	 * True only for free-plan users whose card state is known to be absent.
+	 * When the card state is unknown (field missing/null), returns false so we
+	 * never nag a user who may already have a card — safe-by-default.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param array|null $stats Optional pre-fetched stats.
+	 *
+	 * @return bool True if the connect-payment-method prompt should display.
+	 */
+	public static function requires_payment_method( ?array $stats = null ): bool {
+
+		$stats = $stats ?? self::get_stats();
+
+		if ( ! ( $stats['success'] ?? false ) ) {
+			return false;
+		}
+
+		$has_payment_method = $stats['has_payment_method'] ?? null;
+
+		// Unknown card state — do not prompt.
+		if ( $has_payment_method === null ) {
+			return false;
+		}
+
+		return self::is_free_plan( $stats ) && $has_payment_method === false;
 	}
 
 	/**

@@ -21,9 +21,10 @@ class RegistrationAdminSettings {
 	 * Default settings.
 	 *
 	 * @since 1.2.0
+	 * @since 1.3.0 Default flipped to opt-out — protection enabled by default after API key connection.
 	 */
 	public const DEFAULT_SETTINGS = [
-		'enabled'                   => false,
+		'enabled'                   => true,
 		'protect_checkout_register' => true,
 	];
 

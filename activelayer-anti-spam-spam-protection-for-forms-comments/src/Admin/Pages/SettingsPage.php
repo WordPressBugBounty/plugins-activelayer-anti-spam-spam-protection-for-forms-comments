@@ -7,8 +7,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use ActiveLayer\Admin\AdminPages;
+use ActiveLayer\Admin\Components\PaymentMethodNotice;
 use ActiveLayer\Admin\Settings\SettingsPersistor;
 use ActiveLayer\Api\ApiClient;
+use ActiveLayer\Connect\ConnectFlow;
 use ActiveLayer\Helpers\NoticeHelper;
 use ActiveLayer\Helpers\SettingsHelper;
 use ActiveLayer\Helpers\UpgradeHelper;
@@ -70,17 +72,53 @@ class SettingsPage {
 	}
 
 	/**
+	 * Redirect legacy ?integration= settings URLs to the dedicated Integrations page.
+	 *
+	 * Runs on admin_init (before any output) so the redirect fires before headers
+	 * are sent. Scoped to the settings screen so the ?integration= query arg is not
+	 * hijacked on unrelated admin pages.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @return void
+	 */
+	public function maybe_redirect_legacy_integration(): void {
+
+		if ( wp_doing_ajax() || ! current_user_can( 'manage_activelayer' ) ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only query param for routing.
+		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only query param for routing.
+		if ( ! isset( $_GET['integration'] ) || $page !== 'activelayer-settings' ) {
+			return;
+		}
+
+		wp_safe_redirect( admin_url( 'admin.php?page=activelayer-integrations' ) );
+		exit;
+	}
+
+	/**
 	 * Render settings page.
 	 *
 	 * @since 1.0.0
+	 * @since 1.3.0 Connect return callback and legacy ?integration= redirect moved to admin_init.
 	 */
 	public function render(): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
-		// Redirect old ?integration= URLs to the new dedicated Integrations page.
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only query param for routing.
-		if ( isset( $_GET['integration'] ) && current_user_can( 'manage_activelayer' ) ) {
-			wp_safe_redirect( admin_url( 'admin.php?page=activelayer-integrations' ) );
-			exit;
+		// Surface the one-time Connect result notice persisted across the PRG redirect.
+		// The claim + redirect itself runs earlier on admin_init (ConnectFlow::hooks),
+		// before any output, so headers are not yet sent. The Connect return is a
+		// GET-only flow; skip the transient read on form saves.
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Existence check only; the Connect flow is bound by a per-user PKCE verifier transient, not by this request.
+		if ( empty( $_POST ) ) {
+			$connect_notice = ( new ConnectFlow() )->take_notice();
+
+			if ( $connect_notice !== null ) {
+				$this->set_notice( $connect_notice['message'], $connect_notice['type'] );
+			}
 		}
 
 		$this->handle_form_submission();
@@ -99,18 +137,21 @@ class SettingsPage {
 
 		?>
 		<div class="wrap activelayer-admin-wrap activelayer-page-settings">
+			<h1><?php esc_html_e( 'Settings', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></h1>
 			<?php
 			$onboarding_banner = new OnboardingBanner( new OnboardingManager() );
 
 			$onboarding_banner->render();
 			?>
-			<h1><?php esc_html_e( 'Settings', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></h1>
 
 			<form method="post" action="">
 				<?php wp_nonce_field( 'activelayer_settings' ); ?>
 
 				<!-- API Key Section -->
 				<?php $this->render_api_key_field( $api_key, $has_api_key ); ?>
+
+				<!-- Connect Payment Method Notice -->
+				<?php PaymentMethodNotice::render(); ?>
 
 				<!-- Subscription Stats -->
 				<?php $this->render_subscription_stats(); ?>
@@ -286,6 +327,7 @@ class SettingsPage {
 	 * Render the API key field section.
 	 *
 	 * @since 1.2.0
+	 * @since 1.3.0 Read the validation record via SettingsHelper::OPTION_API_KEY_VALIDATED.
 	 *
 	 * @param string $api_key     Current API key value.
 	 * @param bool   $has_api_key Whether an API key is configured.
@@ -295,7 +337,7 @@ class SettingsPage {
 	private function render_api_key_field( string $api_key, bool $has_api_key ): void {
 
 		// Check if current API key is validated.
-		$api_key_validation = get_option( 'activelayer_api_key_validated', [] );
+		$api_key_validation = get_option( SettingsHelper::OPTION_API_KEY_VALIDATED, [] );
 		$is_key_validated   = ! empty( $api_key_validation['is_valid'] ) &&
 			! empty( $api_key_validation['key'] ) &&
 			$api_key_validation['key'] === $api_key;
@@ -588,6 +630,7 @@ class SettingsPage {
 	 * AJAX handler for API key verification.
 	 *
 	 * @since 1.0.0
+	 * @since 1.3.0 Persist the verified key via SettingsHelper::persist_validated_key().
 	 */
 	public function ajax_verify_api_key(): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
@@ -624,21 +667,8 @@ class SettingsPage {
 		$result     = $api_client->verify_key( $api_key );
 
 		if ( $result['success'] ) {
-			// Save validation status.
-			update_option(
-				'activelayer_api_key_validated',
-				[
-					'key'         => $api_key,
-					'is_valid'    => true,
-					'verified_at' => time(),
-				]
-			);
-
-			// Auto-save the API key to global settings on successful verification.
-			$settings                            = SettingsHelper::get_global_settings();
-			$settings[ SettingsHelper::KEY_API ] = $api_key;
-
-			update_option( 'activelayer_global_settings', $settings );
+			// Persist the key + validation record (shared with the Connect flow).
+			SettingsHelper::persist_validated_key( $api_key );
 
 			// Clear stale stats and schedule fresh fetch for the new key.
 			SubscriptionStats::get_instance()->clear_cache();
@@ -654,7 +684,7 @@ class SettingsPage {
 			);
 		} else {
 			// Clear validation status on failure.
-			delete_option( 'activelayer_api_key_validated' );
+			delete_option( SettingsHelper::OPTION_API_KEY_VALIDATED );
 
 			$error_message = $result['message'] ?? __( 'API key verification failed', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
 			$error_message = wp_strip_all_tags( (string) $error_message );

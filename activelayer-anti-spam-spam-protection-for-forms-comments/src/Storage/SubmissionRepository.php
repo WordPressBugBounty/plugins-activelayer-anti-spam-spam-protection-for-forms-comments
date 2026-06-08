@@ -69,14 +69,15 @@ class SubmissionRepository {
 	 * Submission repository constructor.
 	 *
 	 * @since 1.0.0
+	 * @since 1.3.0 Typed optional dependency parameters as explicitly nullable for PHP 8.4 compatibility.
 	 *
-	 * @param SchemaManager           $schema_manager Schema manager instance.
-	 * @param SubmissionCache         $cache          Cache helper instance.
-	 * @param SubmissionQueryBuilder  $query_builder  Query builder instance (optional, will be created if not provided).
-	 * @param SubmissionAnalytics     $analytics      Analytics instance (optional, will be created if not provided).
-	 * @param SubmissionStatusManager $status_manager Status manager instance (optional, will be created if not provided).
+	 * @param SchemaManager                $schema_manager Schema manager instance.
+	 * @param SubmissionCache              $cache          Cache helper instance.
+	 * @param SubmissionQueryBuilder|null  $query_builder  Query builder instance (optional, will be created if not provided).
+	 * @param SubmissionAnalytics|null     $analytics      Analytics instance (optional, will be created if not provided).
+	 * @param SubmissionStatusManager|null $status_manager Status manager instance (optional, will be created if not provided).
 	 */
-	public function __construct( SchemaManager $schema_manager, SubmissionCache $cache, SubmissionQueryBuilder $query_builder = null, SubmissionAnalytics $analytics = null, SubmissionStatusManager $status_manager = null ) {
+	public function __construct( SchemaManager $schema_manager, SubmissionCache $cache, ?SubmissionQueryBuilder $query_builder = null, ?SubmissionAnalytics $analytics = null, ?SubmissionStatusManager $status_manager = null ) {
 
 		$this->schema_manager = $schema_manager;
 		$this->cache          = $cache;

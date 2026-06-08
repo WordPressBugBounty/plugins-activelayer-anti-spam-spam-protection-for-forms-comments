@@ -168,6 +168,7 @@ class SubscriptionStats {
 	 * Gets user's plan details, usage statistics, and quota information.
 	 *
 	 * @since 1.0.0
+	 * @since 1.3.0 Mapped has_payment_method from the API response.
 	 *
 	 * @return array Subscription stats or error.
 	 */
@@ -219,6 +220,8 @@ class SubscriptionStats {
 			'period_type'        => $period_type,
 			'period_month'       => $period['month'] ?? 0,
 			'period_year'        => $period['year'] ?? 0,
+			// Null when the API omits the field (unknown card state) — consumers treat null as "do not prompt".
+			'has_payment_method' => isset( $data['has_payment_method'] ) ? (bool) $data['has_payment_method'] : null,
 			'timestamp'          => $response['timestamp'] ?? '',
 			'raw_response'       => $response,
 		];

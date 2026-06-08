@@ -28,6 +28,8 @@ class FormDisplayResolver {
 	 *
 	 * @since 1.1.0
 	 * @since 1.2.0 Added `wc_registration` branch (customer login/email).
+	 * @since 1.3.0 Added `buddypress` branch (signup login/email).
+	 * @since 1.3.0 Added `buddyboss` branch (BuddyBoss Platform signup, same shape as BuddyPress).
 	 *
 	 * @param array $submission Submission data.
 	 *
@@ -44,7 +46,7 @@ class FormDisplayResolver {
 
 		$provider_slug = $submission['provider'] ?? '';
 
-		if ( $provider_slug === 'wc_registration' ) {
+		if ( $provider_slug === 'wc_registration' || $provider_slug === 'buddypress' || $provider_slug === 'buddyboss' ) {
 			$login = $form_data['name'] ?? '';
 			$email = $form_data['email'] ?? '';
 

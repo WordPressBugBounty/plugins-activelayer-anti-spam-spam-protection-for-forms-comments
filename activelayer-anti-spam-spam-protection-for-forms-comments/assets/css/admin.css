@@ -325,55 +325,6 @@
   display: inline;
 }
 
-.activelayer-usage-banner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #FAF2D5;
-  border-bottom: 1px solid #ffeaa7;
-  padding: 8px 20px;
-  margin: -1px -20px 0 -20px;
-  position: relative;
-}
-.activelayer-usage-banner p {
-  margin: 0;
-  font-size: 14px;
-  color: #1d2327;
-  text-align: center;
-}
-.activelayer-usage-banner p a {
-  color: #0073aa;
-  font-weight: 600;
-  text-decoration: underline;
-}
-.activelayer-usage-banner p a:hover {
-  color: rgb(0, 80.5, 119);
-}
-.activelayer-usage-banner.activelayer-usage-banner-exhausted {
-  background: #FCEEEF;
-  border-bottom: 1px solid #f5c6cb;
-}
-.activelayer-usage-banner .activelayer-usage-banner-dismiss {
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  color: #8c8f94;
-  line-height: 1;
-}
-.activelayer-usage-banner .activelayer-usage-banner-dismiss .dashicons {
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
-}
-.activelayer-usage-banner .activelayer-usage-banner-dismiss:hover {
-  color: #1d2327;
-}
-
 /**
  * Anti-Spam Plugin Admin Styles - Main SCSS File
  */
@@ -2629,9 +2580,6 @@ button.activelayer-integration-configure[aria-expanded=false]::after {
     transform: rotate(360deg);
   }
 }
-.notice.activelayer-notice {
-  border-left-color: #0073aa;
-}
 .notice.activelayer-notice.activelayer-connection-bar {
   display: flex;
   align-items: center;
@@ -2672,6 +2620,10 @@ button.activelayer-integration-configure[aria-expanded=false]::after {
 }
 .notice.activelayer-notice .notice-content .notice-actions .button {
   margin-left: 8px;
+}
+
+#activelayer-usage-banner.notice {
+  background: #fff;
 }
 
 .activelayer-page-tools .activelayer-tool-card {

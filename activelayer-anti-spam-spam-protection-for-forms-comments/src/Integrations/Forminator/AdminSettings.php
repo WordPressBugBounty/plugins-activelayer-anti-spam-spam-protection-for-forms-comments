@@ -63,6 +63,7 @@ class AdminSettings implements FormAdminSettingsInterface {
 	 * Get form settings for runtime checks.
 	 *
 	 * @since 1.1.0
+	 * @since 1.3.0 Default flipped to opt-out — protection enabled when no explicit toggle stored.
 	 *
 	 * @param int $form_id Form ID.
 	 *
@@ -71,26 +72,19 @@ class AdminSettings implements FormAdminSettingsInterface {
 	public function get_form_settings( int $form_id ): array {
 
 		if ( $form_id <= 0 ) {
-			return [ 'enabled' => false ];
+			return [ 'enabled' => true ];
 		}
 
 		$all_settings = $this->get_all_settings();
 
 		$form_settings = isset( $all_settings[ $form_id ] ) ? $all_settings[ $form_id ] : [];
 
-		$enabled = ! empty( $form_settings['enabled'] );
-
-		// Fallback: check Forminator addon connected state for forms activated
-		// before the mirroring code was deployed.
-		if ( ! $enabled && empty( $form_settings ) ) {
-			$enabled = $this->is_addon_connected_for_form( $form_id );
-
-			if ( $enabled ) {
-				$this->save_form_protection( $form_id, true );
-			}
+		// Respect explicit stored toggle (including false); default to enabled when unset.
+		if ( isset( $form_settings['enabled'] ) ) {
+			return [ 'enabled' => (bool) $form_settings['enabled'] ];
 		}
 
-		return [ 'enabled' => $enabled ];
+		return [ 'enabled' => true ];
 	}
 
 	/**
@@ -236,32 +230,6 @@ class AdminSettings implements FormAdminSettingsInterface {
 	public function get_form_edit_url_template(): string {
 
 		return 'admin.php?page=forminator-cform-wizard&id=%d';
-	}
-
-	/**
-	 * Check if ActiveLayer addon is connected for a form via Forminator API.
-	 *
-	 * Fallback for forms that were activated before the mirroring code was deployed.
-	 *
-	 * @since 1.1.0
-	 *
-	 * @param int $form_id Form identifier.
-	 *
-	 * @return bool
-	 */
-	private function is_addon_connected_for_form( int $form_id ): bool {
-
-		if ( ! function_exists( 'forminator_get_addon' ) ) {
-			return false;
-		}
-
-		$addon = forminator_get_addon( 'activelayer' );
-
-		if ( ! $addon || ! method_exists( $addon, 'is_module_connected' ) ) {
-			return false;
-		}
-
-		return $addon->is_module_connected( $form_id );
 	}
 
 	/**

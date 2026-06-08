@@ -2629,9 +2629,6 @@ button.activelayer-integration-configure[aria-expanded=false]::after {
     transform: rotate(360deg);
   }
 }
-.notice.activelayer-notice {
-  border-left-color: #0073aa;
-}
 .notice.activelayer-notice.activelayer-connection-bar {
   display: flex;
   align-items: center;

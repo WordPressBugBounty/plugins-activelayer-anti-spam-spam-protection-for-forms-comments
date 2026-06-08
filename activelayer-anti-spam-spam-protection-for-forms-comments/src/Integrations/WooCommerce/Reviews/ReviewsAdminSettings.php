@@ -21,9 +21,10 @@ class ReviewsAdminSettings {
 	 * Default review integration settings.
 	 *
 	 * @since 1.2.0
+	 * @since 1.3.0 Default flipped to opt-out — protection enabled by default after API key connection.
 	 */
 	public const DEFAULT_SETTINGS = [
-		'enabled'                          => false,
+		'enabled'                          => true,
 		'check_logged_in_users'            => false,
 		'check_verified_owners'            => false,
 		'auto_approve_clean'               => true,

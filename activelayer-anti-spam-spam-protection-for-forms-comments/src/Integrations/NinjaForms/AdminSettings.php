@@ -92,6 +92,7 @@ class AdminSettings implements \ActiveLayer\Integrations\FormAdminSettingsInterf
 	 * Inject ActiveLayer toggle into the Ninja Forms builder settings.
 	 *
 	 * @since 1.0.0
+	 * @since 1.3.0 React builder default toggle now ON to match opt-out backend.
 	 *
 	 * @param array $settings Existing form settings configuration.
 	 *
@@ -113,7 +114,7 @@ class AdminSettings implements \ActiveLayer\Integrations\FormAdminSettingsInterf
 			'label' => esc_html__( 'Enable ActiveLayer Protection', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 			'width' => 'full',
 			'group' => 'primary',
-			'value' => 0,
+			'value' => 1,
 			'help'  => esc_html__( 'When enabled, submissions are screened by ActiveLayer before form actions run.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 		];
 
@@ -124,6 +125,7 @@ class AdminSettings implements \ActiveLayer\Integrations\FormAdminSettingsInterf
 	 * Retrieve stored per-form configuration.
 	 *
 	 * @since 1.0.0
+	 * @since 1.3.0 Default flipped to opt-out — unset/empty toggle returns enabled=true.
 	 *
 	 * @param int $form_id Form identifier.
 	 *
@@ -131,7 +133,7 @@ class AdminSettings implements \ActiveLayer\Integrations\FormAdminSettingsInterf
 	 */
 	public function get_form_settings( int $form_id ): array {
 
-		$enabled = false;
+		$enabled = true;
 
 		if ( $form_id <= 0 || ! function_exists( 'Ninja_Forms' ) ) {
 			return [

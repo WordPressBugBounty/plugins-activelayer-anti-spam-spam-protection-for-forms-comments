@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use ActiveLayer\Helpers\AppUrlHelper;
+use ActiveLayer\Connect\ConnectFlow;
 use ActiveLayer\Helpers\SettingsHelper;
 
 /**
@@ -44,6 +44,7 @@ class ConnectionBar {
 	 *
 	 * @since 1.1.0
 	 * @since 1.2.0 Build register URL via AppUrlHelper.
+	 * @since 1.3.0 CTA now builds a one-click Connect URL.
 	 */
 	public static function display_notice(): void {
 
@@ -67,7 +68,7 @@ class ConnectionBar {
 		}
 
 		$settings_url = admin_url( 'admin.php?page=' . self::SETTINGS_PAGE_SLUG );
-		$register_url = AppUrlHelper::get_register_url( 'connection_bar', 'create_account' );
+		$register_url = ( new ConnectFlow() )->start( 'connection_bar', 'create_account' );
 
 		?>
 		<div class="notice notice-warning activelayer-notice activelayer-connection-bar">

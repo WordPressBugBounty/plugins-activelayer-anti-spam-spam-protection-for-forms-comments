@@ -110,12 +110,12 @@ class SubmissionsPage {
 
 		?>
 		<div class="wrap activelayer-admin-wrap activelayer-page-submissions">
+			<h1><?php esc_html_e( 'Submissions', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></h1>
 			<?php
 			$onboarding_banner = new OnboardingBanner( new OnboardingManager() );
 
 			$onboarding_banner->render();
 			?>
-			<h1><?php esc_html_e( 'Submissions', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></h1>
 
 		<form method="get">
 			<input type="hidden" name="page" value="activelayer-submissions" />

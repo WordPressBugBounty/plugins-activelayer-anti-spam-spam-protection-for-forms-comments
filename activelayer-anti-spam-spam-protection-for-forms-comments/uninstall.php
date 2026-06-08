@@ -51,6 +51,8 @@ global $wpdb;
  * - activelayer_elementor_forms_settings
  * - activelayer_wc_reviews_settings (WC Reviews sub)
  * - activelayer_wc_registration_settings (WC Registration sub)
+ * - activelayer_buddypress_settings
+ * - activelayer_buddyboss_settings
  *
  * Note: The WooCommerce umbrella (slug 'woocommerce') has no own settings
  * option — its enabled state is derived from the OR of the two sub-flags
@@ -71,6 +73,8 @@ $activelayer_option_names = [
 	'activelayer_storage_schema_version',
 	'activelayer_usage_banner_dismissed',
 	'activelayer_logs',
+	'activelayer_plugin_version',
+	'activelayer_opt_out_announce_required',
 
 	// Integration settings.
 	'activelayer_wpforms_settings',
@@ -85,6 +89,8 @@ $activelayer_option_names = [
 	'activelayer_elementor_forms_settings',
 	'activelayer_wc_reviews_settings',
 	'activelayer_wc_registration_settings',
+	'activelayer_buddypress_settings',
+	'activelayer_buddyboss_settings',
 
 	// Per-form settings.
 	'activelayer_elementor_forms_form_settings',

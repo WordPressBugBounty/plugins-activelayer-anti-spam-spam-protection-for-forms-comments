@@ -168,12 +168,12 @@ class IntegrationsPage {
 
 		?>
 		<div class="wrap activelayer-admin-wrap activelayer-page-integrations">
+			<h1><?php esc_html_e( 'Integrations', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></h1>
 			<?php
 			$onboarding_banner = new OnboardingBanner( new OnboardingManager() );
 
 			$onboarding_banner->render();
 			?>
-			<h1><?php esc_html_e( 'Integrations', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></h1>
 			<p class="description">
 				<?php esc_html_e( 'Configure spam protection settings for different form providers and WordPress features.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?>
 			</p>
@@ -619,6 +619,8 @@ style="display:none"<?php endif; ?>
 	 * Get icon URL for an integration.
 	 *
 	 * @since 1.1.0
+	 * @since 1.3.0 Added BuddyPress icon mapping.
+	 * @since 1.3.0 Added BuddyBoss icon mapping (assets/images/icons/BuddyBoss.png).
 	 *
 	 * @param string $name Integration name.
 	 *
@@ -638,6 +640,8 @@ style="display:none"<?php endif; ?>
 			'SureForms'        => 'SureForms.png',
 			'Gravity Forms'    => 'GravityForms.png',
 			'Elementor Forms'  => 'ElementorForms.png',
+			'BuddyPress'       => 'BuddyPress.png',
+			'BuddyBoss'        => 'BuddyBoss.png',
 		];
 
 		$icon_file = $icon_map[ $name ] ?? '';

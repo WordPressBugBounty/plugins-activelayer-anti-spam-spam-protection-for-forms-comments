@@ -65,6 +65,7 @@ class SubmissionStatusManager {
 	 * Update submission status after processing.
 	 *
 	 * @since 1.0.0
+	 * @since 1.3.0 Fires the activelayer_submission_status_changed action after a successful update.
 	 *
 	 * @param string $id     Submission ID.
 	 * @param string $status New status (clean|spam|failed).
@@ -83,6 +84,10 @@ class SubmissionStatusManager {
 		if ( ! $this->query_builder->is_allowed_status( $normalized_status ) ) {
 			return false;
 		}
+
+		// Capture the previous status before overwriting it.
+		$previous   = $this->find_submission( $id );
+		$old_status = $previous['status'] ?? null;
 
 		global $wpdb;
 
@@ -115,6 +120,23 @@ class SubmissionStatusManager {
 
 		if ( $result !== false ) {
 			$this->cache->clear_submission_cache( $id );
+
+			if ( $result > 0 ) {
+				/**
+				 * Fires after a submission's status has been successfully updated.
+				 *
+				 * Fires on any successful status transition — synchronous (in-request)
+				 * and asynchronous (queue worker) verdict paths, as well as manual or
+				 * admin status updates — since all converge on this method.
+				 *
+				 * @since 1.3.0
+				 *
+				 * @param string      $id         Submission identifier.
+				 * @param string      $new_status The newly applied status.
+				 * @param string|null $old_status The status before this update, or null if unknown.
+				 */
+				do_action( 'activelayer_submission_status_changed', $id, $normalized_status, $old_status );
+			}
 		}
 
 		return $result !== false;

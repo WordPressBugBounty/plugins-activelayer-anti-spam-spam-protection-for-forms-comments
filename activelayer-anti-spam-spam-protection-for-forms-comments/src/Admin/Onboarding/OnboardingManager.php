@@ -6,9 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use ActiveLayer\Helpers\AppUrlHelper;
+use ActiveLayer\Connect\ConnectFlow;
 use ActiveLayer\Helpers\SettingsHelper;
-use ActiveLayer\Integrations\IntegrationRegistry;
 use ActiveLayer\Storage\Storage;
 
 /**
@@ -75,6 +74,7 @@ class OnboardingManager {
 	 *
 	 * @since 1.1.0
 	 * @since 1.2.0 Build register URL via AppUrlHelper.
+	 * @since 1.3.0 Step 2 auto-completes when API key connected; reframed as informational review; step CTA now builds a one-click Connect URL.
 	 *
 	 * @return array Step data keyed by step identifier.
 	 */
@@ -92,9 +92,9 @@ class OnboardingManager {
 
 		$step_1_completed = $has_api_key && $is_key_validated;
 
-		// Step 2: check protected forms count.
-		$forms_summary    = IntegrationRegistry::get_instance()->get_protected_forms_summary();
-		$step_2_completed = $forms_summary['total'] > 0;
+		// Step 2: auto-complete once step 1 (API key) is connected.
+		// With defaults-flip to opt-out, all forms protect automatically.
+		$step_2_completed = $step_1_completed;
 
 		// Step 3: check if any submission exists.
 		$stats            = Storage::get_instance()->get_queue_stats();
@@ -110,15 +110,17 @@ class OnboardingManager {
 					'<a href="' . esc_url( admin_url( 'admin.php?page=activelayer-settings' ) ) . '">' . esc_html__( 'Settings', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) . '</a>'
 				),
 				'completed'   => $step_1_completed,
-				'cta_url'     => AppUrlHelper::get_register_url( 'onboarding_checklist', 'create_account' ),
+				// Only mint a Connect URL (writes a pairing transient) when not yet connected;
+				// a connected user cannot use it, and get_steps() runs from the read-only should_show_banner().
+				'cta_url'     => $step_1_completed ? '' : ( new ConnectFlow() )->start( 'onboarding_checklist', 'create_account' ),
 				'cta_label'   => __( 'Create Account', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 			],
 			'step_2' => [
 				'number'      => 2,
-				'title'       => __( 'Enable spam protection for your forms', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+				'title'       => __( 'Review your form protection settings', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 				'description' => sprintf(
 					/* translators: %s: integrations page link. */
-					__( 'Enable form integrations in %s, then configure which forms to protect.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+					__( 'All supported forms are protected by default. Visit %s to disable protection on specific forms if needed.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 					'<a href="' . esc_url( admin_url( 'admin.php?page=activelayer-integrations' ) ) . '">' . esc_html__( 'Integrations', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) . '</a>'
 				),
 				'completed'   => $step_2_completed,
@@ -128,7 +130,7 @@ class OnboardingManager {
 			'step_3' => [
 				'number'      => 3,
 				'title'       => __( 'Receive your first submission', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
-				'description' => __( 'Once protection is enabled, submissions will appear automatically as your forms receive entries.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+				'description' => __( 'Submissions will appear automatically as your forms receive entries.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 				'completed'   => $step_3_completed,
 				'cta_url'     => '',
 				'cta_label'   => '',

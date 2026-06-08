@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use ActiveLayer\Helpers\SettingsHelper;
 use ActiveLayer\Logger\Logger;
 
 /**
@@ -320,24 +321,36 @@ class IntegrationRegistry {
 	}
 
 	/**
-	 * Build the onboarding step-2 (protected forms) completion payload for AJAX responses.
+	 * Build the onboarding step-2 completion payload for AJAX responses.
 	 *
 	 * Returned shape is the standard payload merged into `wp_send_json_success`
 	 * data by integration AJAX handlers so the onboarding banner JS can update
 	 * step completion without a page reload.
 	 *
 	 * @since 1.2.0
+	 * @since 1.3.0 Step 2 auto-completes when the API key is validated, to stay in sync with OnboardingManager after the opt-out defaults flip.
 	 *
 	 * @return array {
-	 *     @type bool $step_2_completed True when at least one protected form exists.
+	 *     @type bool $step_2_completed True when API key is connected and validated.
 	 * }
 	 */
 	public function build_onboarding_step_payload(): array {
 
-		$forms_summary = $this->get_protected_forms_summary();
+		// Mirror OnboardingManager::get_steps(): with opt-out defaults, all
+		// supported forms protect automatically once the API key is validated,
+		// so step 2 completion is driven by step 1 completion.
+		$has_api_key        = SettingsHelper::has_api_key();
+		$api_key            = SettingsHelper::get_api_key();
+		$api_key_validation = get_option( 'activelayer_api_key_validated', [] );
+
+		$is_key_validated = $has_api_key
+			&& is_array( $api_key_validation )
+			&& ! empty( $api_key_validation['is_valid'] )
+			&& ! empty( $api_key_validation['key'] )
+			&& $api_key_validation['key'] === $api_key;
 
 		return [
-			'step_2_completed' => $forms_summary['total'] > 0,
+			'step_2_completed' => $has_api_key && $is_key_validated,
 		];
 	}
 

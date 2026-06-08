@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use ActiveLayer\Helpers\AppUrlHelper;
+use ActiveLayer\Connect\ConnectFlow;
 use ActiveLayer\Helpers\SettingsHelper;
 use ActiveLayer\Storage\Storage;
 
@@ -172,6 +172,7 @@ class DashboardWidget {
 	 *
 	 * @since 1.1.0
 	 * @since 1.2.0 Build register URL via AppUrlHelper.
+	 * @since 1.3.0 CTA now builds a one-click Connect URL.
 	 */
 	private function render_disconnected(): void {
 
@@ -186,7 +187,7 @@ class DashboardWidget {
 				<a href="<?php echo esc_url( $settings_url ); ?>" class="button button-primary">
 					<?php esc_html_e( 'Connect Your Account', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?>
 				</a>
-				<a href="<?php echo esc_url( AppUrlHelper::get_register_url( 'dashboard_widget', 'create_account' ) ); ?>"
+				<a href="<?php echo esc_url( ( new ConnectFlow() )->start( 'dashboard_widget', 'create_account' ) ); ?>"
 					target="_blank"
 					rel="noopener noreferrer"
 					class="activelayer-dash-widget-cta__secondary">

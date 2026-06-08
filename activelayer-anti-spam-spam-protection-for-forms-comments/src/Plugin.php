@@ -16,8 +16,13 @@ use ActiveLayer\Integrations\SureForms\SureFormsIntegration;
 use ActiveLayer\Integrations\GravityForms\GravityFormsIntegration;
 use ActiveLayer\Integrations\ElementorForms\ElementorFormsIntegration;
 use ActiveLayer\Integrations\WooCommerce\WooCommerceIntegration;
+use ActiveLayer\Integrations\BuddyPress\BuddyPressIntegration;
+use ActiveLayer\Integrations\BuddyBoss\BuddyBossIntegration;
 use ActiveLayer\Admin\AdminPages;
 use ActiveLayer\Admin\Components\DashboardWidget;
+use ActiveLayer\Admin\Components\OptOutDefaultNotice;
+use ActiveLayer\Admin\Components\ReviewRequestNotice;
+use ActiveLayer\Admin\UpgradeRunner;
 use ActiveLayer\Privacy\PrivacyManager;
 use ActiveLayer\Subscription\SubscriptionStats;
 
@@ -86,14 +91,20 @@ class Plugin {
 	 * @since 1.0.0
 	 * @since 1.1.0 Added frontend script loader initialization.
 	 * @since 1.2.0 Wire NativeModerationFeedback listener for native comment moderation.
+	 * @since 1.3.0 Run UpgradeRunner first to detect opt-out announce state.
 	 */
 	public function init(): void {
+
+		UpgradeRunner::run();
 
 		// Initialize integrations.
 		$this->init_integrations();
 
 		// Bridge native WP comment moderation actions to the ActiveLayer feedback pipeline.
 		( new NativeModerationFeedback() )->init();
+
+		// Arm the first-spam review request notice (listener must run in all contexts).
+		ReviewRequestNotice::init();
 
 		// Hook into WordPress.
 		$this->hooks();
@@ -127,6 +138,8 @@ class Plugin {
 	 * @since 1.0.0
 	 * @since 1.2.0 Registered ReviewsIntegration (WooCommerce umbrella).
 	 * @since 1.2.0 Replaced WooCommerceReviews registration with WooCommerce umbrella (covers reviews + registration).
+	 * @since 1.3.0 Registered BuddyPressIntegration (signup spam protection).
+	 * @since 1.3.0 Split BuddyPress into BuddyPressIntegration (free) and BuddyBossIntegration (Platform), each with its own admin toggle.
 	 */
 	private function load_builtin_integrations(): void {
 
@@ -139,6 +152,8 @@ class Plugin {
 			FluentFormsIntegration::class,
 			SureFormsIntegration::class,
 			WooCommerceIntegration::class,
+			BuddyPressIntegration::class,
+			BuddyBossIntegration::class,
 		];
 
 		foreach ( $integrations as $class ) {
@@ -220,6 +235,9 @@ class Plugin {
 		$dashboard_widget = new DashboardWidget();
 
 		$dashboard_widget->hooks();
+
+		// Initialize opt-out default announce notice.
+		OptOutDefaultNotice::init();
 	}
 
 	/**
@@ -277,6 +295,7 @@ class Plugin {
 	 * Register privacy policy content for the plugin.
 	 *
 	 * @since 1.0.0
+	 * @since 1.3.0 Updated to reflect automatic protection enabled by default and per-form opt-out capability.
 	 */
 	public function register_privacy_policy_content(): void {
 
@@ -284,8 +303,8 @@ class Plugin {
 			return;
 		}
 
-		$content  = '<p>' . esc_html__( 'ActiveLayer sends form submission details (such as names, email addresses, form field values, IP addresses, and user agent strings) to the ActiveLayer API for spam analysis. This data is used exclusively to determine whether a submission is spam and may be stored temporarily in accordance with the ActiveLayer Privacy Policy.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) . '</p>';
-		$content .= '<p>' . esc_html__( 'Data shared with ActiveLayer is transmitted over HTTPS. Site owners should ensure their own privacy policy explains this processing and references the ActiveLayer service (https://activelayer.com/privacy) for additional information.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) . '</p>';
+		$content  = '<p>' . esc_html__( 'ActiveLayer automatically protects form submissions on this site after an API key is connected. When a form is submitted, ActiveLayer sends submission details (such as names, email addresses, form field values, IP addresses, and user agent strings) to the ActiveLayer API for spam analysis. This data is used exclusively to determine whether a submission is spam and may be stored temporarily in accordance with the ActiveLayer Privacy Policy. Site administrators can disable protection for individual forms in the ActiveLayer integration settings if needed.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) . '</p>';
+		$content .= '<p>' . esc_html__( 'Data shared with ActiveLayer is transmitted over HTTPS. Site owners should ensure their own privacy policy explains this automatic processing and references the ActiveLayer service (https://activelayer.com/privacy) for additional information.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) . '</p>';
 
 		wp_add_privacy_policy_content( 'ActiveLayer', wp_kses_post( $content ) );
 	}

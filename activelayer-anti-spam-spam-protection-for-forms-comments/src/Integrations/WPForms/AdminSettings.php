@@ -43,6 +43,7 @@ class AdminSettings implements \ActiveLayer\Integrations\FormAdminSettingsInterf
 	 * Get form-specific settings.
 	 *
 	 * @since 1.0.0
+	 * @since 1.3.0 Default flipped to opt-out — protection enabled when no explicit toggle stored.
 	 *
 	 * @param array $form_data Form data.
 	 *
@@ -51,7 +52,7 @@ class AdminSettings implements \ActiveLayer\Integrations\FormAdminSettingsInterf
 	public function get_form_settings( array $form_data ): array {
 
 		$defaults = [
-			'enabled'               => false,
+			'enabled'               => true,
 			'tracking_mode'         => null,
 			'tracking_mode_defined' => false,
 		];
@@ -61,7 +62,7 @@ class AdminSettings implements \ActiveLayer\Integrations\FormAdminSettingsInterf
 		}
 
 		$settings            = $form_data['settings']['anti_spam']['activelayer'] ?? [];
-		$enabled             = ! empty( $settings['enable'] );
+		$enabled             = isset( $settings['enable'] ) ? (bool) $settings['enable'] : true;
 		$tracking_defined    = array_key_exists( 'tracking_mode', $settings );
 		$tracking_mode_value = $tracking_defined ? (bool) $settings['tracking_mode'] : null;
 
@@ -182,9 +183,45 @@ class AdminSettings implements \ActiveLayer\Integrations\FormAdminSettingsInterf
 	}
 
 	/**
+	 * Persist explicit `'0'` for the protection toggle when the builder save drops it.
+	 *
+	 * WPForms renders the toggle as a plain `<input type="checkbox">`. Browsers omit
+	 * unchecked checkboxes from form submissions, so `settings.anti_spam.activelayer.enable`
+	 * disappears from the saved post_content. Without this filter the opt-out default
+	 * read at `get_form_settings()` would re-enable protection on every reload, defeating
+	 * the user's explicit opt-out. Mirrors how WPForms core preserves `store_spam_entries`
+	 * via the same `?? '0'` pattern inside its own `update()` method.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param array $form Post arguments passed to wp_update_post().
+	 * @param array $data Final form data array used to build $form['post_content'].
+	 * @param array $args Update context (cap, context, etc.).
+	 *
+	 * @return array
+	 */
+	public function preserve_protection_toggle_on_save( array $form, array $data, array $args ): array {
+
+		if ( ( $args['context'] ?? '' ) !== 'save_form' ) {
+			return $form;
+		}
+
+		if ( isset( $data['settings']['anti_spam']['activelayer']['enable'] ) ) {
+			return $form;
+		}
+
+		$data['settings']['anti_spam']['activelayer']['enable'] = '0';
+
+		$form['post_content'] = wpforms_encode( $data );
+
+		return $form;
+	}
+
+	/**
 	 * Add anti-spam settings to WPForms builder Anti-Spam panel.
 	 *
 	 * @since 1.0.0
+	 * @since 1.3.0 Builder default toggle now ON to match opt-out backend.
 	 *
 	 * @param array $form_data Form data.
 	 */
@@ -200,7 +237,7 @@ class AdminSettings implements \ActiveLayer\Integrations\FormAdminSettingsInterf
 			[
 				'parent'     => 'settings',
 				'subsection' => 'activelayer',
-				'default'    => false,
+				'default'    => true,
 				'tooltip'    => esc_html__( 'Enable AI-powered spam filtering for this form. Emails will be blocked until API verification completes.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 			]
 		);

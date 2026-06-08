@@ -177,12 +177,9 @@
 		return num.toString();
 	}
 
-	// Usage limit banner dismiss
-	$( '#activelayer-usage-banner' ).on( 'click', '.activelayer-usage-banner-dismiss', function( e ) {
-		e.preventDefault();
-
-		const banner = $( '#activelayer-usage-banner' );
-
+	// Usage limit notice dismiss — persist the native WP dismissal per billing
+	// period. WordPress core handles hiding the notice; we only record it.
+	$( document ).on( 'click', '#activelayer-usage-banner .notice-dismiss', function() {
 		$.ajax( {
 			url: activelayerAdmin.ajaxUrl,
 			type: 'POST',
@@ -191,8 +188,27 @@
 				nonce: activelayerAdmin.nonce
 			}
 		} );
+	} );
 
-		banner.slideUp( 200 );
+	// First-spam review request notice dismiss
+	$( document ).on( 'click', '#activelayer-review-notice .activelayer-review-dismiss', function( e ) {
+		const $link = $( this );
+
+		// Internal links (#) must not jump; the external review link opens in a new tab.
+		if ( ! $link.hasClass( 'activelayer-review-out' ) ) {
+			e.preventDefault();
+		}
+
+		$.ajax( {
+			url: activelayerAdmin.ajaxUrl,
+			type: 'POST',
+			data: {
+				action: 'activelayer_dismiss_review_request',
+				nonce: activelayerAdmin.nonce
+			}
+		} );
+
+		$( '#activelayer-review-notice' ).slideUp( 200 );
 	} );
 
 	// Bulk actions confirmation
@@ -330,5 +346,24 @@
 			}
 		} );
 	} );
+
+	// Opt-out announce notice dismiss — fires on both the X button and the
+	// CTA link. Fire-and-forget; if the CTA navigation races the request,
+	// the notice simply re-renders on the next page load and remains
+	// dismissable.
+	$( document ).on(
+		'click',
+		'.activelayer-opt-out-notice .notice-dismiss, .activelayer-opt-out-notice .activelayer-opt-out-cta',
+		function() {
+			$.ajax( {
+				url: activelayerAdmin.ajaxUrl,
+				type: 'POST',
+				data: {
+					action: 'activelayer_dismiss_opt_out_announce',
+					nonce: activelayerAdmin.nonce
+				}
+			} );
+		}
+	);
 
 } )( jQuery );

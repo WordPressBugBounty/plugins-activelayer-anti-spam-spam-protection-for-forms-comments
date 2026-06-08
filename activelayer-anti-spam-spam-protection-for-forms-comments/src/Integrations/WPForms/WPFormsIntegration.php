@@ -124,6 +124,9 @@ class WPFormsIntegration extends BaseFormIntegration {
 		// Add settings to WPForms builder Anti-Spam panel.
 		add_action( 'wpforms_admin_builder_anti_spam_panel_content', [ $this->admin_settings, 'add_form_settings' ], 30, 1 );
 
+		// Persist explicit '0' for the protection toggle when builder save drops the unchecked checkbox.
+		add_filter( 'wpforms_save_form_args', [ $this->admin_settings, 'preserve_protection_toggle_on_save' ], 10, 3 );
+
 		// Add hidden field for environment signals to protected forms.
 		add_action( 'wpforms_display_submit_before', [ $this, 'output_environment_signals_field' ], 10, 1 );
 	}

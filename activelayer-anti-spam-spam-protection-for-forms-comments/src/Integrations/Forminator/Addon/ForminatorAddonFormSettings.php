@@ -53,6 +53,7 @@ class Forminator_Activelayer_Form_Settings extends Forminator_Integration_Form_S
 	 * a `<form>` tag to detect the save action via $submitted_data.
 	 *
 	 * @since 1.1.0
+	 * @since 1.3.0 Fallback to backend default when addon connected flag unset — UI reflects opt-out semantics.
 	 *
 	 * @param array $submitted_data Submitted data from the wizard form.
 	 *
@@ -67,25 +68,11 @@ class Forminator_Activelayer_Form_Settings extends Forminator_Integration_Form_S
 		$is_submit            = ! empty( $submitted_data['activelayer_activate'] );
 
 		if ( $is_submit ) {
-			$this->addon_settings['connected'] = true;
-
-			$this->save_module_settings_values();
-
-			// Mirror to ActiveLayer option for runtime checks.
-			$admin_settings = new AdminSettings();
-
-			$admin_settings->save_form_protection( $form_id, true );
-
-			$notification = [
-				'type' => 'success',
-				'text' => '<strong>' . esc_html__( 'ActiveLayer', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) . '</strong> '
-					. esc_html__( 'spam protection is now active for this form.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
-			];
+			$notification = $this->handle_activate_submit( $form_id );
 		}
 
-		$is_connected = ! empty( $this->addon_settings['connected'] );
-
-		$buttons = [];
+		$is_connected = $this->resolve_is_connected( $form_id );
+		$buttons      = [];
 
 		if ( $is_connected ) {
 			$buttons['disconnect']['markup'] = Forminator_Integration::get_button_markup(
@@ -134,9 +121,59 @@ class Forminator_Activelayer_Form_Settings extends Forminator_Integration_Form_S
 	}
 
 	/**
+	 * Persist the wizard "Activate" submission and return the success notification.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param int $form_id Form (module) identifier.
+	 *
+	 * @return array Notification payload for the wizard.
+	 */
+	private function handle_activate_submit( int $form_id ): array {
+
+		$this->addon_settings['connected'] = true;
+
+		$this->save_module_settings_values();
+
+		$admin_settings = new AdminSettings();
+
+		$admin_settings->save_form_protection( $form_id, true );
+
+		return [
+			'type' => 'success',
+			'text' => '<strong>' . esc_html__( 'ActiveLayer', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) . '</strong> '
+				. esc_html__( 'spam protection is now active for this form.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+		];
+	}
+
+	/**
+	 * Resolve the wizard connection state, falling back to the backend default.
+	 *
+	 * Prevents the wizard UI from showing "Activate" while the backend already protects.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param int $form_id Form (module) identifier.
+	 *
+	 * @return bool
+	 */
+	private function resolve_is_connected( int $form_id ): bool {
+
+		if ( is_array( $this->addon_settings ) && array_key_exists( 'connected', $this->addon_settings ) ) {
+			return ! empty( $this->addon_settings['connected'] );
+		}
+
+		$admin_settings = new AdminSettings();
+		$form_settings  = $admin_settings->get_form_settings( $form_id );
+
+		return ! empty( $form_settings['enabled'] );
+	}
+
+	/**
 	 * Check if protection is completed (connected).
 	 *
 	 * @since 1.1.0
+	 * @since 1.3.0 Falls back to backend opt-out default via resolve_is_connected() when no wizard state stored.
 	 *
 	 * @param array $submitted_data Submitted data.
 	 *
@@ -146,7 +183,7 @@ class Forminator_Activelayer_Form_Settings extends Forminator_Integration_Form_S
 
 		$this->addon_settings = $this->get_settings_values();
 
-		return ! empty( $this->addon_settings['connected'] );
+		return $this->resolve_is_connected( (int) $this->module_id );
 	}
 
 	/**

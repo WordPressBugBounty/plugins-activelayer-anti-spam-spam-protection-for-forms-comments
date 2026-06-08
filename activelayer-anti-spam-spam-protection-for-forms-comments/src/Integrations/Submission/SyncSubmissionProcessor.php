@@ -45,11 +45,12 @@ class SyncSubmissionProcessor {
 	 * Constructor.
 	 *
 	 * @since 1.2.0
+	 * @since 1.3.0 Typed $api_client as explicitly nullable for PHP 8.4 compatibility.
 	 *
 	 * @param Storage        $storage    Submissions storage.
 	 * @param ApiClient|null $api_client Optional API client (test seam).
 	 */
-	public function __construct( Storage $storage, ApiClient $api_client = null ) {
+	public function __construct( Storage $storage, ?ApiClient $api_client = null ) {
 
 		$this->storage    = $storage;
 		$this->api_client = $api_client;

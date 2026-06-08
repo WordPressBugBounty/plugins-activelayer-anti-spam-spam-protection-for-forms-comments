@@ -356,6 +356,8 @@ class DashboardPage {
 	 * and links to the Integrations page for configuration.
 	 *
 	 * @since 1.1.0
+	 * @since 1.3.0 Added BuddyPress icon mapping.
+	 * @since 1.3.0 Added BuddyBoss icon mapping (assets/images/icons/BuddyBoss.png).
 	 *
 	 * @param bool $has_api_key Whether an API key is configured.
 	 */
@@ -379,6 +381,8 @@ class DashboardPage {
 			'SureForms'        => 'SureForms.png',
 			'Gravity Forms'    => 'GravityForms.png',
 			'Elementor Forms'  => 'ElementorForms.png',
+			'BuddyPress'       => 'BuddyPress.png',
+			'BuddyBoss'        => 'BuddyBoss.png',
 		];
 
 		?>

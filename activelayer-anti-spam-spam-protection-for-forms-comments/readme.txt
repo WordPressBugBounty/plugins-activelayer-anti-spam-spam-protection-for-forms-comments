@@ -3,12 +3,12 @@ Contributors: smub, dimitrism, ernest35
 Tags: anti-spam, antispam, spam protection, contact form, comment spam
 Requires at least: 5.5
 Tested up to: 7.0
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Intelligent spam protection for forms, comments, and WooCommerce. No CAPTCHA needed. Works with WPForms, Contact Form 7, Elementor Forms, and more.
+Intelligent spam protection for WordPress forms, comments, and reviews. No CAPTCHA needed. Works with WPForms, Contact Form 7, WooCommerce, and more.
 
 == Description ==
 
@@ -16,7 +16,7 @@ Intelligent spam protection for forms, comments, and WooCommerce. No CAPTCHA nee
 
 ActiveLayer is an intelligent anti-spam solution that stops **contact form spam** and **comment spam** without CAPTCHAs, puzzles, or extra steps for your visitors. Your forms stay fast and frictionless while unwanted messages get caught in the background.
 
-Your time and attention are expensive — stop spending them on spam. ActiveLayer protects popular form builders like **WPForms**, **Contact Form 7**, **Gravity Forms**, **Elementor Forms**, and **Fluent Forms**, plus **native WordPress comments** and **WooCommerce** (product reviews and customer registration), all from a single plugin. With 10+ form integrations plus dedicated WooCommerce coverage, you manage all your spam protection from one settings page.
+Your time and attention are expensive — stop spending them on spam. ActiveLayer protects popular form builders like **WPForms**, **Contact Form 7**, **Gravity Forms**, **Elementor Forms**, and **Fluent Forms**, plus **native WordPress comments**, **WooCommerce** (product reviews and customer registration), and the **BuddyPress / BuddyBoss signup form**, all from a single plugin. With 10+ form integrations plus dedicated WooCommerce and community-signup coverage, you manage all your spam protection from one settings page.
 
 **[Create a free account and get started](https://activelayer.com/?utm_source=wprepo&utm_medium=link&utm_campaign=liteplugin)**
 
@@ -34,7 +34,7 @@ Optional behavioral tracking monitors how users interact with your forms — key
 
 = Per-Form Control and Sync Mode =
 
-You decide exactly which forms to protect. ActiveLayer uses a privacy-first, opt-in approach — protection is enabled per form, not globally. This gives you granular control over every contact form, registration form, or comment section on your site.
+You decide exactly which forms to protect. ActiveLayer protects all supported forms and WooCommerce surfaces by default after your API key is connected — you can disable protection per form if needed. This gives you granular control over every contact form, registration form, or comment section on your site.
 
 Sync Mode lets supported integrations wait for the API verdict before the submission completes, so spam can be blocked inline. By default, ActiveLayer runs checks asynchronously for maximum speed. Turn Sync Mode on when you prefer inline blocking and can tolerate a small added latency on submissions.
 
@@ -64,6 +64,9 @@ One plugin covers WPForms, Contact Form 7, Gravity Forms, Elementor Forms, Fluen
 ### E-commerce and Service Businesses
 Keep inquiry and support forms clean while maintaining a fast, professional user experience. The async architecture means your forms never slow down, even during high-traffic periods. **WooCommerce stores** get dedicated protection for product reviews and customer registration (My Account, classic checkout, and the new Cart/Checkout Blocks) — without adding a CAPTCHA anywhere on the path to purchase.
 
+### Membership Sites and Online Communities
+Running a community on **BuddyPress** or **BuddyBoss Platform**? ActiveLayer hooks the public signup form and blocks spam registrations before they create fake accounts — no extra CAPTCHA in front of your real members, no manual moderation queue to babysit. The integration covers both free BuddyPress and BuddyBoss Platform with a dedicated admin toggle for each.
+
 = Full ActiveLayer Feature List =
 
 * **Async processing** - Background queue via Action Scheduler so forms complete instantly
@@ -80,8 +83,10 @@ Keep inquiry and support forms clean while maintaining a fast, professional user
 * **WordPress Comments protection** - Auto-approve clean comments, auto-spam detected ones, fail-open restore
 * **WooCommerce Reviews protection** - Score every product review on submission, with optional verified-owner bypass, logged-in-user bypass, and high-confidence auto-delete
 * **WooCommerce Registration protection** - Block bot signups before the account is created, across the My Account page, classic checkout, and the new Cart/Checkout Blocks
+* **BuddyPress signup protection** - Block spam registrations on the public `/register/` page; sync check fires after BuddyPress's own validation and writes the block message next to the username field
+* **BuddyBoss Platform signup protection** - Same sync gate against the BuddyBoss Platform signup form, with automatic xprofile-name fallback because BuddyBoss auto-generates the username from the email
 * **Silent discard for high-confidence spam** - Optional hard-delete of comments and WooCommerce reviews that exceed a configurable spam score threshold (default 95), skipping spam-folder storage entirely
-* **Per-form toggles** - Enable or disable protection on individual forms (privacy by design)
+* **Per-form toggles** - Protection enabled by default per form; disable on individual forms as needed
 * **Sync Mode** - Optional synchronous spam checks for inline blocking on supported integrations
 * **Dashboard analytics** - Submission totals, spam caught, accuracy rates, queue health at a glance
 * **Submissions management** - Filter by status and provider, bulk recheck, mark clean or spam, trash
@@ -92,7 +97,7 @@ Keep inquiry and support forms clean while maintaining a fast, professional user
 * **Environment detection** - Identifies headless browsers and automated submission tools
 * **Debug logging** - Opt-in ring buffer (last 200 entries), PII-redacted, view and clear in admin
 * **Bulk recheck** - Re-queue past submissions for fresh API verdicts anytime
-* **Privacy-first design** - Per-form opt-in, sanitized logging, masked secrets, hashed emails
+* **Default protection** - Forms protected by default after API connection; disable per form if needed. Sanitized logging, masked secrets, hashed emails
 
 = Integrations =
 
@@ -107,14 +112,16 @@ Keep inquiry and support forms clean while maintaining a fast, professional user
 * [SureForms](https://wordpress.org/plugins/sureforms/)
 * WordPress Comments (built-in)
 * [WooCommerce](https://woocommerce.com/) (product reviews and customer registration)
+* [BuddyPress](https://wordpress.org/plugins/buddypress/) (public signup form)
+* [BuddyBoss Platform](https://www.buddyboss.com/platform/) (public signup form)
 
 == Installation ==
 
 1. In your WordPress admin, go to Plugins → Add New and search for "ActiveLayer".
 2. Click "Install Now", then "Activate".
-3. Go to **ActiveLayer → Settings** and paste your API key.
+3. Go to **ActiveLayer → Settings** and paste your API key, or click **Create Account** to register and have the key saved automatically (one-click Connect).
 4. Click **Verify Key** to confirm your connection.
-5. Enable the integrations you need and turn on protection per form.
+5. Enable the integrations you need. Protection for all supported forms is enabled by default after your API key is verified.
 
 Get your free API key at [activelayer.com](https://activelayer.com/?utm_source=wprepo&utm_medium=link&utm_campaign=liteplugin).
 
@@ -134,7 +141,7 @@ No. ActiveLayer is a completely CAPTCHA-free anti-spam solution. Spam checks hap
 
 = Which form builders does ActiveLayer support? =
 
-ActiveLayer works with WPForms (Lite and Pro), Contact Form 7, Gravity Forms, Elementor Forms (Pro), Fluent Forms, Formidable Forms, Forminator, Ninja Forms, SureForms, and native WordPress comments — 10 integrations in total. All are managed from a single settings page with per-form control.
+ActiveLayer works with WPForms (Lite and Pro), Contact Form 7, Gravity Forms, Elementor Forms (Pro), Fluent Forms, Formidable Forms, Forminator, Ninja Forms, SureForms, native WordPress comments, and the BuddyPress / BuddyBoss Platform signup forms — 12 integrations in total. All are managed from a single settings page with per-form control.
 
 = Do visitors have to wait for the spam check? =
 
@@ -154,11 +161,11 @@ Yes. ActiveLayer offers a free tier. Create your account at [activelayer.com](ht
 
 = Can I protect only specific forms instead of all forms? =
 
-Absolutely. ActiveLayer uses a privacy-first, opt-in approach. You enable spam protection on each individual form through the form builder settings. Forms without protection enabled are not affected at all.
+Absolutely. ActiveLayer protects all supported forms by default once your API key is connected. You can disable protection on individual forms through the form builder settings if preferred. Forms without an explicit disable setting remain protected.
 
 = How does ActiveLayer compare to other anti-spam solutions? =
 
-ActiveLayer uses an async queue architecture — your forms never wait for the spam check to finish. It also supports per-form toggles, optional Sync Mode for inline blocking, and integrates with nine popular form builders plus WordPress comments from a single plugin. Unlike blocklist-based tools, ActiveLayer analyzes multiple signals for more accurate spam detection.
+ActiveLayer uses an async queue architecture — your forms never wait for the spam check to finish. It also supports per-form toggles, optional Sync Mode for inline blocking, and integrates with nine popular form builders, WordPress comments, and the BuddyPress / BuddyBoss signup forms from a single plugin. Unlike blocklist-based tools, ActiveLayer analyzes multiple signals for more accurate spam detection.
 
 = Can I recheck past submissions with a fresh verdict? =
 
@@ -167,6 +174,12 @@ Yes. In ActiveLayer → Submissions, use row actions or bulk actions to "Recheck
 = Can I use ActiveLayer alongside other anti-spam tools? =
 
 In most cases, yes. ActiveLayer integrates cleanly with supported form builders and WordPress comments. If you run multiple anti-spam solutions, start with protection enabled on a single test form to verify there are no conflicts or double-filtering issues before rolling it out to the rest of your site.
+
+= Does ActiveLayer work with BuddyPress and BuddyBoss? =
+
+Yes. ActiveLayer protects the public BuddyPress / BuddyBoss signup form (`/register/`) with a synchronous spam check that runs after BuddyPress's own validation but before the pending signup record is created. Spam is blocked inline with a message rendered next to the username field (or next to the email field on BuddyBoss Platform, which doesn't render a separate username input). Each platform has its own admin toggle in **ActiveLayer → Integrations** so you only enable the one that matches your install.
+
+Coverage is intentionally scoped to public signups. Activity stream posts, private messages, group updates, bbPress, and the BuddyBoss App REST signup endpoint are out of scope for this release.
 
 = Does ActiveLayer protect WooCommerce Cart/Checkout Blocks? =
 
@@ -197,6 +210,9 @@ This plugin connects to the ActiveLayer API to analyze form submissions and comm
 
 == Upgrade Notice ==
 
+= 1.3.0 =
+Form protection is now enabled by default for all supported providers after your API key is connected. Existing forms you've explicitly disabled remain disabled. If protection didn't activate on a specific form, re-save it in the form builder.
+
 = 1.2.0 =
 WooCommerce integration: spam protection for Product Reviews and Customer Registration. Adds silent-discard for high-confidence spam and native moderation feedback. Fixes moderator email timing for held comments. Tested up to WordPress 7.0. Recommended upgrade.
 
@@ -204,6 +220,12 @@ WooCommerce integration: spam protection for Product Reviews and Customer Regist
 Five new form integrations (Gravity Forms, Elementor Forms, Fluent Forms, Forminator, SureForms), global Sync Mode, client-side behavioral and environment signals, Tools page with bulk delete, conditional frontend script loading, and security hardening. Recommended upgrade for all users.
 
 == Changelog ==
+
+= 1.3.0 =
+* Changed: Form protection now enabled by default for all supported providers after API key connection. Existing forms with explicit disable setting remain disabled until re-saved.
+* Added: BuddyPress and BuddyBoss integration — anti-spam protection for community signup (registration) forms. Blocked signups are labelled "Member" in the Submissions log.
+* Added: One-click Connect — create and link your free account in one step, with the API key saved automatically on return.
+* Fixed: PHP 8.4 compatibility — explicitly typed nullable constructor parameters to silence the new implicitly-nullable deprecation notice (behaviour unchanged on PHP 7.2+).
 
 = 1.2.0 =
 * Added: WooCommerce integration umbrella — full anti-spam coverage for the two highest-risk WooCommerce surfaces (Product Reviews and Customer Registration), managed from a single panel under ActiveLayer → Integrations.
