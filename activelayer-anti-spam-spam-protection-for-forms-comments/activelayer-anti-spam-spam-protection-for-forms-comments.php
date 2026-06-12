@@ -6,7 +6,7 @@
  * Requires at least: 5.5
  * Requires PHP:      7.2
  * Author:            ActiveLayer Team
- * Version:           1.3.0
+ * Version:           1.3.1
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       activelayer-anti-spam-spam-protection-for-forms-comments
@@ -44,7 +44,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-const ACTIVELAYER_PLUGIN_VERSION = '1.2.0';
+const ACTIVELAYER_PLUGIN_VERSION = '1.3.1';
 
 /**
  * Plugin file.

@@ -3,7 +3,7 @@ Contributors: smub, dimitrism, ernest35
 Tags: anti-spam, antispam, spam protection, contact form, comment spam
 Requires at least: 5.5
 Tested up to: 7.0
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -210,6 +210,9 @@ This plugin connects to the ActiveLayer API to analyze form submissions and comm
 
 == Upgrade Notice ==
 
+= 1.3.1 =
+Fixes stale admin and frontend assets after the 1.3.0 update — the internal version used for cache-busting was not bumped, so browsers kept loading cached 1.2.0 CSS/JS. Recommended for everyone on 1.3.0.
+
 = 1.3.0 =
 Form protection is now enabled by default for all supported providers after your API key is connected. Existing forms you've explicitly disabled remain disabled. If protection didn't activate on a specific form, re-save it in the form builder.
 
@@ -220,6 +223,9 @@ WooCommerce integration: spam protection for Product Reviews and Customer Regist
 Five new form integrations (Gravity Forms, Elementor Forms, Fluent Forms, Forminator, SureForms), global Sync Mode, client-side behavioral and environment signals, Tools page with bulk delete, conditional frontend script loading, and security hardening. Recommended upgrade for all users.
 
 == Changelog ==
+
+= 1.3.1 =
+* Fixed: Internal plugin version constant was left at 1.2.0 in the 1.3.0 release, so browsers and page caches kept serving outdated CSS/JS assets after the update. Asset cache-busting now works correctly again.
 
 = 1.3.0 =
 * Changed: Form protection now enabled by default for all supported providers after API key connection. Existing forms with explicit disable setting remain disabled until re-saved.
