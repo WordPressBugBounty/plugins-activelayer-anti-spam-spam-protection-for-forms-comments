@@ -13,11 +13,14 @@ use ActiveLayer\Integrations\FormidableForms\FormidableFormsIntegration;
 use ActiveLayer\Integrations\Forminator\ForminatorIntegration;
 use ActiveLayer\Integrations\FluentForms\FluentFormsIntegration;
 use ActiveLayer\Integrations\SureForms\SureFormsIntegration;
+use ActiveLayer\Integrations\WSForm\WSFormIntegration;
 use ActiveLayer\Integrations\GravityForms\GravityFormsIntegration;
 use ActiveLayer\Integrations\ElementorForms\ElementorFormsIntegration;
 use ActiveLayer\Integrations\WooCommerce\WooCommerceIntegration;
 use ActiveLayer\Integrations\BuddyPress\BuddyPressIntegration;
 use ActiveLayer\Integrations\BuddyBoss\BuddyBossIntegration;
+use ActiveLayer\Integrations\AffiliateWP\AffiliateWPIntegration;
+use ActiveLayer\Integrations\MemberPress\MemberPressIntegration;
 use ActiveLayer\Admin\AdminPages;
 use ActiveLayer\Admin\Components\DashboardWidget;
 use ActiveLayer\Admin\Components\OptOutDefaultNotice;
@@ -140,6 +143,9 @@ class Plugin {
 	 * @since 1.2.0 Replaced WooCommerceReviews registration with WooCommerce umbrella (covers reviews + registration).
 	 * @since 1.3.0 Registered BuddyPressIntegration (signup spam protection).
 	 * @since 1.3.0 Split BuddyPress into BuddyPressIntegration (free) and BuddyBossIntegration (Platform), each with its own admin toggle.
+	 * @since 1.4.0 Registered WSFormIntegration (WS Form sync-block anti-spam).
+	 * @since 1.4.0 Registered AffiliateWPIntegration (affiliate-registration spam protection).
+	 * @since 1.4.0 Registered MemberPressIntegration (membership-signup spam protection).
 	 */
 	private function load_builtin_integrations(): void {
 
@@ -151,9 +157,12 @@ class Plugin {
 			FormidableFormsIntegration::class,
 			FluentFormsIntegration::class,
 			SureFormsIntegration::class,
+			WSFormIntegration::class,
 			WooCommerceIntegration::class,
 			BuddyPressIntegration::class,
 			BuddyBossIntegration::class,
+			AffiliateWPIntegration::class,
+			MemberPressIntegration::class,
 		];
 
 		foreach ( $integrations as $class ) {

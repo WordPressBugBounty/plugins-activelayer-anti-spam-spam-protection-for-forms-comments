@@ -4,6 +4,7 @@ namespace ActiveLayer\Integrations\Comments;
 
 use ActiveLayer\Helpers\SettingsHelper;
 use ActiveLayer\Helpers\RequestHelper;
+use ActiveLayer\Integrations\Submission\SubmissionBodySanitizer;
 use ActiveLayer\Logger\Logger;
 use ActiveLayer\Storage\Storage;
 use Exception;
@@ -390,6 +391,7 @@ class SubmissionHandler {
 	 * Normalize WordPress comment data to standard format.
 	 *
 	 * @since 1.0.0
+	 * @since 1.4.0 Deliver submission body raw (unslashed, content-preserving) for the API.
 	 *
 	 * @param array $commentdata Raw WordPress comment data.
 	 *
@@ -400,7 +402,7 @@ class SubmissionHandler {
 		$email       = isset( $commentdata['comment_author_email'] ) ? sanitize_email( (string) $commentdata['comment_author_email'] ) : '';
 		$name        = isset( $commentdata['comment_author'] ) ? RequestHelper::sanitize_field_value( (string) $commentdata['comment_author'] ) : '';
 		$message_raw = isset( $commentdata['comment_content'] ) ? (string) $commentdata['comment_content'] : '';
-		$message     = RequestHelper::sanitize_field_value( $message_raw );
+		$message     = SubmissionBodySanitizer::sanitize( wp_unslash( $message_raw ) );
 		$website_url = isset( $commentdata['comment_author_url'] ) ? esc_url_raw( (string) $commentdata['comment_author_url'] ) : '';
 		$post_id     = isset( $commentdata['comment_post_ID'] ) ? (int) $commentdata['comment_post_ID'] : 0;
 		$parent_id   = isset( $commentdata['comment_parent'] ) ? (int) $commentdata['comment_parent'] : 0;

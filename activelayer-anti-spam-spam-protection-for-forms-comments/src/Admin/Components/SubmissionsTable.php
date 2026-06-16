@@ -436,6 +436,8 @@ class SubmissionsTable extends WP_List_Table {
 	 * @since 1.2.0 Added WooCommerce Registration (`wc_registration`) provider branch.
 	 * @since 1.3.0 Added BuddyPress (`buddypress`) provider branch.
 	 * @since 1.3.0 Added BuddyBoss (`buddyboss`) provider branch — shares the BuddyPress display logic.
+	 * @since 1.4.0 Added AffiliateWP (`affiliatewp`) provider branch.
+	 * @since 1.4.0 Added memberpress to the registration display branch.
 	 *
 	 * @param string $provider_slug Provider identifier.
 	 * @param string $form_id       Form identifier.
@@ -471,7 +473,7 @@ class SubmissionsTable extends WP_List_Table {
 			return [ $display, esc_html__( 'Product: %s', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) ];
 		}
 
-		if ( $provider_slug === 'wc_registration' || $provider_slug === 'buddypress' || $provider_slug === 'buddyboss' ) {
+		if ( $provider_slug === 'wc_registration' || $provider_slug === 'buddypress' || $provider_slug === 'buddyboss' || $provider_slug === 'affiliatewp' || $provider_slug === 'memberpress' ) {
 			$email = $form_data['email'] ?? '';
 			$login = $form_data['name'] ?? '';
 
@@ -480,6 +482,11 @@ class SubmissionsTable extends WP_List_Table {
 			if ( $provider_slug === 'wc_registration' ) {
 				/* translators: %s: customer login or email. */
 				return [ $display, esc_html__( 'Customer: %s', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) ];
+			}
+
+			if ( $provider_slug === 'affiliatewp' ) {
+				/* translators: %s: affiliate login or email. */
+				return [ $display, esc_html__( 'Affiliate: %s', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) ];
 			}
 
 			/* translators: %s: community member login or email. */

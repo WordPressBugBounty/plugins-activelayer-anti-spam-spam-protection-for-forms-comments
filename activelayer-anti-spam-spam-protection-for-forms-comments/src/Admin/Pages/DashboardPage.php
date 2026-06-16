@@ -8,6 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use ActiveLayer\Admin\AdminPages;
 use ActiveLayer\Admin\Components\DashboardWidget;
+use ActiveLayer\Admin\Components\PluginInstaller;
 use ActiveLayer\Admin\Onboarding\OnboardingBanner;
 use ActiveLayer\Admin\Onboarding\OnboardingManager;
 use ActiveLayer\Helpers\SettingsHelper;
@@ -40,8 +41,11 @@ class DashboardPage {
 	 * Get sister plugins available for cross-promotion.
 	 *
 	 * Returned from a method instead of a constant so descriptions are translatable.
+	 * Plugin file paths (Lite and Pro variants) live in
+	 * {@see PluginInstaller::get_plugin_files()} keyed by `slug`.
 	 *
 	 * @since 1.1.0
+	 * @since 1.4.0 Moved plugin file paths to PluginInstaller as the single source of truth.
 	 *
 	 * @return array[]
 	 */
@@ -51,43 +55,36 @@ class DashboardPage {
 			[
 				'name'        => 'WPForms',
 				'slug'        => 'wpforms-lite',
-				'file'        => 'wpforms-lite/wpforms.php',
-				'alt_file'    => 'wpforms/wpforms.php',
 				'description' => __( 'The most beginner-friendly WordPress form plugin.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 				'icon'        => 'wpforms.png',
 			],
 			[
 				'name'        => 'WP Mail SMTP',
 				'slug'        => 'wp-mail-smtp',
-				'file'        => 'wp-mail-smtp/wp_mail_smtp.php',
 				'description' => __( 'Fix email deliverability issues for WordPress.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 				'icon'        => 'wp-mail-smtp.png',
 			],
 			[
 				'name'        => 'MonsterInsights',
 				'slug'        => 'google-analytics-for-wordpress',
-				'file'        => 'google-analytics-for-wordpress/googleanalytics.php',
 				'description' => __( 'The best Google Analytics plugin for WordPress.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 				'icon'        => 'monsterinsights.png',
 			],
 			[
 				'name'        => 'All in One SEO',
 				'slug'        => 'all-in-one-seo-pack',
-				'file'        => 'all-in-one-seo-pack/all_in_one_seo_pack.php',
 				'description' => __( 'The best WordPress SEO plugin and toolkit.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 				'icon'        => 'all-in-one-seo.png',
 			],
 			[
 				'name'        => 'OptinMonster',
 				'slug'        => 'optinmonster',
-				'file'        => 'optinmonster/optin-monster-wp-api.php',
 				'description' => __( 'Powerful lead generation and conversion optimization.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 				'icon'        => 'optinmonster.png',
 			],
 			[
 				'name'        => 'SeedProd',
 				'slug'        => 'coming-soon',
-				'file'        => 'coming-soon/coming-soon.php',
 				'description' => __( 'The best drag-and-drop landing page builder.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 				'icon'        => 'seedprod.png',
 			],
@@ -358,6 +355,8 @@ class DashboardPage {
 	 * @since 1.1.0
 	 * @since 1.3.0 Added BuddyPress icon mapping.
 	 * @since 1.3.0 Added BuddyBoss icon mapping (assets/images/icons/BuddyBoss.png).
+	 * @since 1.4.0 Added AffiliateWP icon mapping (assets/images/icons/AffiliateWP.png).
+	 * @since 1.4.0 Added MemberPress and WS Form icon mappings.
 	 *
 	 * @param bool $has_api_key Whether an API key is configured.
 	 */
@@ -383,6 +382,9 @@ class DashboardPage {
 			'Elementor Forms'  => 'ElementorForms.png',
 			'BuddyPress'       => 'BuddyPress.png',
 			'BuddyBoss'        => 'BuddyBoss.png',
+			'AffiliateWP'      => 'AffiliateWP.png',
+			'MemberPress'      => 'MemberPress.png',
+			'WS Form'          => 'WSForm.png',
 		];
 
 		?>
@@ -487,6 +489,7 @@ class DashboardPage {
 	 * Caps at 4 cards and skips already-active plugins.
 	 *
 	 * @since 1.1.0
+	 * @since 1.4.0 Detects Lite/Pro variants via PluginInstaller::get_plugin_files().
 	 */
 	private function render_cross_promote(): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
@@ -506,17 +509,13 @@ class DashboardPage {
 				break;
 			}
 
-			$is_installed = $this->is_plugin_installed( $plugin['file'], $all_plugins );
-			$is_active    = is_plugin_active( $plugin['file'] );
+			$is_installed = false;
+			$is_active    = false;
 
-			// Check alternative file (e.g. WPForms Pro).
-			if ( ! empty( $plugin['alt_file'] ) ) {
-				if ( ! $is_installed ) {
-					$is_installed = $this->is_plugin_installed( $plugin['alt_file'], $all_plugins );
-				}
-				if ( ! $is_active ) {
-					$is_active = is_plugin_active( $plugin['alt_file'] );
-				}
+			// Check every known variant (e.g. WPForms Lite and WPForms Pro).
+			foreach ( PluginInstaller::get_plugin_files( $plugin['slug'] ) as $plugin_file ) {
+				$is_installed = $is_installed || $this->is_plugin_installed( $plugin_file, $all_plugins );
+				$is_active    = $is_active || is_plugin_active( $plugin_file );
 			}
 
 			$icon_url = $plugin_url . 'assets/images/icons/plugins/' . $plugin['icon'];

@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use ActiveLayer\Helpers\RequestHelper;
+use ActiveLayer\Integrations\Submission\SubmissionBodySanitizer;
 use ActiveLayer\Storage\Analytics\SubmissionAnalytics;
 use ActiveLayer\Storage\Query\SubmissionQueryBuilder;
 use ActiveLayer\Storage\Status\SubmissionStatusManager;
@@ -90,6 +91,7 @@ class SubmissionRepository {
 	 * Create a pending submission entry.
 	 *
 	 * @since 1.0.0
+	 * @since 1.4.0 Preserve submission body content (links/newlines) via SubmissionBodySanitizer.
 	 *
 	 * @param array $payload Form submission data.
 	 * @param array $meta    Metadata (form_id, provider, etc.).
@@ -99,7 +101,7 @@ class SubmissionRepository {
 	 *
 	 * @return string Unique submission ID.
 	 */
-	public function create_pending( array $payload, array $meta ): string {
+	public function create_pending( array $payload, array $meta ): string { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		global $wpdb;
 
@@ -117,6 +119,12 @@ class SubmissionRepository {
 			throw new InvalidArgumentException( 'Invalid provider' );
 		}
 
+		$sanitized_payload = RequestHelper::sanitize_submission_data( $payload );
+
+		if ( isset( $payload['message'] ) ) {
+			$sanitized_payload['message'] = SubmissionBodySanitizer::sanitize( $payload['message'] );
+		}
+
 		$data = [
 			'provider'     => sanitize_text_field( $meta['provider'] ),
 			'form_id'      => sanitize_text_field( $meta['form_id'] ),
@@ -124,7 +132,7 @@ class SubmissionRepository {
 			'status'       => 'pending',
 			'retry_count'  => 0,
 			'verdict'      => null,
-			'form_data'    => wp_json_encode( RequestHelper::sanitize_submission_data( $payload ) ),
+			'form_data'    => wp_json_encode( $sanitized_payload ),
 			'api_response' => null,
 			'created_at'   => current_time( 'mysql' ),
 			'processed_at' => null,

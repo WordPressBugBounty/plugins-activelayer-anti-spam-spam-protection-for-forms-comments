@@ -45,6 +45,8 @@ class SubmissionHandler {
 	 * Handle WPForms submission.
 	 *
 	 * @since 1.0.0
+	 * @since 1.4.0 Attach payment signals to submission context.
+	 * @since 1.4.0 Skip administrative re-processing (WPForms "Mark as Not Spam").
 	 *
 	 * @param array     $fields    Form fields data.
 	 * @param array     $entry     Entry data (unused for wpforms_process_complete).
@@ -52,6 +54,14 @@ class SubmissionHandler {
 	 * @param int|mixed $entry_id  WPForms entry ID (can be int or string depending on WPForms version).
 	 */
 	public function handle_submission( array $fields, array $entry, array $form_data, $entry_id ): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.CyclomaticComplexity.MaxExceeded
+
+		// WPForms Pro re-fires `wpforms_process_complete` when an admin marks a spam
+		// entry as not spam (SpamEntry::process_complete()). A genuine submission
+		// always fires `wpforms_process` earlier in the same request, so its absence
+		// means this is an administrative re-fire - never a live form submission.
+		if ( ! did_action( 'wpforms_process' ) ) {
+			return;
+		}
 
 		// Ensure entry_id is an integer.
 		$entry_id = (int) $entry_id;
@@ -93,6 +103,12 @@ class SubmissionHandler {
 			$meta                  = $this->integration->get_form_meta( $form_data );
 			$meta['entry_id']      = $entry_id;
 			$meta['tracking_mode'] = $tracking_mode;
+
+			$payment = $this->integration->get_payment_signals( $form_data, $fields );
+
+			if ( ! empty( $payment ) ) {
+				$meta['payment'] = $payment;
+			}
 
 			// Process submission.
 			$submission_id = $this->integration->process_submission( $fields, $meta );
@@ -145,6 +161,7 @@ class SubmissionHandler {
 	 * the entry as spam or allows emails based on the verdict.
 	 *
 	 * @since 1.1.0
+	 * @since 1.4.0 Attach payment signals to submission context.
 	 *
 	 * @param array $fields    Form fields data.
 	 * @param array $form_data Form configuration.
@@ -157,6 +174,12 @@ class SubmissionHandler {
 
 		$meta['entry_id']      = $entry_id;
 		$meta['tracking_mode'] = $tracking_mode;
+
+		$payment = $this->integration->get_payment_signals( $form_data, $fields );
+
+		if ( ! empty( $payment ) ) {
+			$meta['payment'] = $payment;
+		}
 
 		// Tracking mode: queue async, emails already flowing normally.
 		if ( $tracking_mode ) {

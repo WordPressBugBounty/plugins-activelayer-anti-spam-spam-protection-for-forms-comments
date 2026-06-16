@@ -98,7 +98,8 @@ class HoneypotSignals {
 	/**
 	 * Create from POST field value.
 	 *
-	 * Extracts honeypot field value directly from POST data.
+	 * Extracts honeypot field value directly from POST data. Non-scalar values
+	 * are treated as filled because they indicate malformed field tampering.
 	 *
 	 * @since 1.1.0
 	 *
@@ -114,8 +115,12 @@ class HoneypotSignals {
 		$value  = '';
 
 		if ( isset( $post_data[ $field_name ] ) ) {
-			$value  = sanitize_text_field( $post_data[ $field_name ] );
-			$filled = $value !== '';
+			if ( is_scalar( $post_data[ $field_name ] ) ) {
+				$value  = sanitize_text_field( (string) $post_data[ $field_name ] );
+				$filled = $value !== '';
+			} else {
+				$filled = true;
+			}
 		}
 
 		return new self(

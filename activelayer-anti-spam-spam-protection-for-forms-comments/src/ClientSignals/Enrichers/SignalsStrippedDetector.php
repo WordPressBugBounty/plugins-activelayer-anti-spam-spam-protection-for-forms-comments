@@ -8,15 +8,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use ActiveLayer\ClientSignals\Fields\BehavioralField;
 use ActiveLayer\ClientSignals\Fields\EnvironmentField;
+use ActiveLayer\ClientSignals\Fields\HoneypotField;
 use ActiveLayer\Helpers\SettingsHelper;
 use ActiveLayer\Logger\Logger;
 
 /**
  * Detects when expected client signals are stripped from the request.
  *
- * If a tracking type is enabled in settings but its corresponding POST
- * field is absent OR empty (a smarter bot may keep the input element
- * but blank its value), sets context.signals_stripped = true.
+ * If environment or behavioral tracking is enabled but its corresponding
+ * POST field is absent OR empty, sets context.signals_stripped = true.
+ * Honeypot tracking is flagged only when the field is absent or malformed,
+ * because an empty honeypot string is the expected clean value.
  *
  * @since 1.2.0
  */
@@ -70,6 +72,7 @@ class SignalsStrippedDetector {
 	 * Check whether any tracking-enabled signal is missing from $_POST.
 	 *
 	 * @since 1.2.0
+	 * @since 1.4.0 Include the honeypot field when honeypot tracking is enabled.
 	 *
 	 * @return bool True when at least one enabled signal type was stripped.
 	 */
@@ -83,6 +86,12 @@ class SignalsStrippedDetector {
 
 		if ( SettingsHelper::is_behavioral_tracking_enabled()
 			&& self::is_signal_field_empty( BehavioralField::FIELD_NAME )
+		) {
+			return true;
+		}
+
+		if ( SettingsHelper::is_honeypot_tracking_enabled()
+			&& self::is_honeypot_field_stripped()
 		) {
 			return true;
 		}
@@ -135,5 +144,26 @@ class SignalsStrippedDetector {
 		$raw = wp_unslash( $_POST[ $field_name ] );
 
 		return ! is_string( $raw ) || trim( $raw ) === '';
+	}
+
+	/**
+	 * Check whether the honeypot POST field is absent or malformed.
+	 *
+	 * An empty honeypot string is the expected clean-human value, so only
+	 * absence or array-shaped tampering is considered stripped here.
+	 *
+	 * @since 1.4.0
+	 *
+	 * @return bool True when the honeypot field was stripped or malformed.
+	 */
+	private static function is_honeypot_field_stripped(): bool {
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified by form provider.
+		if ( ! isset( $_POST[ HoneypotField::FIELD_NAME ] ) ) {
+			return true;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce verified by form provider; type check only.
+		return ! is_string( wp_unslash( $_POST[ HoneypotField::FIELD_NAME ] ) );
 	}
 }

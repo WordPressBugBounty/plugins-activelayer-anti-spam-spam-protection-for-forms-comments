@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'activelayer/activelayer-plugin',
-        'pretty_version' => 'dev-hotfix/1.3.1',
-        'version' => 'dev-hotfix/1.3.1',
-        'reference' => '1af1f0697cb715adfaf376788adb264ca358252f',
+        'pretty_version' => 'dev-master',
+        'version' => 'dev-master',
+        'reference' => 'f31850f2e4cbe6ab4b8b3c42cf30ed910884516c',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'activelayer/activelayer-plugin' => array(
-            'pretty_version' => 'dev-hotfix/1.3.1',
-            'version' => 'dev-hotfix/1.3.1',
-            'reference' => '1af1f0697cb715adfaf376788adb264ca358252f',
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
+            'reference' => 'f31850f2e4cbe6ab4b8b3c42cf30ed910884516c',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

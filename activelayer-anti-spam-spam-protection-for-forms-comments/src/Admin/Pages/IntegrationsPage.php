@@ -621,6 +621,8 @@ style="display:none"<?php endif; ?>
 	 * @since 1.1.0
 	 * @since 1.3.0 Added BuddyPress icon mapping.
 	 * @since 1.3.0 Added BuddyBoss icon mapping (assets/images/icons/BuddyBoss.png).
+	 * @since 1.4.0 Added AffiliateWP icon mapping (assets/images/icons/AffiliateWP.png).
+	 * @since 1.4.0 Added MemberPress and WS Form icon mappings.
 	 *
 	 * @param string $name Integration name.
 	 *
@@ -642,6 +644,9 @@ style="display:none"<?php endif; ?>
 			'Elementor Forms'  => 'ElementorForms.png',
 			'BuddyPress'       => 'BuddyPress.png',
 			'BuddyBoss'        => 'BuddyBoss.png',
+			'AffiliateWP'      => 'AffiliateWP.png',
+			'MemberPress'      => 'MemberPress.png',
+			'WS Form'          => 'WSForm.png',
 		];
 
 		$icon_file = $icon_map[ $name ] ?? '';

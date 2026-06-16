@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use ActiveLayer\ClientSignals\BehavioralSignals;
+use ActiveLayer\Helpers\SettingsHelper;
 use ActiveLayer\Logger\Logger;
 
 /**
@@ -22,7 +23,7 @@ class BehavioralSignalsEnricher {
 	/**
 	 * Append behavioral signals to normalized submission data.
 	 *
-	 * No-op when signals are absent or invalid.
+	 * No-op when behavioral tracking is disabled, or signals are absent or invalid.
 	 *
 	 * @since 1.2.0
 	 *
@@ -32,6 +33,10 @@ class BehavioralSignalsEnricher {
 	 * @return array Submission data with behavioral_signals in context (or unchanged).
 	 */
 	public function enrich( array $normalized_data, string $provider_slug ): array {
+
+		if ( ! SettingsHelper::is_behavioral_tracking_enabled() ) {
+			return $normalized_data;
+		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified by form provider.
 		$signals = BehavioralSignals::from_post_data( wp_unslash( $_POST ) );

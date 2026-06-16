@@ -220,6 +220,7 @@ class SingleSubmissionView {
 	 * Render sidebar with metadata and action buttons.
 	 *
 	 * @since 1.1.0
+	 * @since 1.4.0 Added memberpress to the Member: provider label branch.
 	 *
 	 * @param array $submission Submission data.
 	 */
@@ -267,8 +268,10 @@ class SingleSubmissionView {
 								esc_html_e( 'Product:', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
 							} elseif ( $submission['provider'] === 'wc_registration' ) {
 								esc_html_e( 'Customer:', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
-							} elseif ( $submission['provider'] === 'buddypress' || $submission['provider'] === 'buddyboss' ) {
+							} elseif ( $submission['provider'] === 'buddypress' || $submission['provider'] === 'buddyboss' || $submission['provider'] === 'memberpress' ) {
 								esc_html_e( 'Member:', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
+							} elseif ( $submission['provider'] === 'affiliatewp' ) {
+								esc_html_e( 'Affiliate:', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
 							} else {
 								esc_html_e( 'Form:', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
 							}

@@ -53,6 +53,9 @@ global $wpdb;
  * - activelayer_wc_registration_settings (WC Registration sub)
  * - activelayer_buddypress_settings
  * - activelayer_buddyboss_settings
+ * - activelayer_affiliatewp_settings
+ * - activelayer_memberpress_settings
+ * - activelayer_ws_form_settings
  *
  * Note: The WooCommerce umbrella (slug 'woocommerce') has no own settings
  * option — its enabled state is derived from the OR of the two sub-flags
@@ -63,6 +66,7 @@ global $wpdb;
  * - activelayer_elementor_forms_form_settings
  * - activelayer_gravityforms_form_settings
  * - activelayer_forminator_form_settings
+ * - activelayer_ws_form_form_{id}
  */
 $activelayer_option_names = [
 	// Core.
@@ -91,6 +95,9 @@ $activelayer_option_names = [
 	'activelayer_wc_registration_settings',
 	'activelayer_buddypress_settings',
 	'activelayer_buddyboss_settings',
+	'activelayer_affiliatewp_settings',
+	'activelayer_memberpress_settings',
+	'activelayer_ws_form_settings',
 
 	// Per-form settings.
 	'activelayer_elementor_forms_form_settings',
@@ -107,14 +114,15 @@ foreach ( $activelayer_option_names as $activelayer_option_name ) {
 }
 
 /**
- * Delete per-form options for FluentForms and SureForms (dynamic keys with form ID).
+ * Delete per-form options for FluentForms, SureForms, and WS Form (dynamic keys with form ID).
  */
 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall cleanup, no caching needed.
 $activelayer_per_form_rows = $wpdb->get_col(
 	$wpdb->prepare(
-		"SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+		"SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s",
 		$wpdb->esc_like( 'activelayer_fluentforms_form_' ) . '%',
-		$wpdb->esc_like( 'activelayer_sureforms_form_' ) . '%'
+		$wpdb->esc_like( 'activelayer_sureforms_form_' ) . '%',
+		$wpdb->esc_like( 'activelayer_ws_form_form_' ) . '%'
 	)
 );
 

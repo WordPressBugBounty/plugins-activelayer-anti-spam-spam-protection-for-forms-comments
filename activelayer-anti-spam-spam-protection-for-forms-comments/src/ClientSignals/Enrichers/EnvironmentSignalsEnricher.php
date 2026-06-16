@@ -8,6 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use ActiveLayer\ClientSignals\EnvironmentSignals;
 use ActiveLayer\ClientSignals\Fields\EnvironmentField;
+use ActiveLayer\Helpers\SettingsHelper;
 use ActiveLayer\Logger\Logger;
 
 /**
@@ -23,7 +24,8 @@ class EnvironmentSignalsEnricher {
 	/**
 	 * Append environment signals to normalized submission data.
 	 *
-	 * No-op when the field is absent, JSON is invalid, or signals are invalid.
+	 * No-op when environment tracking is disabled, the field is absent, JSON is
+	 * invalid, or signals are invalid.
 	 *
 	 * @since 1.2.0
 	 *
@@ -33,6 +35,10 @@ class EnvironmentSignalsEnricher {
 	 * @return array Submission data with environment_signals in context (or unchanged).
 	 */
 	public function enrich( array $normalized_data, string $provider_slug ): array {
+
+		if ( ! SettingsHelper::is_environment_tracking_enabled() ) {
+			return $normalized_data;
+		}
 
 		$raw = $this->read_from_post();
 

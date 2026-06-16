@@ -76,6 +76,7 @@ class EmailReconstructor {
 	 * Check if emails should be disabled for anti-spam forms.
 	 *
 	 * @since 1.0.0
+	 * @since 1.4.0 Bail outside live form processing (admin un-spam re-fire, manual resend).
 	 *
 	 * @param bool   $disable       Current disable status.
 	 * @param object $notifications Notifications object.
@@ -83,6 +84,14 @@ class EmailReconstructor {
 	 * @return bool True to disable emails.
 	 */
 	public function should_disable_emails( bool $disable, object $notifications ): bool { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.CyclomaticComplexity.MaxExceeded
+
+		// Outside live form processing (`wpforms_process` never fired in this
+		// request) there is no pending verdict to wait for - e.g. the admin
+		// "Mark as Not Spam" re-fire or a manual notification resend. Never
+		// hold emails in such requests.
+		if ( ! did_action( 'wpforms_process' ) ) {
+			return $disable;
+		}
 
 		// Skip if integration is disabled globally.
 		if ( ! $this->integration->is_enabled() ) {

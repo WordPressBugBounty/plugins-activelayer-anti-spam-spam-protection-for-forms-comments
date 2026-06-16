@@ -21,6 +21,9 @@ class SubmissionQueryBuilder {
 	 * @since 1.2.0 Added `wc_registration` provider.
 	 * @since 1.3.0 Added `buddypress` provider.
 	 * @since 1.3.0 Added `buddyboss` provider (BuddyBoss Platform signup integration).
+	 * @since 1.4.0 Added `ws_form` provider (WS Form integration).
+	 * @since 1.4.0 Added `affiliatewp` provider (AffiliateWP affiliate-registration integration).
+	 * @since 1.4.0 Added `memberpress` provider (MemberPress membership-signup integration).
 	 *
 	 * @var array
 	 */
@@ -39,6 +42,9 @@ class SubmissionQueryBuilder {
 		'wc_registration',
 		'buddypress',
 		'buddyboss',
+		'ws_form',
+		'affiliatewp',
+		'memberpress',
 	];
 
 	/**

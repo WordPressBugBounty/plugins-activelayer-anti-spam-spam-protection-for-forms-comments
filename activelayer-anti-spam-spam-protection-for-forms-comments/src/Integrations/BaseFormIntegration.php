@@ -13,6 +13,7 @@ use ActiveLayer\ClientSignals\Enrichers\SignalsStrippedDetector;
 use ActiveLayer\Helpers\SettingsHelper;
 use ActiveLayer\Helpers\UpgradeHelper;
 use ActiveLayer\Integrations\Submission\FormContextBuilder;
+use ActiveLayer\Integrations\Submission\SubmissionBodySanitizer;
 use ActiveLayer\Integrations\Submission\SyncSubmissionProcessor;
 use ActiveLayer\Logger\Logger;
 use ActiveLayer\Queue\QueueManager;
@@ -164,6 +165,7 @@ abstract class BaseFormIntegration {
 	 * (process_submission_synchronously) flows.
 	 *
 	 * @since 1.2.0
+	 * @since 1.4.0 Enforce content-preserving message-body floor.
 	 *
 	 * @param array $raw_data Raw provider form data.
 	 * @param array $meta     Submission metadata (already enriched via enrich_meta).
@@ -172,7 +174,12 @@ abstract class BaseFormIntegration {
 	 */
 	private function prepare_submission_data( array $raw_data, array $meta ): array {
 
-		$normalized              = $this->normalize_form_data( $raw_data );
+		$normalized = $this->normalize_form_data( $raw_data );
+
+		if ( isset( $normalized['message'] ) ) {
+			$normalized['message'] = SubmissionBodySanitizer::sanitize( $normalized['message'] );
+		}
+
 		$normalized['data_type'] = $this->get_data_type();
 		$normalized              = $this->context_builder->build( $normalized, $meta );
 

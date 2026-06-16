@@ -463,6 +463,43 @@ class WPFormsIntegration extends BaseFormIntegration {
 	}
 
 	/**
+	 * Build payment signals for a WPForms submission.
+	 *
+	 * Form-level only: signals are derived from the form configuration and the
+	 * submitted fields, with no database query and no Pro/entries requirement.
+	 * Returns an empty array for non-payment forms so callers attach nothing.
+	 *
+	 * A form counts as a payment form only when it has a WPForms payment field
+	 * (`wpforms_has_payment( 'form' )`). An enabled gateway alone is not
+	 * sufficient: WPForms cannot charge a form that has no payment field, so a
+	 * gateway-only form would otherwise be flagged sensitive without ever
+	 * collecting payment.
+	 *
+	 * @since 1.4.0
+	 *
+	 * @param array $form_data Form configuration.
+	 * @param array $fields    Submitted form fields.
+	 *
+	 * @return array {
+	 *     Empty for non-payment forms, otherwise:
+	 *
+	 *     @type bool $has_payment      Whether the form collects payment.
+	 *     @type bool $payment_provided Whether a payment amount was entered in this submission.
+	 * }
+	 */
+	public function get_payment_signals( array $form_data, array $fields ): array {
+
+		if ( ! function_exists( 'wpforms_has_payment' ) || ! wpforms_has_payment( 'form', $form_data ) ) {
+			return [];
+		}
+
+		return [
+			'has_payment'      => true,
+			'payment_provided' => (bool) wpforms_has_payment( 'entry', $fields ),
+		];
+	}
+
+	/**
 	 * Get admin settings instance.
 	 *
 	 * @since 1.0.0
@@ -573,6 +610,7 @@ class WPFormsIntegration extends BaseFormIntegration {
 	 * Handle synchronous verification when WPForms skips entry storage.
 	 *
 	 * @since 1.0.0
+	 * @since 1.4.0 Attach payment signals to submission context.
 	 *
 	 * @param array $fields    Form fields data.
 	 * @param array $entry     Raw entry data (unused).
@@ -610,6 +648,12 @@ class WPFormsIntegration extends BaseFormIntegration {
 		$meta                  = $this->get_form_meta( $form_data );
 		$meta['entry_id']      = null;
 		$meta['tracking_mode'] = $tracking_mode;
+
+		$payment = $this->get_payment_signals( $form_data, $fields );
+
+		if ( ! empty( $payment ) ) {
+			$meta['payment'] = $payment;
+		}
 
 		if ( $tracking_mode ) {
 			try {

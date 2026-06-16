@@ -25,17 +25,22 @@ class PluginInstaller {
 	/**
 	 * Plugins that are allowed to be installed via this handler.
 	 *
-	 * @since 1.1.0
+	 * Maps each WordPress.org slug to its known plugin files, the Pro
+	 * variant first so an installed Pro copy is activated instead of
+	 * downloading the Lite version next to it.
 	 *
-	 * @var string[]
+	 * @since 1.1.0
+	 * @since 1.4.0 Changed to a map of slug → known Pro/Lite plugin files.
+	 *
+	 * @var string[][]
 	 */
 	private const ALLOWED_PLUGINS = [
-		'wpforms-lite',
-		'wp-mail-smtp',
-		'google-analytics-for-wordpress',
-		'optinmonster',
-		'coming-soon',
-		'all-in-one-seo-pack',
+		'wpforms-lite'                   => [ 'wpforms/wpforms.php', 'wpforms-lite/wpforms.php' ],
+		'wp-mail-smtp'                   => [ 'wp-mail-smtp-pro/wp_mail_smtp.php', 'wp-mail-smtp/wp_mail_smtp.php' ],
+		'google-analytics-for-wordpress' => [ 'google-analytics-premium/googleanalytics-premium.php', 'google-analytics-for-wordpress/googleanalytics.php' ],
+		'optinmonster'                   => [ 'optinmonster/optin-monster-wp-api.php' ],
+		'coming-soon'                    => [ 'seedprod-coming-soon-pro-5/seedprod-coming-soon-pro-5.php', 'coming-soon/coming-soon.php' ],
+		'all-in-one-seo-pack'            => [ 'all-in-one-seo-pack-pro/all_in_one_seo_pack.php', 'all-in-one-seo-pack/all_in_one_seo_pack.php' ],
 	];
 
 	/**
@@ -46,6 +51,24 @@ class PluginInstaller {
 	public function hooks(): void {
 
 		add_action( 'wp_ajax_activelayer_install_plugin', [ $this, 'ajax_install_plugin' ] );
+	}
+
+	/**
+	 * Get the known plugin files (Pro and Lite variants) for an allowed slug.
+	 *
+	 * Single source of truth for slug → plugin file mapping, consumed by
+	 * the dashboard cross-promote cards so detection and activation can
+	 * never disagree on which files belong to a sister plugin.
+	 *
+	 * @since 1.4.0
+	 *
+	 * @param string $plugin_slug Plugin slug on WordPress.org.
+	 *
+	 * @return string[] Known plugin file paths, Pro variant first. Empty if the slug is not allowed.
+	 */
+	public static function get_plugin_files( string $plugin_slug ): array {
+
+		return self::ALLOWED_PLUGINS[ $plugin_slug ] ?? [];
 	}
 
 	/**
@@ -69,7 +92,7 @@ class PluginInstaller {
 			wp_send_json_error( [ 'message' => esc_html__( 'Plugin slug is required.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) ] );
 		}
 
-		if ( ! in_array( $plugin_slug, self::ALLOWED_PLUGINS, true ) ) {
+		if ( ! isset( self::ALLOWED_PLUGINS[ $plugin_slug ] ) ) {
 			wp_send_json_error( [ 'message' => esc_html__( 'Plugin not allowed.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) ] );
 		}
 
@@ -179,7 +202,13 @@ class PluginInstaller {
 	/**
 	 * Find a plugin's main file by its directory slug.
 	 *
+	 * Checks the known Pro/Lite files for the slug first, so an
+	 * installed-but-inactive Pro variant (e.g. wp-mail-smtp-pro) is
+	 * activated instead of downloading the Lite version next to it,
+	 * then falls back to a directory-prefix scan.
+	 *
 	 * @since 1.1.0
+	 * @since 1.4.0 Checks known Pro/Lite variant files before the prefix scan.
 	 *
 	 * @param string $plugin_slug Plugin directory slug.
 	 *
@@ -189,7 +218,15 @@ class PluginInstaller {
 
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
-		foreach ( get_plugins() as $plugin_file => $plugin_data ) {
+		$all_plugins = get_plugins();
+
+		foreach ( self::ALLOWED_PLUGINS[ $plugin_slug ] ?? [] as $known_file ) {
+			if ( isset( $all_plugins[ $known_file ] ) ) {
+				return $known_file;
+			}
+		}
+
+		foreach ( $all_plugins as $plugin_file => $plugin_data ) {
 			if ( strpos( $plugin_file, $plugin_slug . '/' ) === 0 ) {
 				return $plugin_file;
 			}
