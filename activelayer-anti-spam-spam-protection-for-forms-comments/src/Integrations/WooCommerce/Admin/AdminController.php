@@ -153,16 +153,6 @@ final class AdminController {
 								</label>
 							</td>
 						</tr>
-						<tr>
-							<th scope="row"><?php esc_html_e( 'Checkout', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></th>
-							<td>
-								<label>
-									<input type="checkbox" name="settings[registration][protect_checkout_register]" value="1" <?php checked( $register_settings['protect_checkout_register'] ?? true, true ); ?> />
-									<?php esc_html_e( 'Also protect register-during-checkout', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?>
-								</label>
-								<p class="description"><?php esc_html_e( 'Run the spam check when a customer creates an account during checkout. Disable to never block checkout flows.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></p>
-							</td>
-						</tr>
 					</tbody>
 				</table>
 			</div>

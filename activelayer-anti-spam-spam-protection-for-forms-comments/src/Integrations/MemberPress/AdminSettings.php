@@ -10,8 +10,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  * MemberPress admin settings.
  *
  * Stores configuration under option key `activelayer_memberpress_settings`.
- * Single `enabled` toggle, default true (opt-out — protection on after the
- * API key is connected). Mirrors AffiliateWP\AdminSettings.
+ * `enabled` (default true, opt-out) toggles protection once the API key is
+ * connected; `block_paid_signups` (default false) opts in to also gating
+ * real-money signups. Mirrors AffiliateWP\AdminSettings.
  *
  * @since 1.4.0
  *
@@ -20,12 +21,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 class AdminSettings {
 
 	/**
-	 * Default settings — enabled by default (opt-out).
+	 * Default settings — enabled by default (opt-out); paid signups not gated.
 	 *
 	 * @since 1.4.0
+	 * @since 1.4.1 Added `block_paid_signups` (default false).
 	 */
 	public const DEFAULT_SETTINGS = [
-		'enabled' => true,
+		'enabled'            => true,
+		'block_paid_signups' => false,
 	];
 
 	/**
@@ -75,7 +78,12 @@ class AdminSettings {
 	/**
 	 * Persist settings.
 	 *
+	 * Full replace: callers must pass the complete intended state. The panel
+	 * save path re-posts `enabled` alongside `block_paid_signups` so a panel
+	 * save never drops the master toggle.
+	 *
 	 * @since 1.4.0
+	 * @since 1.4.1 Also persists `block_paid_signups`.
 	 *
 	 * @param array $settings Submitted settings.
 	 *
@@ -86,7 +94,8 @@ class AdminSettings {
 		$option_name = $this->integration->get_option_key();
 
 		$clean_settings = [
-			'enabled' => ! empty( $settings['enabled'] ),
+			'enabled'            => ! empty( $settings['enabled'] ),
+			'block_paid_signups' => ! empty( $settings['block_paid_signups'] ),
 		];
 
 		return update_option( $option_name, $clean_settings );

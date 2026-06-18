@@ -9,20 +9,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Hooks the WC registration flow into the spam check.
+ * Hooks the standalone WC My Account registration form into the spam check.
  *
- * Covers three entry points through a single validation hook:
- *   - Standalone My Account register form (classic shortcode).
- *   - Register-during-checkout on classic `[woocommerce_checkout]`.
- *   - Register-during-checkout on block-based checkout (Store API REST).
- *
- * All three flows fire `woocommerce_register_post` via `wc_create_new_customer()`,
- * so the spam gate is unified. Client-signal fields are rendered into the two
- * classic flows only; block-based checkout reaches the gate without form fields
- * (Store API uses a JSON body), and `SignalsStrippedDetector` is REST-aware so
- * it does not flag that as suspicious.
+ * Scope is the standalone My Account register form ONLY. Register-during-checkout
+ * is intentionally NOT gated: the same `woocommerce_register_post` hook fires for
+ * the classic `[woocommerce_checkout]` flow and the block-based checkout (Store
+ * API REST), but blocking a registration there aborts the entire order, so a
+ * false positive would cost a sale. `handle_registration()` detects the checkout
+ * context (classic via `is_checkout()`, block-based via the Store API checkout
+ * route) and returns without checking. Client-signal fields are rendered into the
+ * My Account form only.
  *
  * @since 1.2.0
+ * @since 1.4.1 Register-during-checkout is no longer checked — only the standalone My Account form is gated.
  *
  * @package ActiveLayer\Integrations\WooCommerce\Registration
  */
@@ -66,29 +65,29 @@ class RegistrationSubmissionHandler {
 	 */
 	private function hooks(): void {
 
-		// Standalone My Account register form.
+		// Standalone My Account register form — signal fields + spam gate.
+		// Register-during-checkout is deliberately not wired up: signal fields
+		// are not emitted into the checkout form, and handle_registration()
+		// skips the checkout context (see its body).
 		add_action( 'woocommerce_register_form', [ $this->integration, 'output_signal_fields' ] );
 
-		// Classic checkout with "Create an account" — woocommerce_register_form
-		// does NOT fire here, but woocommerce_register_post does. Emit the
-		// hidden signal fields inside the checkout form (woocommerce_after_checkout_form
-		// fires OUTSIDE the </form> in WC's classic checkout template, so use
-		// woocommerce_review_order_before_submit instead — it renders inside
-		// the order review block, just before the #place_order button).
-		add_action( 'woocommerce_review_order_before_submit', [ $this->integration, 'output_signal_fields' ] );
-
-		// Primary validation hook (fires for classic shortcode flows AND for
-		// block-based checkout via Checkout::process_customer → wc_create_new_customer).
+		// Primary validation hook. It also fires for register-during-checkout
+		// (classic + block-based via wc_create_new_customer), so the handler
+		// detects and skips that context.
 		add_action( 'woocommerce_register_post', [ $this, 'handle_registration' ], 10, 3 );
 	}
 
 	/**
-	 * WC register hook: validates the registration and blocks on spam verdict.
+	 * WC register hook: validates the standalone My Account registration and blocks on spam.
 	 *
 	 * Object signature: `do_action( 'woocommerce_register_post', $username, $email, $validation_error )`.
 	 * `$validation_error` is a WP_Error instance; adding to it stops registration.
 	 *
+	 * Returns early for any checkout context (classic or block-based Store API):
+	 * register-during-checkout is not gated so the spam check can never abort an order.
+	 *
 	 * @since 1.2.0
+	 * @since 1.4.1 Skips the register-during-checkout context entirely.
 	 *
 	 * @param string   $username         Submitted username.
 	 * @param string   $email            Submitted email.
@@ -111,14 +110,15 @@ class RegistrationSubmissionHandler {
 			return;
 		}
 
-		// Honour the checkout-context toggle. Block-based checkout reaches this hook
-		// via the Store API REST route, where is_checkout() returns false; treat the
-		// Store API checkout endpoint as a checkout context too so the toggle works
-		// in both transports.
+		// Never gate register-during-checkout: blocking there aborts the whole
+		// order, so a false positive would cost a sale. Block-based checkout
+		// reaches this hook via the Store API REST route, where is_checkout()
+		// returns false; treat that endpoint as a checkout context too so both
+		// transports are skipped. Only the standalone My Account form is gated.
 		$is_checkout_context = ( function_exists( 'is_checkout' ) && is_checkout() )
 			|| self::is_store_api_checkout_context();
 
-		if ( $is_checkout_context && ! $this->integration->protects_checkout_register() ) {
+		if ( $is_checkout_context ) {
 			return;
 		}
 
@@ -143,9 +143,9 @@ class RegistrationSubmissionHandler {
 	 * Detect a Store API checkout REST request.
 	 *
 	 * Block-based checkout submits via POST /wp-json/wc/store/v1/checkout, where
-	 * is_checkout() returns false and the request is a JSON REST call. Used by
-	 * the checkout-context toggle so `protect_checkout_register` works in both
-	 * the classic shortcode and the block-based flow.
+	 * is_checkout() returns false and the request is a JSON REST call. Used so
+	 * handle_registration() can skip the register-during-checkout context in the
+	 * block-based flow as well as the classic shortcode.
 	 *
 	 * @since 1.2.0
 	 *
@@ -173,8 +173,8 @@ class RegistrationSubmissionHandler {
 	 * permalinks (`/?rest_route=/wc/store/v1/checkout`) must match.
 	 * `WC()->is_store_api_request()` is intentionally NOT used here because
 	 * it only checks the pretty URI prefix and returns false on
-	 * plain-permalink sites — that would silently disable the
-	 * `protect_checkout_register` toggle for legit configurations.
+	 * plain-permalink sites — that would let a block-based checkout
+	 * registration slip through the skip and get checked anyway.
 	 *
 	 * `$_GET` / `$_SERVER` are read-only routing inputs (not form data), so
 	 * the nonce-verification check does not apply. Values are still

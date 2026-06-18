@@ -411,7 +411,7 @@
 		formData.append( 'type', type );
 		formData.append( 'slug', slug );
 
-		if ( type === 'comments' || type === 'woocommerce' ) {
+		if ( type === 'comments' || type === 'woocommerce' || type === 'memberpress' ) {
 			// Gather settings from named inputs.
 			// Checkboxes: only append checked ones (omit unchecked) to match
 			// the isset() contract in update_*_settings() handlers.

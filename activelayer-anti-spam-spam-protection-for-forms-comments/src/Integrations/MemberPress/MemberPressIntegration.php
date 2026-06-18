@@ -6,6 +6,7 @@ use ActiveLayer\ClientSignals\Fields\FieldRenderer;
 use ActiveLayer\Helpers\SettingsHelper;
 use ActiveLayer\Integrations\BaseFormIntegration;
 use ActiveLayer\Integrations\Traits\RegistrationProtectionTrait;
+use MeprProduct;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -110,6 +111,71 @@ class MemberPressIntegration extends BaseFormIntegration {
 	public function is_setting_enabled(): bool {
 
 		return ! empty( $this->settings['enabled'] );
+	}
+
+	/**
+	 * Whether the admin opted in to also gate real-money signups.
+	 *
+	 * Off by default: MemberPress creates the WordPress user before the
+	 * payment is taken (MeprCheckoutCtrl::process_signup_form), so blocking a
+	 * real-money signup on a spam verdict aborts the purchase and risks a lost
+	 * sale on a false positive. Free, free-trial, and fully-discounted signups
+	 * are always gated regardless of this flag (no payment is at stake there).
+	 *
+	 * @since 1.4.1
+	 *
+	 * @return bool
+	 */
+	public function should_block_paid_signups(): bool {
+
+		return ! empty( $this->settings['block_paid_signups'] );
+	}
+
+	/**
+	 * Whether the membership charges real money at signup right now.
+	 *
+	 * Returns false — keeping the spam gate active — for signups that create
+	 * an account without taking payment: free memberships, fully-discounted
+	 * (100%-off coupon) signups, and paid memberships with a free trial
+	 * (`$0` charged at signup). Only signups that take real money immediately
+	 * return true, since those are the ones a false-positive block would cost
+	 * a real sale.
+	 *
+	 * @since 1.4.1
+	 *
+	 * @param int|string $membership_id Membership (product) post ID, or the
+	 *                                  `mepr_signup` sentinel when absent.
+	 * @param string     $coupon_code   Coupon code posted with the signup.
+	 *
+	 * @return bool
+	 */
+	public function signup_takes_payment_now( $membership_id, string $coupon_code = '' ): bool {
+
+		if ( ! class_exists( 'MeprProduct' ) || ! is_int( $membership_id ) || $membership_id <= 0 ) {
+			return false;
+		}
+
+		$product = new MeprProduct( $membership_id );
+
+		if ( empty( $product->ID ) ) {
+			return false;
+		}
+
+		$coupon = $coupon_code !== '' ? $coupon_code : null;
+
+		// Free or fully discounted — no payment at stake; keep gating.
+		if ( ! $product->is_payment_required( $coupon ) ) {
+			return false;
+		}
+
+		// Paid membership with a free trial charges $0 at signup. Treat it as a
+		// free account: it is a prime fake-account vector and blocking it costs
+		// no sale, so keep the gate active.
+		if ( ! empty( $product->trial ) && (float) $product->trial_amount <= 0.0 ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**

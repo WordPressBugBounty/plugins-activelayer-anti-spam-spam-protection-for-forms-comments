@@ -7,7 +7,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language-Team: ActiveLayer Team <support@activelayer.com>\n"
-"POT-Creation-Date: 2026-06-16 13:08+0000\n"
+"POT-Creation-Date: 2026-06-18 07:58+0000\n"
 "Report-Msgid-Bugs-To: https://github.com/activelayer/activelayer-plugin/issues\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
@@ -68,7 +68,7 @@ msgstr ""
 msgid "Submissions"
 msgstr ""
 
-#: src/Admin/AdminPages.php:314, src/Admin/AdminPages.php:315, src/Admin/Onboarding/OnboardingManager.php:124, src/Admin/Pages/DashboardPage.php:393, src/Admin/Pages/IntegrationsPage.php:171
+#: src/Admin/AdminPages.php:314, src/Admin/AdminPages.php:315, src/Admin/Onboarding/OnboardingManager.php:124, src/Admin/Pages/DashboardPage.php:393, src/Admin/Pages/IntegrationsPage.php:177
 msgid "Integrations"
 msgstr ""
 
@@ -137,7 +137,7 @@ msgstr ""
 msgid "Saving..."
 msgstr ""
 
-#: src/Admin/AdminPages.php:446, src/Admin/Pages/IntegrationsPage.php:805, src/Admin/Pages/IntegrationsPage.php:854, src/Admin/Pages/IntegrationsPage.php:922, src/Admin/Settings/SettingsPersistor.php:124, src/Integrations/WooCommerce/Admin/AdminController.php:230
+#: src/Admin/AdminPages.php:446, src/Admin/Pages/IntegrationsPage.php:554, src/Admin/Pages/IntegrationsPage.php:918, src/Admin/Pages/IntegrationsPage.php:967, src/Admin/Pages/IntegrationsPage.php:1035, src/Admin/Settings/SettingsPersistor.php:124, src/Integrations/WooCommerce/Admin/AdminController.php:220
 msgid "Settings saved."
 msgstr ""
 
@@ -145,19 +145,19 @@ msgstr ""
 msgid "Save failed. Please try again."
 msgstr ""
 
-#: src/Admin/AdminPages.php:448, src/Admin/Pages/IntegrationsPage.php:441, src/Admin/Pages/IntegrationsPage.php:516, src/Integrations/WooCommerce/Admin/AdminController.php:171
+#: src/Admin/AdminPages.php:448, src/Admin/Pages/IntegrationsPage.php:449, src/Admin/Pages/IntegrationsPage.php:490, src/Admin/Pages/IntegrationsPage.php:629, src/Integrations/WooCommerce/Admin/AdminController.php:161
 msgid "Save Settings"
 msgstr ""
 
-#: src/Admin/AdminPages.php:449, src/Admin/Pages/DashboardPage.php:416, src/Admin/Pages/IntegrationsPage.php:226
+#: src/Admin/AdminPages.php:449, src/Admin/Pages/DashboardPage.php:416, src/Admin/Pages/IntegrationsPage.php:232
 msgid "Active"
 msgstr ""
 
-#: src/Admin/AdminPages.php:450, src/Admin/Pages/DashboardPage.php:417, src/Admin/Pages/IntegrationsPage.php:227
+#: src/Admin/AdminPages.php:450, src/Admin/Pages/DashboardPage.php:417, src/Admin/Pages/IntegrationsPage.php:233
 msgid "Paused"
 msgstr ""
 
-#: src/Admin/AdminPages.php:451, src/Admin/Pages/IntegrationsPage.php:487
+#: src/Admin/AdminPages.php:451, src/Admin/Pages/IntegrationsPage.php:600
 msgid "Select All"
 msgstr ""
 
@@ -165,7 +165,7 @@ msgstr ""
 msgid "Deselect All"
 msgstr ""
 
-#: src/Admin/AdminPages.php:587, src/Admin/AdminPages.php:607, src/Admin/Components/DashboardWidget.php:270, src/Admin/Components/PluginInstaller.php:84, src/Admin/Components/ReviewRequestNotice.php:186, src/Admin/Components/UsageLimitNotice.php:173, src/Admin/Pages/IntegrationsPage.php:97
+#: src/Admin/AdminPages.php:587, src/Admin/AdminPages.php:607, src/Admin/Components/DashboardWidget.php:270, src/Admin/Components/PluginInstaller.php:84, src/Admin/Components/ReviewRequestNotice.php:186, src/Admin/Components/UsageLimitNotice.php:173, src/Admin/Pages/IntegrationsPage.php:99
 msgid "Permission denied."
 msgstr ""
 
@@ -843,7 +843,7 @@ msgstr ""
 msgid "Learn more about all features"
 msgstr ""
 
-#: src/Admin/Pages/DashboardPage.php:548, src/Admin/Pages/IntegrationsPage.php:611
+#: src/Admin/Pages/DashboardPage.php:548, src/Admin/Pages/IntegrationsPage.php:724
 msgid "Install & Activate"
 msgstr ""
 
@@ -863,163 +863,183 @@ msgstr ""
 msgid "Quick Access"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:127
+#: src/Admin/Pages/IntegrationsPage.php:133
 msgid "Invalid type."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:178
+#: src/Admin/Pages/IntegrationsPage.php:184
 msgid "Configure spam protection settings for different form providers and WordPress features."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:182
+#: src/Admin/Pages/IntegrationsPage.php:188
 msgid "No integrations available."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:270
+#: src/Admin/Pages/IntegrationsPage.php:276
 msgid "Configure"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:283
+#: src/Admin/Pages/IntegrationsPage.php:289
 msgid "Enable spam protection"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:349
+#: src/Admin/Pages/IntegrationsPage.php:357
 msgid "Tracking Mode"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:353, src/Integrations/WPForms/AdminSettings.php:261
+#: src/Admin/Pages/IntegrationsPage.php:361, src/Integrations/WPForms/AdminSettings.php:261
 msgid "Enable tracking mode (log only)"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:355
+#: src/Admin/Pages/IntegrationsPage.php:363
 msgid "Analyze and log comments without auto-blocking spam verdicts."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:360, src/Integrations/WooCommerce/Admin/AdminController.php:85
+#: src/Admin/Pages/IntegrationsPage.php:368, src/Integrations/WooCommerce/Admin/AdminController.php:85
 msgid "Logged-in Users"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:364
+#: src/Admin/Pages/IntegrationsPage.php:372
 msgid "Check comments from logged-in users"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:366
+#: src/Admin/Pages/IntegrationsPage.php:374
 msgid "Also analyze comments from logged-in users (administrators are always excluded)."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:370, src/Integrations/WooCommerce/Admin/AdminController.php:103
+#: src/Admin/Pages/IntegrationsPage.php:378, src/Integrations/WooCommerce/Admin/AdminController.php:103
 msgid "Auto-approve"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:374
+#: src/Admin/Pages/IntegrationsPage.php:382
 msgid "Auto-approve clean comments"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:376
+#: src/Admin/Pages/IntegrationsPage.php:384
 msgid "Automatically approve comments that are marked as clean by the spam filter."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:380, src/Integrations/WooCommerce/Admin/AdminController.php:112
+#: src/Admin/Pages/IntegrationsPage.php:388, src/Integrations/WooCommerce/Admin/AdminController.php:112
 msgid "Auto-spam"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:384
+#: src/Admin/Pages/IntegrationsPage.php:392
 msgid "Auto-spam detected comments"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:386
+#: src/Admin/Pages/IntegrationsPage.php:394
 msgid "Automatically move comments detected as spam to the spam folder."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:390, src/Integrations/WooCommerce/Admin/AdminController.php:121
+#: src/Admin/Pages/IntegrationsPage.php:398, src/Integrations/WooCommerce/Admin/AdminController.php:121
 msgid "Silently Discard"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:394
+#: src/Admin/Pages/IntegrationsPage.php:402
 msgid "Silently delete high-confidence spam instead of storing it"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:396
+#: src/Admin/Pages/IntegrationsPage.php:404
 msgid "When the spam score is at or above the threshold below, the comment is removed from your site entirely (it cannot be recovered or un-spammed)."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:400, src/Integrations/WooCommerce/Admin/AdminController.php:131
+#: src/Admin/Pages/IntegrationsPage.php:408, src/Integrations/WooCommerce/Admin/AdminController.php:131
 msgid "Discard Threshold"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:404, src/Integrations/WooCommerce/Admin/AdminController.php:135
+#: src/Admin/Pages/IntegrationsPage.php:412, src/Integrations/WooCommerce/Admin/AdminController.php:135
 msgid "Score 0–100 (default 95)."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:409
+#: src/Admin/Pages/IntegrationsPage.php:417
 msgid "Comment Length"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:412
+#: src/Admin/Pages/IntegrationsPage.php:420
 msgid "Minimum:"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:414, src/Admin/Pages/IntegrationsPage.php:420
+#: src/Admin/Pages/IntegrationsPage.php:422, src/Admin/Pages/IntegrationsPage.php:428
 msgid "characters"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:418
+#: src/Admin/Pages/IntegrationsPage.php:426
 msgid "Maximum:"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:425
+#: src/Admin/Pages/IntegrationsPage.php:433
 msgid "Trackbacks & Pingbacks"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:429
+#: src/Admin/Pages/IntegrationsPage.php:437
 msgid "Check trackbacks for spam"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:434
+#: src/Admin/Pages/IntegrationsPage.php:442
 msgid "Check pingbacks for spam"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:485
+#: src/Admin/Pages/IntegrationsPage.php:476
+msgid "Paid Registrations"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:480
+msgid "Block spam on paid membership registrations"
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:483
+msgid "Warning: MemberPress creates the account before payment is taken, so enabling this can block a legitimate purchase when the spam filter has a false positive. Free, free-trial, and fully-discounted registrations are always protected."
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:512
+msgid "Invalid integration for MemberPress settings."
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:523
+msgid "MemberPress integration is not available."
+msgstr ""
+
+#: src/Admin/Pages/IntegrationsPage.php:598
 msgid "Select which forms to protect"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:498
+#: src/Admin/Pages/IntegrationsPage.php:611
 msgid "Edit"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:510
+#: src/Admin/Pages/IntegrationsPage.php:623
 msgid "Enable protection"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:471
+#: src/Admin/Pages/IntegrationsPage.php:584
 msgid "No forms found."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:479
+#: src/Admin/Pages/IntegrationsPage.php:592
 msgid "Create a Form"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:602
+#: src/Admin/Pages/IntegrationsPage.php:715
 msgid "Recommended"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:605
+#: src/Admin/Pages/IntegrationsPage.php:718
 msgid "The #1 form builder for WordPress, now with AI spam protection"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:778
+#: src/Admin/Pages/IntegrationsPage.php:891
 msgid "Integration not found."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:828
+#: src/Admin/Pages/IntegrationsPage.php:941
 msgid "Invalid integration for comment settings."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:877
+#: src/Admin/Pages/IntegrationsPage.php:990
 msgid "Integration slug is required."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:888
+#: src/Admin/Pages/IntegrationsPage.php:1001
 msgid "Integration not found or does not support per-form settings."
 msgstr ""
 
@@ -1477,7 +1497,7 @@ msgstr ""
 msgid "Check submissions for spam using ActiveLayer AI before creating entries."
 msgstr ""
 
-#: src/Integrations/MemberPress/AdminSettings.php:111
+#: src/Integrations/MemberPress/AdminSettings.php:120
 msgid "Block spam sign-ups on MemberPress membership registration forms."
 msgstr ""
 
@@ -1610,27 +1630,15 @@ msgstr ""
 msgid "Enable spam detection for customer registration"
 msgstr ""
 
-#: src/Integrations/WooCommerce/Admin/AdminController.php:157
-msgid "Checkout"
-msgstr ""
-
-#: src/Integrations/WooCommerce/Admin/AdminController.php:161
-msgid "Also protect register-during-checkout"
-msgstr ""
-
-#: src/Integrations/WooCommerce/Admin/AdminController.php:163
-msgid "Run the spam check when a customer creates an account during checkout. Disable to never block checkout flows."
-msgstr ""
-
-#: src/Integrations/WooCommerce/Admin/AdminController.php:195
+#: src/Integrations/WooCommerce/Admin/AdminController.php:185
 msgid "Invalid integration for WooCommerce settings."
 msgstr ""
 
-#: src/Integrations/WooCommerce/Admin/AdminController.php:217
+#: src/Integrations/WooCommerce/Admin/AdminController.php:207
 msgid "WooCommerce integration is not available."
 msgstr ""
 
-#: src/Integrations/WooCommerce/Registration/RegistrationAdminSettings.php:112
+#: src/Integrations/WooCommerce/Registration/RegistrationAdminSettings.php:111
 msgid "Block spam registrations on the WooCommerce My Account form and the checkout register flow."
 msgstr ""
 

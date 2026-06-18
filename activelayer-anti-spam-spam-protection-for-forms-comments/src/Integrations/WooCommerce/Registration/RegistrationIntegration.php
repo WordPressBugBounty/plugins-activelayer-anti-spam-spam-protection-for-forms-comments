@@ -111,20 +111,6 @@ class RegistrationIntegration extends BaseFormIntegration {
 	}
 
 	/**
-	 * Whether the integration should also protect the register-during-checkout flow.
-	 *
-	 * Reads from the cached settings map populated by BaseFormIntegration::load_settings().
-	 *
-	 * @since 1.2.0
-	 *
-	 * @return bool
-	 */
-	public function protects_checkout_register(): bool {
-
-		return ! empty( $this->settings['protect_checkout_register'] );
-	}
-
-	/**
 	 * Render hidden ActiveLayer signal fields inside the WC register form.
 	 *
 	 * @since 1.2.0

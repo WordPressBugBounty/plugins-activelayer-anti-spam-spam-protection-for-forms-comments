@@ -22,10 +22,10 @@ class RegistrationAdminSettings {
 	 *
 	 * @since 1.2.0
 	 * @since 1.3.0 Default flipped to opt-out — protection enabled by default after API key connection.
+	 * @since 1.4.1 Removed `protect_checkout_register` — register-during-checkout is no longer checked.
 	 */
 	public const DEFAULT_SETTINGS = [
-		'enabled'                   => true,
-		'protect_checkout_register' => true,
+		'enabled' => true,
 	];
 
 	/**
@@ -86,8 +86,7 @@ class RegistrationAdminSettings {
 		$option_name = $this->integration->get_option_key();
 
 		$clean_settings = [
-			'enabled'                   => ! empty( $settings['enabled'] ),
-			'protect_checkout_register' => ! empty( $settings['protect_checkout_register'] ),
+			'enabled' => ! empty( $settings['enabled'] ),
 		];
 
 		return update_option( $option_name, $clean_settings );

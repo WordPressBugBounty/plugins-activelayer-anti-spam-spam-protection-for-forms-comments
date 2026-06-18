@@ -79,10 +79,12 @@ class IntegrationsPage {
 	 * - `enabled`: toggles an integration on or off.
 	 * - `comments`: saves WP Comments-specific settings.
 	 * - `woocommerce`: saves WooCommerce Reviews + Registration settings via AdminController.
+	 * - `memberpress`: saves MemberPress paid-signup gating opt-in.
 	 * - `forms`: saves per-form protection toggles for a form provider.
 	 *
 	 * @since 1.1.0
 	 * @since 1.2.0 Added `woocommerce` type dispatched to the WooCommerce AdminController.
+	 * @since 1.4.1 Added `memberpress` type.
 	 *
 	 * @return void
 	 */
@@ -116,6 +118,10 @@ class IntegrationsPage {
 
 			case 'woocommerce':
 				$this->wc_admin->handle_settings_save( $slug );
+				break;
+
+			case 'memberpress':
+				$this->handle_memberpress_settings( $slug );
 				break;
 
 			case 'forms':
@@ -230,7 +236,7 @@ class IntegrationsPage {
 		$admin_url           = $this->get_integration_admin_url( $slug, $form_admin_settings );
 
 		// Determine if this integration supports configuration.
-		$has_panel    = in_array( $slug, [ 'wp_comments', 'woocommerce' ], true ) || $form_admin_settings;
+		$has_panel    = in_array( $slug, [ 'wp_comments', 'woocommerce', 'memberpress' ], true ) || $form_admin_settings;
 		$panel_hidden = $has_panel && ! $enabled;
 
 		$panel_id = 'activelayer-integration-panel-' . esc_attr( $slug );
@@ -312,6 +318,8 @@ style="display:none"<?php endif; ?>
 					$this->render_comments_panel( $data );
 				} elseif ( $slug === 'woocommerce' ) {
 					$this->wc_admin->render_panel( $data );
+				} elseif ( $slug === 'memberpress' ) {
+					$this->render_memberpress_panel( $data );
 				} else {
 					$this->render_forms_panel( $slug );
 				}
@@ -442,6 +450,111 @@ style="display:none"<?php endif; ?>
 			</p>
 		</form>
 		<?php
+	}
+
+	/**
+	 * Render the MemberPress inline settings panel.
+	 *
+	 * Surfaces the paid-signup gating opt-in only. The master enable toggle
+	 * lives in the integration row and is preserved server-side on save.
+	 *
+	 * @since 1.4.1
+	 *
+	 * @param array $data Integration data including settings.
+	 *
+	 * @return void
+	 */
+	private function render_memberpress_panel( array $data ): void {
+
+		$settings = $data['settings'] ?? [];
+
+		?>
+		<form class="activelayer-integration-settings-form" data-slug="memberpress" data-type="memberpress">
+			<table class="form-table" role="presentation">
+				<tbody>
+					<tr>
+						<th scope="row"><?php esc_html_e( 'Paid Registrations', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></th>
+						<td>
+							<label>
+								<input type="checkbox" name="settings[block_paid_signups]" value="1" <?php checked( $settings['block_paid_signups'] ?? false, true ); ?> />
+								<?php esc_html_e( 'Block spam on paid membership registrations', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?>
+							</label>
+							<p class="description">
+								<?php esc_html_e( 'Warning: MemberPress creates the account before payment is taken, so enabling this can block a legitimate purchase when the spam filter has a false positive. Free, free-trial, and fully-discounted registrations are always protected.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?>
+							</p>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<p class="submit">
+				<button type="submit" class="button button-primary"><?php esc_html_e( 'Save Settings', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></button>
+			</p>
+		</form>
+		<?php
+	}
+
+	/**
+	 * Handle the AJAX save request for the MemberPress panel.
+	 *
+	 * Persists the `block_paid_signups` opt-in while preserving the master
+	 * `enabled` toggle (read from storage, never trusted from the client).
+	 *
+	 * @since 1.4.1
+	 *
+	 * @param string $slug Integration registry slug (must be 'memberpress').
+	 *
+	 * @return void
+	 */
+	private function handle_memberpress_settings( string $slug ): void {
+
+		if ( $slug !== 'memberpress' ) {
+			wp_send_json_error(
+				[ 'message' => esc_html__( 'Invalid integration for MemberPress settings.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) ],
+				400
+			);
+
+			return;
+		}
+
+		$integration = $this->registry->get_integration( 'memberpress' );
+
+		if ( ! $integration || ! method_exists( $integration, 'get_admin_settings' ) ) {
+			wp_send_json_error(
+				[ 'message' => esc_html__( 'MemberPress integration is not available.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) ],
+				400
+			);
+
+			return;
+		}
+
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Nonce verified in ajax_save_settings().
+		$raw_settings = isset( $_POST['settings'] ) && is_array( $_POST['settings'] )
+			? wp_unslash( $_POST['settings'] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			: [];
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+
+		$clean_settings = ArrayHelper::sanitize_recursive( $raw_settings );
+
+		$admin_settings = $integration->get_admin_settings();
+		$current        = $admin_settings->get_settings();
+
+		// Preserve the master enable toggle (owned by the row switch); the panel
+		// only controls the paid-signup opt-in.
+		$admin_settings->update_settings(
+			[
+				'enabled'            => ! empty( $current['enabled'] ),
+				'block_paid_signups' => ! empty( $clean_settings['block_paid_signups'] ),
+			]
+		);
+
+		$this->registry->refresh();
+
+		wp_send_json_success(
+			array_merge(
+				[ 'message' => esc_html__( 'Settings saved.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) ],
+				$this->registry->build_onboarding_step_payload()
+			)
+		);
 	}
 
 	/**

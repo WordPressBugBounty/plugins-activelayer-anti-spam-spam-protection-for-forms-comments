@@ -3,12 +3,12 @@ Contributors: smub, dimitrism, ernest35
 Tags: anti-spam, antispam, spam protection, contact form, comment spam
 Requires at least: 5.5
 Tested up to: 7.0
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Intelligent spam protection for WordPress forms, comments, reviews, and registrations. No CAPTCHA needed. Works with WPForms, Contact Form 7, WS Form, WooCommerce, AffiliateWP, MemberPress, and more.
+Intelligent spam protection for WordPress forms, comments, and reviews. No CAPTCHA needed. Works with WPForms, Contact Form 7, WooCommerce, and more.
 
 == Description ==
 
@@ -62,7 +62,7 @@ Stop comment spam on your posts without requiring readers to solve CAPTCHAs or p
 One plugin covers WPForms, Contact Form 7, Gravity Forms, Elementor Forms, Fluent Forms, Formidable Forms, WooCommerce, and more — every integration managed from one settings page. No need to configure separate anti-spam tools for each form builder or WooCommerce surface your clients use.
 
 ### E-commerce and Service Businesses
-Keep inquiry and support forms clean while maintaining a fast, professional user experience. Async checks keep contact forms moving quickly, while registration gates can block spam accounts inline. **WooCommerce stores** get dedicated protection for product reviews and customer registration (My Account, classic checkout, and the new Cart/Checkout Blocks) — without adding a CAPTCHA anywhere on the path to purchase.
+Keep inquiry and support forms clean while maintaining a fast, professional user experience. Async checks keep contact forms moving quickly, while registration gates can block spam accounts inline. **WooCommerce stores** get dedicated protection for product reviews and My Account customer registration — and the checkout itself is never gated, so spam protection can't get in the way of a sale.
 
 ### Membership Sites and Online Communities
 Running a community on **BuddyPress** or **BuddyBoss Platform**? ActiveLayer hooks the public signup form and blocks spam registrations before they create fake accounts — no extra CAPTCHA in front of your real members, no manual moderation queue to babysit. The integration covers both free BuddyPress and BuddyBoss Platform with a dedicated admin toggle for each.
@@ -83,11 +83,11 @@ Running a community on **BuddyPress** or **BuddyBoss Platform**? ActiveLayer hoo
 * **WS Form integration** - Synchronous spam blocking before WS Form saves entries or runs actions, with per-form control
 * **WordPress Comments protection** - Auto-approve clean comments, auto-spam detected ones, fail-open restore
 * **WooCommerce Reviews protection** - Score every product review on submission, with optional verified-owner bypass, logged-in-user bypass, and high-confidence auto-delete
-* **WooCommerce Registration protection** - Block bot signups before the account is created, across the My Account page, classic checkout, and the new Cart/Checkout Blocks
+* **WooCommerce Registration protection** - Block bot signups on the My Account registration form before the account is created (the checkout flow is never gated, so it can't block a purchase)
 * **BuddyPress signup protection** - Block spam registrations on the public `/register/` page; sync check fires after BuddyPress's own validation and writes the block message next to the username field
 * **BuddyBoss Platform signup protection** - Same sync gate against the BuddyBoss Platform signup form, with automatic xprofile-name fallback because BuddyBoss auto-generates the username from the email
 * **AffiliateWP registration protection** - Block bot affiliate signups before the affiliate and WordPress user are created; sync check fires after AffiliateWP's own validation
-* **MemberPress registration protection** - Block bot membership signups before the WordPress user account and membership are created
+* **MemberPress registration protection** - Block bot membership signups before the account is created; free, free-trial, and fully-discounted signups are gated by default, while paid checkouts are never blocked (opt in to gate those too)
 * **Silent discard for high-confidence spam** - Optional hard-delete of comments and WooCommerce reviews that exceed a configurable spam score threshold (default 95), skipping spam-folder storage entirely
 * **Per-form toggles** - Protection enabled by default per form; disable on individual forms as needed
 * **Sync Mode** - Optional synchronous spam checks for inline blocking on supported integrations
@@ -187,11 +187,9 @@ Yes. ActiveLayer protects the public BuddyPress / BuddyBoss signup form (`/regis
 
 Coverage is intentionally scoped to public signups. Activity stream posts, private messages, group updates, bbPress, and the BuddyBoss App REST signup endpoint are out of scope for this release.
 
-= Does ActiveLayer protect WooCommerce Cart/Checkout Blocks? =
+= Does ActiveLayer protect the WooCommerce checkout? =
 
-Yes for Customer Registration during checkout — the spam gate runs whether visitors register through the classic `[woocommerce_my_account]` / `[woocommerce_checkout]` shortcodes or through the block-based Cart/Checkout (default since WooCommerce 8.3). The "Also protect register-during-checkout" toggle is honoured in both flows.
-
-Client-signal coverage (environment + behavioral fingerprints) is currently rendered into the classic shortcode flows only. On block-based checkout the API still receives email, IP, user agent and honeypot, so spam classification still works — just with reduced precision until full block-checkout signal coverage ships.
+ActiveLayer protects WooCommerce product reviews and the standalone My Account registration form (`[woocommerce_my_account]`). It intentionally does **not** gate registration during checkout — neither the classic `[woocommerce_checkout]` shortcode nor the block-based Cart/Checkout. A spam check there could abort the whole order, so a false positive would cost a sale; ActiveLayer keeps the path to purchase clear and leaves the checkout itself ungated.
 
 == External services ==
 
@@ -216,6 +214,9 @@ This plugin connects to the ActiveLayer API to analyze form submissions and comm
 
 == Upgrade Notice ==
 
+= 1.4.1 =
+Smoother checkout and signup for WooCommerce and MemberPress — purchases and paid memberships now complete without interruption. Standalone registration forms stay protected. Recommended for sites using either integration.
+
 = 1.4.0 =
 Adds AffiliateWP, MemberPress, and WS Form spam protection, payment-form detection signals for WPForms, and five new translations. Includes fixes for message-body handling, WPForms "Not Spam" re-processing, and Pro-plugin detection on the dashboard. Recommended upgrade.
 
@@ -232,6 +233,10 @@ WooCommerce integration: spam protection for Product Reviews and Customer Regist
 Five new form integrations (Gravity Forms, Elementor Forms, Fluent Forms, Forminator, SureForms), global Sync Mode, client-side behavioral and environment signals, Tools page with bulk delete, conditional frontend script loading, and security hardening. Recommended upgrade for all users.
 
 == Changelog ==
+
+= 1.4.1 =
+* Improved: WooCommerce — account registration during checkout now completes smoothly without an inline spam check, keeping the purchase flow uninterrupted. The standalone My Account registration form stays protected.
+* Improved: MemberPress — paid memberships complete signup without an inline spam check for a seamless checkout. Free memberships, free trials, and fully-discounted signups remain protected, with an optional setting to extend checks to paid signups.
 
 = 1.4.0 =
 * Added: AffiliateWP integration — synchronous protection for affiliate registration before the affiliate and WordPress user are created.

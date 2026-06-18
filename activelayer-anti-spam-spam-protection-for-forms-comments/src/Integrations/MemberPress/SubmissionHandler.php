@@ -105,12 +105,15 @@ class SubmissionHandler {
 	 * same POST MemberPress itself is about to validate and store.
 	 *
 	 * @since 1.4.0
+	 * @since 1.4.1 Skip real-money signups unless the admin opts
+	 *        in via `block_paid_signups`; free, free-trial, and fully-discounted
+	 *        signups stay gated.
 	 *
 	 * @param array $errors Validation errors collected by MemberPress so far.
 	 *
 	 * @return array Errors, with the block message appended on a spam verdict.
 	 */
-	public function validate_signup( $errors ) {
+	public function validate_signup( $errors ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		if ( ! is_array( $errors ) ) {
 			$errors = [];
@@ -139,10 +142,24 @@ class SubmissionHandler {
 			return $errors;
 		}
 
+		$membership_id = $this->resolve_membership_id();
+
+		// MemberPress creates the WordPress account before taking payment, so a
+		// false-positive block on a real-money signup aborts the purchase and
+		// costs the sale. Skip the gate for signups that charge money at
+		// checkout unless the admin opted in. Free, free-trial, and
+		// fully-discounted signups have no payment at stake and stay gated.
+		if (
+			! $this->integration->should_block_paid_signups()
+			&& $this->integration->signup_takes_payment_now( $membership_id, $this->resolve_coupon_code() )
+		) {
+			return $errors;
+		}
+
 		$this->integration->check_registration_spam(
 			$email,
 			$name,
-			[ 'form_id' => $this->resolve_membership_id() ],
+			[ 'form_id' => $membership_id ],
 			static function ( string $message ) use ( &$errors ): void {
 				$errors[] = $message;
 			}
@@ -215,5 +232,26 @@ class SubmissionHandler {
 		// phpcs:enable
 
 		return 'mepr_signup';
+	}
+
+	/**
+	 * Resolve the coupon code posted with the signup.
+	 *
+	 * Passed to the paid-signup test so a discount that drops the at-signup
+	 * charge to zero (e.g. a 100%-off coupon) keeps the spam gate active.
+	 *
+	 * @since 1.4.1
+	 *
+	 * @return string Sanitized coupon code, or '' when absent.
+	 */
+	private function resolve_coupon_code(): string {
+
+		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Anonymous MemberPress signups carry no nonce; see validate_signup().
+		if ( isset( $_POST['mepr_coupon_code'] ) && is_scalar( $_POST['mepr_coupon_code'] ) ) {
+			return sanitize_text_field( wp_unslash( (string) $_POST['mepr_coupon_code'] ) );
+		}
+		// phpcs:enable
+
+		return '';
 	}
 }
