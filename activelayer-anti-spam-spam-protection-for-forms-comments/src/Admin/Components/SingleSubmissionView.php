@@ -266,7 +266,9 @@ class SingleSubmissionView {
 								esc_html_e( 'Post:', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
 							} elseif ( $submission['provider'] === 'wc_reviews' ) {
 								esc_html_e( 'Product:', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
-							} elseif ( $submission['provider'] === 'wc_registration' ) {
+							} elseif ( $submission['provider'] === 'edd_reviews' ) {
+								esc_html_e( 'Download:', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
+							} elseif ( $submission['provider'] === 'wc_registration' || $submission['provider'] === 'edd_registration' ) {
 								esc_html_e( 'Customer:', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
 							} elseif ( $submission['provider'] === 'buddypress' || $submission['provider'] === 'buddyboss' || $submission['provider'] === 'memberpress' ) {
 								esc_html_e( 'Member:', 'activelayer-anti-spam-spam-protection-for-forms-comments' );

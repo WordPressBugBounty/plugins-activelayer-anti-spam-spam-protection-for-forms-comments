@@ -116,6 +116,7 @@ class SubmissionWorker {
 	 * Call appropriate API endpoint based on submission type.
 	 *
 	 * @since 1.1.0
+	 * @since 1.5.0 Route EDD reviews through the comment-specific endpoint.
 	 *
 	 * @param array     $submission Submission data.
 	 * @param ApiClient $api_client API client instance.
@@ -131,8 +132,9 @@ class SubmissionWorker {
 			$submission_data['created_at'] = $submission['created_at'];
 		}
 
-		// Use comment-specific endpoint for WordPress comments and WooCommerce reviews.
-		$comment_providers = [ 'wp_comments', 'wc_reviews' ];
+		// Use comment-specific endpoint for WordPress comments and product reviews
+		// (WooCommerce + EDD), all of which are stored as WordPress comments.
+		$comment_providers = [ 'wp_comments', 'wc_reviews', 'edd_reviews' ];
 
 		if ( isset( $submission['provider'] ) && in_array( $submission['provider'], $comment_providers, true ) ) {
 			return $api_client->check_comment( $submission_data );

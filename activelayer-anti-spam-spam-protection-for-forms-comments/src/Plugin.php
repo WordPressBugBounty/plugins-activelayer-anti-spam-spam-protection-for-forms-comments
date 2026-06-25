@@ -21,6 +21,8 @@ use ActiveLayer\Integrations\BuddyPress\BuddyPressIntegration;
 use ActiveLayer\Integrations\BuddyBoss\BuddyBossIntegration;
 use ActiveLayer\Integrations\AffiliateWP\AffiliateWPIntegration;
 use ActiveLayer\Integrations\MemberPress\MemberPressIntegration;
+use ActiveLayer\Integrations\FunnelKit\FunnelKitIntegration;
+use ActiveLayer\Integrations\EasyDigitalDownloads\EasyDigitalDownloadsIntegration;
 use ActiveLayer\Admin\AdminPages;
 use ActiveLayer\Admin\Components\DashboardWidget;
 use ActiveLayer\Admin\Components\OptOutDefaultNotice;
@@ -146,6 +148,8 @@ class Plugin {
 	 * @since 1.4.0 Registered WSFormIntegration (WS Form sync-block anti-spam).
 	 * @since 1.4.0 Registered AffiliateWPIntegration (affiliate-registration spam protection).
 	 * @since 1.4.0 Registered MemberPressIntegration (membership-signup spam protection).
+	 * @since 1.5.0 Registered FunnelKitIntegration (opt-in form spam protection).
+	 * @since 1.5.0 Registered EasyDigitalDownloadsIntegration (registration spam protection).
 	 */
 	private function load_builtin_integrations(): void {
 
@@ -163,6 +167,8 @@ class Plugin {
 			BuddyBossIntegration::class,
 			AffiliateWPIntegration::class,
 			MemberPressIntegration::class,
+			FunnelKitIntegration::class,
+			EasyDigitalDownloadsIntegration::class,
 		];
 
 		foreach ( $integrations as $class ) {

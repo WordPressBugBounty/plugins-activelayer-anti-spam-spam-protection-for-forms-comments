@@ -3,7 +3,7 @@ Contributors: smub, dimitrism, ernest35
 Tags: anti-spam, antispam, spam protection, contact form, comment spam
 Requires at least: 5.5
 Tested up to: 7.0
-Stable tag: 1.4.1
+Stable tag: 1.5.0
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -16,7 +16,7 @@ Intelligent spam protection for WordPress forms, comments, and reviews. No CAPTC
 
 ActiveLayer is an intelligent anti-spam solution that stops **contact form spam**, **comment spam**, and registration spam without CAPTCHAs, puzzles, or extra steps for your visitors. Your forms stay fast and frictionless while unwanted messages get caught automatically.
 
-Your time and attention are expensive — stop spending them on spam. ActiveLayer protects popular form builders like **WPForms**, **Contact Form 7**, **Gravity Forms**, **Elementor Forms**, **Fluent Forms**, and **WS Form**, plus **native WordPress comments**, **WooCommerce** (product reviews and customer registration), **AffiliateWP**, **MemberPress**, and **BuddyPress / BuddyBoss signup forms**, all from a single plugin. With 16 integrations, you manage all your spam protection from one settings page.
+Your time and attention are expensive — stop spending them on spam. ActiveLayer protects popular form builders like **WPForms**, **Contact Form 7**, **Gravity Forms**, **Elementor Forms**, **Fluent Forms**, **WS Form**, and **FunnelKit Funnel Builder**, plus **native WordPress comments**, **WooCommerce** (product reviews and customer registration), **Easy Digital Downloads** (store reviews and customer registration), **AffiliateWP**, **MemberPress**, and **BuddyPress / BuddyBoss signup forms**, all from a single plugin. With 18 integrations, you manage all your spam protection from one settings page.
 
 **[Create a free account and get started](https://activelayer.com/?utm_source=wprepo&utm_medium=link&utm_campaign=liteplugin)**
 
@@ -88,6 +88,8 @@ Running a community on **BuddyPress** or **BuddyBoss Platform**? ActiveLayer hoo
 * **BuddyBoss Platform signup protection** - Same sync gate against the BuddyBoss Platform signup form, with automatic xprofile-name fallback because BuddyBoss auto-generates the username from the email
 * **AffiliateWP registration protection** - Block bot affiliate signups before the affiliate and WordPress user are created; sync check fires after AffiliateWP's own validation
 * **MemberPress registration protection** - Block bot membership signups before the account is created; free, free-trial, and fully-discounted signups are gated by default, while paid checkouts are never blocked (opt in to gate those too)
+* **FunnelKit Funnel Builder integration** - Synchronous spam blocking for opt-in forms before FunnelKit runs email, CRM contact, and webhook actions, with per-form control
+* **Easy Digital Downloads integration** - Spam protection for product reviews and the standalone customer registration form; the EDD checkout is never gated, so it can't block a purchase
 * **Silent discard for high-confidence spam** - Optional hard-delete of comments and WooCommerce reviews that exceed a configurable spam score threshold (default 95), skipping spam-folder storage entirely
 * **Per-form toggles** - Protection enabled by default per form; disable on individual forms as needed
 * **Sync Mode** - Optional synchronous spam checks for inline blocking on supported integrations
@@ -120,6 +122,8 @@ Running a community on **BuddyPress** or **BuddyBoss Platform**? ActiveLayer hoo
 * [BuddyBoss Platform](https://www.buddyboss.com/platform/) (public signup form)
 * [AffiliateWP](https://affiliatewp.com/) (affiliate registration form)
 * [MemberPress](https://memberpress.com/) (membership registration form)
+* [FunnelKit Funnel Builder](https://wordpress.org/plugins/funnel-builder/) (opt-in forms)
+* [Easy Digital Downloads](https://wordpress.org/plugins/easy-digital-downloads/) (product reviews and customer registration)
 
 == Installation ==
 
@@ -147,7 +151,7 @@ No. ActiveLayer is a completely CAPTCHA-free anti-spam solution. Spam checks hap
 
 = Which form builders does ActiveLayer support? =
 
-ActiveLayer works with WPForms (Lite and Pro), Contact Form 7, Gravity Forms, Elementor Forms (Pro), Fluent Forms, Formidable Forms, Forminator, Ninja Forms, SureForms, WS Form, native WordPress comments, WooCommerce, BuddyPress / BuddyBoss Platform signup forms, AffiliateWP affiliate registration, and MemberPress membership registration — 16 integrations in total. All are managed from a single settings page with per-form control.
+ActiveLayer works with WPForms (Lite and Pro), Contact Form 7, Gravity Forms, Elementor Forms (Pro), Fluent Forms, Formidable Forms, Forminator, Ninja Forms, SureForms, WS Form, FunnelKit Funnel Builder (opt-in forms), native WordPress comments, WooCommerce, Easy Digital Downloads, BuddyPress / BuddyBoss Platform signup forms, AffiliateWP affiliate registration, and MemberPress membership registration — 18 integrations in total. All are managed from a single settings page with per-form control.
 
 = Do visitors have to wait for the spam check? =
 
@@ -171,7 +175,7 @@ Absolutely. ActiveLayer protects all supported forms by default once your API ke
 
 = How does ActiveLayer compare to other anti-spam solutions? =
 
-ActiveLayer uses async queue processing where possible, plus synchronous gates where inline blocking is required. It also supports per-form toggles, optional Sync Mode for supported providers, and integrates with ten popular form builders, WordPress comments, WooCommerce, BuddyPress / BuddyBoss signup forms, AffiliateWP affiliate registrations, and MemberPress membership registrations from a single plugin. Unlike blocklist-based tools, ActiveLayer analyzes multiple signals for more accurate spam detection.
+ActiveLayer uses async queue processing where possible, plus synchronous gates where inline blocking is required. It also supports per-form toggles, optional Sync Mode for supported providers, and integrates with eleven popular form builders, WordPress comments, WooCommerce, BuddyPress / BuddyBoss signup forms, AffiliateWP affiliate registrations, and MemberPress membership registrations from a single plugin. Unlike blocklist-based tools, ActiveLayer analyzes multiple signals for more accurate spam detection.
 
 = Can I recheck past submissions with a fresh verdict? =
 
@@ -214,6 +218,9 @@ This plugin connects to the ActiveLayer API to analyze form submissions and comm
 
 == Upgrade Notice ==
 
+= 1.5.0 =
+Adds Easy Digital Downloads and FunnelKit Funnel Builder spam protection, plus improved client-side signal-integrity diagnostics for more accurate detection. Recommended upgrade.
+
 = 1.4.1 =
 Smoother checkout and signup for WooCommerce and MemberPress — purchases and paid memberships now complete without interruption. Standalone registration forms stay protected. Recommended for sites using either integration.
 
@@ -233,6 +240,11 @@ WooCommerce integration: spam protection for Product Reviews and Customer Regist
 Five new form integrations (Gravity Forms, Elementor Forms, Fluent Forms, Forminator, SureForms), global Sync Mode, client-side behavioral and environment signals, Tools page with bulk delete, conditional frontend script loading, and security hardening. Recommended upgrade for all users.
 
 == Changelog ==
+
+= 1.5.0 =
+* Added: Easy Digital Downloads integration — spam protection for product reviews and the standalone customer registration form. The EDD checkout is never gated, so spam protection can't interrupt a purchase.
+* Added: FunnelKit Funnel Builder integration — synchronous spam blocking for opt-in (lead capture) forms before FunnelKit runs its email, CRM contact, and webhook actions, with per-form control.
+* Improved: Client-side signal diagnostics — submissions now report whether behavioral and environment signals arrived intact, were empty, or were stripped before reaching the server, helping the API tell real visitors from tampered requests more accurately.
 
 = 1.4.1 =
 * Improved: WooCommerce — account registration during checkout now completes smoothly without an inline spam check, keeping the purchase flow uninterrupted. The standalone My Account registration form stays protected.

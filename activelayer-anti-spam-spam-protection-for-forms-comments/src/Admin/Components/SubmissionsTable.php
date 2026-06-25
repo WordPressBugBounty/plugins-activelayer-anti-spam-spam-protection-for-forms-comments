@@ -438,6 +438,7 @@ class SubmissionsTable extends WP_List_Table {
 	 * @since 1.3.0 Added BuddyBoss (`buddyboss`) provider branch — shares the BuddyPress display logic.
 	 * @since 1.4.0 Added AffiliateWP (`affiliatewp`) provider branch.
 	 * @since 1.4.0 Added memberpress to the registration display branch.
+	 * @since 1.5.0 Added EDD Reviews (`edd_reviews`, download title) branch and edd_registration to the registration display branch.
 	 *
 	 * @param string $provider_slug Provider identifier.
 	 * @param string $form_id       Form identifier.
@@ -473,13 +474,22 @@ class SubmissionsTable extends WP_List_Table {
 			return [ $display, esc_html__( 'Product: %s', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) ];
 		}
 
-		if ( $provider_slug === 'wc_registration' || $provider_slug === 'buddypress' || $provider_slug === 'buddyboss' || $provider_slug === 'affiliatewp' || $provider_slug === 'memberpress' ) {
+		if ( $provider_slug === 'edd_reviews' ) {
+			$download_title = get_the_title( (int) $form_id );
+
+			$display = $download_title !== '' ? $download_title : __( 'Unknown Download', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
+
+			/* translators: %s: download name. */
+			return [ $display, esc_html__( 'Download: %s', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) ];
+		}
+
+		if ( $provider_slug === 'wc_registration' || $provider_slug === 'buddypress' || $provider_slug === 'buddyboss' || $provider_slug === 'affiliatewp' || $provider_slug === 'memberpress' || $provider_slug === 'edd_registration' ) {
 			$email = $form_data['email'] ?? '';
 			$login = $form_data['name'] ?? '';
 
 			$display = $login !== '' ? $login : ( $email !== '' ? $email : __( 'Unknown Registration', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) );
 
-			if ( $provider_slug === 'wc_registration' ) {
+			if ( $provider_slug === 'wc_registration' || $provider_slug === 'edd_registration' ) {
 				/* translators: %s: customer login or email. */
 				return [ $display, esc_html__( 'Customer: %s', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) ];
 			}

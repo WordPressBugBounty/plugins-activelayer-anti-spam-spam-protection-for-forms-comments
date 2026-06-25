@@ -25,6 +25,7 @@ class FormEditUrlResolver {
 	 * Resolve the admin edit URL for a given form submission.
 	 *
 	 * @since 1.1.0
+	 * @since 1.5.0 Added EDD Reviews (`edd_reviews`) download edit-link branch.
 	 *
 	 * @param string $provider_slug Provider identifier (e.g. 'wp_comments', 'elementor_forms').
 	 * @param string $form_id       Form identifier; interpretation varies by provider.
@@ -40,6 +41,10 @@ class FormEditUrlResolver {
 
 		if ( $provider_slug === 'wc_reviews' ) {
 			return self::resolve_product_url( $form_id );
+		}
+
+		if ( $provider_slug === 'edd_reviews' ) {
+			return self::resolve_download_url( $form_id );
 		}
 
 		if ( $provider_slug === 'elementor_forms' ) {
@@ -63,6 +68,26 @@ class FormEditUrlResolver {
 		$post_id = (int) $form_id;
 
 		if ( $post_id <= 0 || get_post_type( $post_id ) !== 'product' ) {
+			return '';
+		}
+
+		return admin_url( sprintf( 'post.php?post=%d&action=edit', $post_id ) );
+	}
+
+	/**
+	 * Resolve edit URL for Easy Digital Downloads download reviews.
+	 *
+	 * @since 1.5.0
+	 *
+	 * @param string $form_id Download ID used as form identifier.
+	 *
+	 * @return string Edit URL or empty string if the download no longer exists.
+	 */
+	private static function resolve_download_url( string $form_id ): string {
+
+		$post_id = (int) $form_id;
+
+		if ( $post_id <= 0 || get_post_type( $post_id ) !== 'download' ) {
 			return '';
 		}
 

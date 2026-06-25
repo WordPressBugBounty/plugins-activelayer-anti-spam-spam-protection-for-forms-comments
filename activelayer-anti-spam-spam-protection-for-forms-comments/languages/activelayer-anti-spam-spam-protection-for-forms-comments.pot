@@ -7,7 +7,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language-Team: ActiveLayer Team <support@activelayer.com>\n"
-"POT-Creation-Date: 2026-06-18 07:58+0000\n"
+"POT-Creation-Date: 2026-06-25 11:06+0000\n"
 "Report-Msgid-Bugs-To: https://github.com/activelayer/activelayer-plugin/issues\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
@@ -24,11 +24,11 @@ msgstr ""
 msgid "Failed to create the submissions database table. Please deactivate and reactivate the plugin, or contact support if the issue persists."
 msgstr ""
 
-#: src/Plugin.php:315
+#: src/Plugin.php:321
 msgid "ActiveLayer automatically protects form submissions on this site after an API key is connected. When a form is submitted, ActiveLayer sends submission details (such as names, email addresses, form field values, IP addresses, and user agent strings) to the ActiveLayer API for spam analysis. This data is used exclusively to determine whether a submission is spam and may be stored temporarily in accordance with the ActiveLayer Privacy Policy. Site administrators can disable protection for individual forms in the ActiveLayer integration settings if needed."
 msgstr ""
 
-#: src/Plugin.php:316
+#: src/Plugin.php:322
 msgid "Data shared with ActiveLayer is transmitted over HTTPS. Site owners should ensure their own privacy policy explains this automatic processing and references the ActiveLayer service (https://activelayer.com/privacy) for additional information."
 msgstr ""
 
@@ -68,7 +68,7 @@ msgstr ""
 msgid "Submissions"
 msgstr ""
 
-#: src/Admin/AdminPages.php:314, src/Admin/AdminPages.php:315, src/Admin/Onboarding/OnboardingManager.php:124, src/Admin/Pages/DashboardPage.php:393, src/Admin/Pages/IntegrationsPage.php:177
+#: src/Admin/AdminPages.php:314, src/Admin/AdminPages.php:315, src/Admin/Onboarding/OnboardingManager.php:124, src/Admin/Pages/DashboardPage.php:393, src/Admin/Pages/IntegrationsPage.php:194
 msgid "Integrations"
 msgstr ""
 
@@ -137,7 +137,7 @@ msgstr ""
 msgid "Saving..."
 msgstr ""
 
-#: src/Admin/AdminPages.php:446, src/Admin/Pages/IntegrationsPage.php:554, src/Admin/Pages/IntegrationsPage.php:918, src/Admin/Pages/IntegrationsPage.php:967, src/Admin/Pages/IntegrationsPage.php:1035, src/Admin/Settings/SettingsPersistor.php:124, src/Integrations/WooCommerce/Admin/AdminController.php:220
+#: src/Admin/AdminPages.php:446, src/Admin/Pages/IntegrationsPage.php:574, src/Admin/Pages/IntegrationsPage.php:974, src/Admin/Pages/IntegrationsPage.php:1023, src/Admin/Pages/IntegrationsPage.php:1091, src/Admin/Settings/SettingsPersistor.php:124, src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:211, src/Integrations/WooCommerce/Admin/AdminController.php:220
 msgid "Settings saved."
 msgstr ""
 
@@ -145,19 +145,19 @@ msgstr ""
 msgid "Save failed. Please try again."
 msgstr ""
 
-#: src/Admin/AdminPages.php:448, src/Admin/Pages/IntegrationsPage.php:449, src/Admin/Pages/IntegrationsPage.php:490, src/Admin/Pages/IntegrationsPage.php:629, src/Integrations/WooCommerce/Admin/AdminController.php:161
+#: src/Admin/AdminPages.php:448, src/Admin/Pages/IntegrationsPage.php:469, src/Admin/Pages/IntegrationsPage.php:510, src/Admin/Pages/IntegrationsPage.php:649, src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:152, src/Integrations/WooCommerce/Admin/AdminController.php:161
 msgid "Save Settings"
 msgstr ""
 
-#: src/Admin/AdminPages.php:449, src/Admin/Pages/DashboardPage.php:416, src/Admin/Pages/IntegrationsPage.php:232
+#: src/Admin/AdminPages.php:449, src/Admin/Pages/DashboardPage.php:416, src/Admin/Pages/IntegrationsPage.php:249
 msgid "Active"
 msgstr ""
 
-#: src/Admin/AdminPages.php:450, src/Admin/Pages/DashboardPage.php:417, src/Admin/Pages/IntegrationsPage.php:233
+#: src/Admin/AdminPages.php:450, src/Admin/Pages/DashboardPage.php:417, src/Admin/Pages/IntegrationsPage.php:250
 msgid "Paused"
 msgstr ""
 
-#: src/Admin/AdminPages.php:451, src/Admin/Pages/IntegrationsPage.php:600
+#: src/Admin/AdminPages.php:451, src/Admin/Pages/IntegrationsPage.php:620
 msgid "Select All"
 msgstr ""
 
@@ -165,7 +165,7 @@ msgstr ""
 msgid "Deselect All"
 msgstr ""
 
-#: src/Admin/AdminPages.php:587, src/Admin/AdminPages.php:607, src/Admin/Components/DashboardWidget.php:270, src/Admin/Components/PluginInstaller.php:84, src/Admin/Components/ReviewRequestNotice.php:186, src/Admin/Components/UsageLimitNotice.php:173, src/Admin/Pages/IntegrationsPage.php:99
+#: src/Admin/AdminPages.php:587, src/Admin/AdminPages.php:607, src/Admin/Components/DashboardWidget.php:270, src/Admin/Components/PluginInstaller.php:84, src/Admin/Components/ReviewRequestNotice.php:186, src/Admin/Components/UsageLimitNotice.php:173, src/Admin/Pages/IntegrationsPage.php:112
 msgid "Permission denied."
 msgstr ""
 
@@ -190,16 +190,20 @@ msgstr ""
 msgid "Connection failed. Try Connect again, or paste your API key manually."
 msgstr ""
 
-#: src/Helpers/FormDisplayResolver.php:63, src/Admin/Components/SubmissionsTable.php:480
+#: src/Helpers/FormDisplayResolver.php:64, src/Admin/Components/SubmissionsTable.php:490
 msgid "Unknown Registration"
 msgstr ""
 
-#: src/Helpers/FormDisplayResolver.php:92, src/Admin/Components/SubmissionsTable.php:470
+#: src/Helpers/FormDisplayResolver.php:94, src/Admin/Components/SubmissionsTable.php:471
 msgid "Unknown Product"
 msgstr ""
 
+#: src/Helpers/FormDisplayResolver.php:98, src/Admin/Components/SubmissionsTable.php:480
+msgid "Unknown Download"
+msgstr ""
+
 #. translators: %s: form name.
-#: src/Helpers/FormDisplayResolver.php:95, src/Admin/Components/SubmissionsTable.php:500, src/Admin/Components/SubmissionsTable.php:507
+#: src/Helpers/FormDisplayResolver.php:101, src/Admin/Components/SubmissionsTable.php:510, src/Admin/Components/SubmissionsTable.php:517
 msgid "Unknown Form"
 msgstr ""
 
@@ -467,20 +471,24 @@ msgstr ""
 msgid "Provider:"
 msgstr ""
 
-#: src/Admin/Components/SingleSubmissionView.php:276
+#: src/Admin/Components/SingleSubmissionView.php:278
 msgid "Form:"
 msgstr ""
 
-#: src/Admin/Components/SingleSubmissionView.php:274
+#: src/Admin/Components/SingleSubmissionView.php:276
 msgid "Affiliate:"
 msgstr ""
 
-#: src/Admin/Components/SingleSubmissionView.php:272
+#: src/Admin/Components/SingleSubmissionView.php:274
 msgid "Member:"
 msgstr ""
 
-#: src/Admin/Components/SingleSubmissionView.php:270
+#: src/Admin/Components/SingleSubmissionView.php:272
 msgid "Customer:"
+msgstr ""
+
+#: src/Admin/Components/SingleSubmissionView.php:270
+msgid "Download:"
 msgstr ""
 
 #: src/Admin/Components/SingleSubmissionView.php:268
@@ -491,23 +499,23 @@ msgstr ""
 msgid "Post:"
 msgstr ""
 
-#: src/Admin/Components/SingleSubmissionView.php:289
+#: src/Admin/Components/SingleSubmissionView.php:291
 msgid "Status:"
 msgstr ""
 
-#: src/Admin/Components/SingleSubmissionView.php:299, src/Admin/Components/SubmissionsTable.php:204, src/Admin/Components/SubmissionsTable.php:654
+#: src/Admin/Components/SingleSubmissionView.php:301, src/Admin/Components/SubmissionsTable.php:204, src/Admin/Components/SubmissionsTable.php:664
 msgid "Trash"
 msgstr ""
 
-#: src/Admin/Components/SingleSubmissionView.php:375, src/Admin/Components/SubmissionsTable.php:626
+#: src/Admin/Components/SingleSubmissionView.php:377, src/Admin/Components/SubmissionsTable.php:636
 msgid "Mark Clean"
 msgstr ""
 
-#: src/Admin/Components/SingleSubmissionView.php:357, src/Admin/Components/SubmissionsTable.php:635
+#: src/Admin/Components/SingleSubmissionView.php:359, src/Admin/Components/SubmissionsTable.php:645
 msgid "Mark Spam"
 msgstr ""
 
-#: src/Admin/Components/SingleSubmissionView.php:339, src/Admin/Components/SubmissionsTable.php:617
+#: src/Admin/Components/SingleSubmissionView.php:341, src/Admin/Components/SubmissionsTable.php:627
 msgid "Recheck"
 msgstr ""
 
@@ -527,11 +535,11 @@ msgstr ""
 msgid "Processed"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:109, src/Admin/Components/SubmissionsTable.php:574
+#: src/Admin/Components/SubmissionsTable.php:109, src/Admin/Components/SubmissionsTable.php:584
 msgid "Restore"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:110, src/Admin/Components/SubmissionsTable.php:592
+#: src/Admin/Components/SubmissionsTable.php:110, src/Admin/Components/SubmissionsTable.php:602
 msgid "Delete Permanently"
 msgstr ""
 
@@ -597,106 +605,111 @@ msgstr ""
 
 #. translators: %s: form name.
 #. translators: %s: form name or identifier.
-#: src/Admin/Components/SubmissionsTable.php:454, src/Admin/Components/SubmissionsTable.php:503, src/Admin/Components/SubmissionsTable.php:507
+#: src/Admin/Components/SubmissionsTable.php:455, src/Admin/Components/SubmissionsTable.php:513, src/Admin/Components/SubmissionsTable.php:517
 msgid "Form name: %s"
 msgstr ""
 
 #. translators: %s: post name.
-#: src/Admin/Components/SubmissionsTable.php:461
+#: src/Admin/Components/SubmissionsTable.php:462
 msgid "Unknown Post"
 msgstr ""
 
 #. translators: %s: post name or identifier.
-#: src/Admin/Components/SubmissionsTable.php:464
+#: src/Admin/Components/SubmissionsTable.php:465
 msgid "Post Name: %s"
 msgstr ""
 
 #. translators: %s: product name.
-#: src/Admin/Components/SubmissionsTable.php:473
+#: src/Admin/Components/SubmissionsTable.php:474
 msgid "Product: %s"
 msgstr ""
 
+#. translators: %s: download name.
+#: src/Admin/Components/SubmissionsTable.php:483
+msgid "Download: %s"
+msgstr ""
+
 #. translators: %s: customer login or email.
-#: src/Admin/Components/SubmissionsTable.php:484
+#: src/Admin/Components/SubmissionsTable.php:494
 msgid "Customer: %s"
 msgstr ""
 
 #. translators: %s: affiliate login or email.
-#: src/Admin/Components/SubmissionsTable.php:489
+#: src/Admin/Components/SubmissionsTable.php:499
 msgid "Affiliate: %s"
 msgstr ""
 
 #. translators: %s: community member login or email.
-#: src/Admin/Components/SubmissionsTable.php:493
+#: src/Admin/Components/SubmissionsTable.php:503
 msgid "Member: %s"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:543
+#: src/Admin/Components/SubmissionsTable.php:553
 msgid "N/A"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:591
+#: src/Admin/Components/SubmissionsTable.php:601
 msgid "Delete this submission permanently?"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:609, src/Admin/Pages/LogsPage.php:78
+#: src/Admin/Components/SubmissionsTable.php:619, src/Admin/Pages/LogsPage.php:78
 msgid "View"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:653
+#: src/Admin/Components/SubmissionsTable.php:663
 msgid "Move this submission to the trash?"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:663
+#: src/Admin/Components/SubmissionsTable.php:673
 msgid "Copy API ID"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:785, src/Admin/Components/SubmissionsTable.php:791
+#: src/Admin/Components/SubmissionsTable.php:795, src/Admin/Components/SubmissionsTable.php:801
 msgid "Not processed"
 msgstr ""
 
 #. translators: %s: human readable time difference.
-#: src/Admin/Components/SubmissionsTable.php:804
+#: src/Admin/Components/SubmissionsTable.php:814
 msgid "%s ago"
 msgstr ""
 
 #. translators: %d: number of submissions.
-#: src/Admin/Components/SubmissionsTable.php:837
+#: src/Admin/Components/SubmissionsTable.php:847
 msgid "%d submission queued for recheck."
 msgid_plural "%d submissions queued for recheck."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of submissions.
-#: src/Admin/Components/SubmissionsTable.php:844
+#: src/Admin/Components/SubmissionsTable.php:854
 msgid "%d submission marked as clean."
 msgid_plural "%d submissions marked as clean."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of submissions.
-#: src/Admin/Components/SubmissionsTable.php:851
+#: src/Admin/Components/SubmissionsTable.php:861
 msgid "%d submission marked as spam."
 msgid_plural "%d submissions marked as spam."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of submissions.
-#: src/Admin/Components/SubmissionsTable.php:858
+#: src/Admin/Components/SubmissionsTable.php:868
 msgid "%d submission moved to trash."
 msgid_plural "%d submissions moved to trash."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of submissions.
-#: src/Admin/Components/SubmissionsTable.php:865
+#: src/Admin/Components/SubmissionsTable.php:875
 msgid "%d submission restored."
 msgid_plural "%d submissions restored."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of submissions.
-#: src/Admin/Components/SubmissionsTable.php:872
+#: src/Admin/Components/SubmissionsTable.php:882
 msgid "%d submission deleted permanently."
 msgid_plural "%d submissions deleted permanently."
 msgstr[0] ""
@@ -843,7 +856,7 @@ msgstr ""
 msgid "Learn more about all features"
 msgstr ""
 
-#: src/Admin/Pages/DashboardPage.php:548, src/Admin/Pages/IntegrationsPage.php:724
+#: src/Admin/Pages/DashboardPage.php:548, src/Admin/Pages/IntegrationsPage.php:774
 msgid "Install & Activate"
 msgstr ""
 
@@ -863,183 +876,183 @@ msgstr ""
 msgid "Quick Access"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:133
+#: src/Admin/Pages/IntegrationsPage.php:150
 msgid "Invalid type."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:184
+#: src/Admin/Pages/IntegrationsPage.php:201
 msgid "Configure spam protection settings for different form providers and WordPress features."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:188
+#: src/Admin/Pages/IntegrationsPage.php:205
 msgid "No integrations available."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:276
+#: src/Admin/Pages/IntegrationsPage.php:293
 msgid "Configure"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:289
+#: src/Admin/Pages/IntegrationsPage.php:306
 msgid "Enable spam protection"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:357
+#: src/Admin/Pages/IntegrationsPage.php:377
 msgid "Tracking Mode"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:361, src/Integrations/WPForms/AdminSettings.php:261
+#: src/Admin/Pages/IntegrationsPage.php:381, src/Integrations/WPForms/AdminSettings.php:261
 msgid "Enable tracking mode (log only)"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:363
+#: src/Admin/Pages/IntegrationsPage.php:383
 msgid "Analyze and log comments without auto-blocking spam verdicts."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:368, src/Integrations/WooCommerce/Admin/AdminController.php:85
+#: src/Admin/Pages/IntegrationsPage.php:388, src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:85, src/Integrations/WooCommerce/Admin/AdminController.php:85
 msgid "Logged-in Users"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:372
+#: src/Admin/Pages/IntegrationsPage.php:392
 msgid "Check comments from logged-in users"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:374
+#: src/Admin/Pages/IntegrationsPage.php:394
 msgid "Also analyze comments from logged-in users (administrators are always excluded)."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:378, src/Integrations/WooCommerce/Admin/AdminController.php:103
+#: src/Admin/Pages/IntegrationsPage.php:398, src/Integrations/WooCommerce/Admin/AdminController.php:103
 msgid "Auto-approve"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:382
+#: src/Admin/Pages/IntegrationsPage.php:402
 msgid "Auto-approve clean comments"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:384
+#: src/Admin/Pages/IntegrationsPage.php:404
 msgid "Automatically approve comments that are marked as clean by the spam filter."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:388, src/Integrations/WooCommerce/Admin/AdminController.php:112
+#: src/Admin/Pages/IntegrationsPage.php:408, src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:103, src/Integrations/WooCommerce/Admin/AdminController.php:112
 msgid "Auto-spam"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:392
+#: src/Admin/Pages/IntegrationsPage.php:412
 msgid "Auto-spam detected comments"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:394
+#: src/Admin/Pages/IntegrationsPage.php:414
 msgid "Automatically move comments detected as spam to the spam folder."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:398, src/Integrations/WooCommerce/Admin/AdminController.php:121
+#: src/Admin/Pages/IntegrationsPage.php:418, src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:112, src/Integrations/WooCommerce/Admin/AdminController.php:121
 msgid "Silently Discard"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:402
+#: src/Admin/Pages/IntegrationsPage.php:422
 msgid "Silently delete high-confidence spam instead of storing it"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:404
+#: src/Admin/Pages/IntegrationsPage.php:424
 msgid "When the spam score is at or above the threshold below, the comment is removed from your site entirely (it cannot be recovered or un-spammed)."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:408, src/Integrations/WooCommerce/Admin/AdminController.php:131
+#: src/Admin/Pages/IntegrationsPage.php:428, src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:122, src/Integrations/WooCommerce/Admin/AdminController.php:131
 msgid "Discard Threshold"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:412, src/Integrations/WooCommerce/Admin/AdminController.php:135
+#: src/Admin/Pages/IntegrationsPage.php:432, src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:126, src/Integrations/WooCommerce/Admin/AdminController.php:135
 msgid "Score 0–100 (default 95)."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:417
+#: src/Admin/Pages/IntegrationsPage.php:437
 msgid "Comment Length"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:420
+#: src/Admin/Pages/IntegrationsPage.php:440
 msgid "Minimum:"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:422, src/Admin/Pages/IntegrationsPage.php:428
+#: src/Admin/Pages/IntegrationsPage.php:442, src/Admin/Pages/IntegrationsPage.php:448
 msgid "characters"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:426
+#: src/Admin/Pages/IntegrationsPage.php:446
 msgid "Maximum:"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:433
+#: src/Admin/Pages/IntegrationsPage.php:453
 msgid "Trackbacks & Pingbacks"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:437
+#: src/Admin/Pages/IntegrationsPage.php:457
 msgid "Check trackbacks for spam"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:442
+#: src/Admin/Pages/IntegrationsPage.php:462
 msgid "Check pingbacks for spam"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:476
+#: src/Admin/Pages/IntegrationsPage.php:496
 msgid "Paid Registrations"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:480
+#: src/Admin/Pages/IntegrationsPage.php:500
 msgid "Block spam on paid membership registrations"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:483
+#: src/Admin/Pages/IntegrationsPage.php:503
 msgid "Warning: MemberPress creates the account before payment is taken, so enabling this can block a legitimate purchase when the spam filter has a false positive. Free, free-trial, and fully-discounted registrations are always protected."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:512
+#: src/Admin/Pages/IntegrationsPage.php:532
 msgid "Invalid integration for MemberPress settings."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:523
+#: src/Admin/Pages/IntegrationsPage.php:543
 msgid "MemberPress integration is not available."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:598
+#: src/Admin/Pages/IntegrationsPage.php:618
 msgid "Select which forms to protect"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:611
+#: src/Admin/Pages/IntegrationsPage.php:631
 msgid "Edit"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:623
+#: src/Admin/Pages/IntegrationsPage.php:643
 msgid "Enable protection"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:584
+#: src/Admin/Pages/IntegrationsPage.php:604
 msgid "No forms found."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:592
+#: src/Admin/Pages/IntegrationsPage.php:612
 msgid "Create a Form"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:715
+#: src/Admin/Pages/IntegrationsPage.php:765
 msgid "Recommended"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:718
+#: src/Admin/Pages/IntegrationsPage.php:768
 msgid "The #1 form builder for WordPress, now with AI spam protection"
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:891
+#: src/Admin/Pages/IntegrationsPage.php:945
 msgid "Integration not found."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:941
+#: src/Admin/Pages/IntegrationsPage.php:997
 msgid "Invalid integration for comment settings."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:990
+#: src/Admin/Pages/IntegrationsPage.php:1046
 msgid "Integration slug is required."
 msgstr ""
 
-#: src/Admin/Pages/IntegrationsPage.php:1001
+#: src/Admin/Pages/IntegrationsPage.php:1057
 msgid "Integration not found or does not support per-form settings."
 msgstr ""
 
@@ -1439,20 +1452,20 @@ msgid "Analyze WordPress comments for spam detection"
 msgstr ""
 
 #. translators: %d: minimum required comment length in characters.
-#: src/Integrations/Comments/SubmissionHandler.php:165
+#: src/Integrations/Comments/SubmissionHandler.php:171
 msgid "Error: Comment must be at least %d characters long."
 msgstr ""
 
-#: src/Integrations/Comments/SubmissionHandler.php:168
+#: src/Integrations/Comments/SubmissionHandler.php:174
 msgid "Comment Too Short"
 msgstr ""
 
 #. translators: %d: maximum allowed comment length in characters.
-#: src/Integrations/Comments/SubmissionHandler.php:181
+#: src/Integrations/Comments/SubmissionHandler.php:187
 msgid "Error: Comment must be no longer than %d characters."
 msgstr ""
 
-#: src/Integrations/Comments/SubmissionHandler.php:184
+#: src/Integrations/Comments/SubmissionHandler.php:190
 msgid "Comment Too Long"
 msgstr ""
 
@@ -1477,7 +1490,7 @@ msgstr ""
 msgid "ActiveLayer API key is not configured. Please configure it in %s to enable spam protection."
 msgstr ""
 
-#: src/Integrations/ContactForm7/AdminSettings.php:205, src/Integrations/ElementorForms/AdminSettings.php:247, src/Integrations/FluentForms/AdminSettings.php:74, src/Integrations/FormidableForms/AdminSettings.php:256, src/Integrations/Forminator/AdminSettings.php:161, src/Integrations/GravityForms/AdminSettings.php:132, src/Integrations/NinjaForms/AdminSettings.php:214, src/Integrations/SureForms/AdminSettings.php:74, src/Integrations/WPForms/AdminSettings.php:142, src/Integrations/WSForm/AdminSettings.php:78
+#: src/Integrations/ContactForm7/AdminSettings.php:205, src/Integrations/ElementorForms/AdminSettings.php:247, src/Integrations/FluentForms/AdminSettings.php:74, src/Integrations/FormidableForms/AdminSettings.php:256, src/Integrations/Forminator/AdminSettings.php:161, src/Integrations/FunnelKit/AdminSettings.php:85, src/Integrations/GravityForms/AdminSettings.php:132, src/Integrations/NinjaForms/AdminSettings.php:214, src/Integrations/SureForms/AdminSettings.php:74, src/Integrations/WPForms/AdminSettings.php:142, src/Integrations/WSForm/AdminSettings.php:78
 msgid "Untitled"
 msgstr ""
 
@@ -1527,6 +1540,66 @@ msgstr ""
 
 #: src/Integrations/WSForm/EditorPanel.php:152
 msgid "Protect this form from spam with ActiveLayer. Mirrors the per-form toggle on the ActiveLayer Integrations screen."
+msgstr ""
+
+#: src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:72, src/Integrations/WooCommerce/Admin/AdminController.php:72
+msgid "Product Reviews"
+msgstr ""
+
+#: src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:76, src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:139, src/Integrations/WooCommerce/Admin/AdminController.php:76, src/Integrations/WooCommerce/Admin/AdminController.php:148
+msgid "Enabled"
+msgstr ""
+
+#: src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:80, src/Integrations/WooCommerce/Admin/AdminController.php:80
+msgid "Enable spam detection for product reviews"
+msgstr ""
+
+#: src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:89, src/Integrations/WooCommerce/Admin/AdminController.php:89
+msgid "Check reviews from logged-in users"
+msgstr ""
+
+#: src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:94, src/Integrations/WooCommerce/Admin/AdminController.php:94
+msgid "Verified Owners"
+msgstr ""
+
+#: src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:98
+msgid "Check reviews from verified purchasers"
+msgstr ""
+
+#: src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:107, src/Integrations/WooCommerce/Admin/AdminController.php:116
+msgid "Auto-spam detected reviews"
+msgstr ""
+
+#: src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:116, src/Integrations/WooCommerce/Admin/AdminController.php:125
+msgid "Silently delete high-confidence spam reviews instead of storing them"
+msgstr ""
+
+#: src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:118, src/Integrations/WooCommerce/Admin/AdminController.php:127
+msgid "When the spam score is at or above the threshold below, the review is removed from your site entirely (it cannot be recovered or un-spammed)."
+msgstr ""
+
+#: src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:135, src/Integrations/WooCommerce/Admin/AdminController.php:144
+msgid "Customer Registration"
+msgstr ""
+
+#: src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:143, src/Integrations/WooCommerce/Admin/AdminController.php:152
+msgid "Enable spam detection for customer registration"
+msgstr ""
+
+#: src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:176
+msgid "Invalid integration for Easy Digital Downloads settings."
+msgstr ""
+
+#: src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:198
+msgid "Easy Digital Downloads integration is not available."
+msgstr ""
+
+#: src/Integrations/EasyDigitalDownloads/Registration/RegistrationAdminSettings.php:113
+msgid "Block spam registrations on the Easy Digital Downloads registration form."
+msgstr ""
+
+#: src/Integrations/EasyDigitalDownloads/Reviews/ReviewsAdminSettings.php:127
+msgid "Analyze Easy Digital Downloads product reviews for spam detection"
 msgstr ""
 
 #: src/Integrations/Forminator/Addon/ForminatorAddon.php:92
@@ -1582,52 +1655,12 @@ msgstr ""
 msgid "spam protection is now active for this form."
 msgstr ""
 
-#: src/Integrations/WooCommerce/Admin/AdminController.php:72
-msgid "Product Reviews"
-msgstr ""
-
-#: src/Integrations/WooCommerce/Admin/AdminController.php:76, src/Integrations/WooCommerce/Admin/AdminController.php:148
-msgid "Enabled"
-msgstr ""
-
-#: src/Integrations/WooCommerce/Admin/AdminController.php:80
-msgid "Enable spam detection for product reviews"
-msgstr ""
-
-#: src/Integrations/WooCommerce/Admin/AdminController.php:89
-msgid "Check reviews from logged-in users"
-msgstr ""
-
-#: src/Integrations/WooCommerce/Admin/AdminController.php:94
-msgid "Verified Owners"
-msgstr ""
-
 #: src/Integrations/WooCommerce/Admin/AdminController.php:98
 msgid "Check reviews from verified product owners"
 msgstr ""
 
 #: src/Integrations/WooCommerce/Admin/AdminController.php:107
 msgid "Auto-approve clean reviews"
-msgstr ""
-
-#: src/Integrations/WooCommerce/Admin/AdminController.php:116
-msgid "Auto-spam detected reviews"
-msgstr ""
-
-#: src/Integrations/WooCommerce/Admin/AdminController.php:125
-msgid "Silently delete high-confidence spam reviews instead of storing them"
-msgstr ""
-
-#: src/Integrations/WooCommerce/Admin/AdminController.php:127
-msgid "When the spam score is at or above the threshold below, the review is removed from your site entirely (it cannot be recovered or un-spammed)."
-msgstr ""
-
-#: src/Integrations/WooCommerce/Admin/AdminController.php:144
-msgid "Customer Registration"
-msgstr ""
-
-#: src/Integrations/WooCommerce/Admin/AdminController.php:152
-msgid "Enable spam detection for customer registration"
 msgstr ""
 
 #: src/Integrations/WooCommerce/Admin/AdminController.php:185

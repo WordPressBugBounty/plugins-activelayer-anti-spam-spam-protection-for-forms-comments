@@ -14,6 +14,7 @@ use ActiveLayer\Helpers\SettingsHelper;
 use ActiveLayer\Integrations\FormAdminSettingsInterface;
 use ActiveLayer\Integrations\IntegrationRegistry;
 use ActiveLayer\Integrations\WooCommerce\Admin\AdminController;
+use ActiveLayer\Integrations\EasyDigitalDownloads\Admin\AdminController as EddAdminController;
 
 /**
  * Integrations Page Controller.
@@ -47,17 +48,28 @@ class IntegrationsPage {
 	private $wc_admin;
 
 	/**
+	 * Easy Digital Downloads umbrella admin controller.
+	 *
+	 * @since 1.5.0
+	 *
+	 * @var EddAdminController
+	 */
+	private $edd_admin;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.1.0
 	 * @since 1.2.0 Instantiates WooCommerce admin controller (delegated WC-specific admin logic).
+	 * @since 1.5.0 Instantiates Easy Digital Downloads admin controller (delegated EDD-specific admin logic).
 	 *
 	 * @param IntegrationRegistry $registry Integration registry instance.
 	 */
 	public function __construct( IntegrationRegistry $registry ) {
 
-		$this->registry = $registry;
-		$this->wc_admin = new AdminController( $registry );
+		$this->registry  = $registry;
+		$this->wc_admin  = new AdminController( $registry );
+		$this->edd_admin = new EddAdminController( $registry );
 	}
 
 	/**
@@ -85,10 +97,11 @@ class IntegrationsPage {
 	 * @since 1.1.0
 	 * @since 1.2.0 Added `woocommerce` type dispatched to the WooCommerce AdminController.
 	 * @since 1.4.1 Added `memberpress` type.
+	 * @since 1.5.0 Added `edd` type dispatched to the EDD AdminController.
 	 *
 	 * @return void
 	 */
-	public function ajax_save_settings(): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function ajax_save_settings(): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.CyclomaticComplexity.MaxExceeded
 
 		// Verify nonce.
 		check_ajax_referer( 'activelayer_integration_settings', 'nonce' );
@@ -118,6 +131,10 @@ class IntegrationsPage {
 
 			case 'woocommerce':
 				$this->wc_admin->handle_settings_save( $slug );
+				break;
+
+			case 'edd':
+				$this->edd_admin->handle_settings_save( $slug );
 				break;
 
 			case 'memberpress':
@@ -236,7 +253,7 @@ class IntegrationsPage {
 		$admin_url           = $this->get_integration_admin_url( $slug, $form_admin_settings );
 
 		// Determine if this integration supports configuration.
-		$has_panel    = in_array( $slug, [ 'wp_comments', 'woocommerce', 'memberpress' ], true ) || $form_admin_settings;
+		$has_panel    = in_array( $slug, [ 'wp_comments', 'woocommerce', 'memberpress', 'edd' ], true ) || $form_admin_settings;
 		$panel_hidden = $has_panel && ! $enabled;
 
 		$panel_id = 'activelayer-integration-panel-' . esc_attr( $slug );
@@ -300,6 +317,7 @@ style="display:none"<?php endif; ?>
 	 *
 	 * @since 1.1.0
 	 * @since 1.2.0 Dispatch `woocommerce` slug to the WooCommerce AdminController.
+	 * @since 1.5.0 Dispatch `edd` slug to the EDD AdminController.
 	 *
 	 * @param string $slug Integration registry slug.
 	 * @param array  $data Integration data from registry status.
@@ -318,6 +336,8 @@ style="display:none"<?php endif; ?>
 					$this->render_comments_panel( $data );
 				} elseif ( $slug === 'woocommerce' ) {
 					$this->wc_admin->render_panel( $data );
+				} elseif ( $slug === 'edd' ) {
+					$this->edd_admin->render_panel( $data );
 				} elseif ( $slug === 'memberpress' ) {
 					$this->render_memberpress_panel( $data );
 				} else {
@@ -638,9 +658,11 @@ style="display:none"<?php endif; ?>
 	 *
 	 * Elementor Forms uses hashed element IDs for per-form settings, so the
 	 * edit URL must be built from the originating page_id when available.
-	 * Other providers continue using the per-provider URL template.
+	 * FunnelKit routes its editor by parent funnel ID rather than opt-in page
+	 * post ID. Other providers continue using the per-provider URL template.
 	 *
 	 * @since 1.1.0
+	 * @since 1.5.0 Added FunnelKit funnel-based deep link.
 	 *
 	 * @param string $slug              Integration registry slug.
 	 * @param array  $form              Form row data.
@@ -652,6 +674,10 @@ style="display:none"<?php endif; ?>
 
 		if ( $slug === 'elementor_forms' ) {
 			return $this->resolve_elementor_edit_url( $form );
+		}
+
+		if ( $slug === 'funnelkit' ) {
+			return $this->resolve_funnelkit_edit_url( $form );
 		}
 
 		if ( $edit_url_template === '' ) {
@@ -685,6 +711,30 @@ style="display:none"<?php endif; ?>
 		}
 
 		return admin_url( sprintf( 'post.php?post=%d&action=elementor', $page_id ) );
+	}
+
+	/**
+	 * Resolve the FunnelKit opt-in edit URL from its parent funnel ID.
+	 *
+	 * FunnelKit's React admin routes by funnel (admin.php?page=bwf&path=/funnels/{id}),
+	 * not by opt-in page post ID, so the deep link targets the parent funnel.
+	 * Falls back to the funnels list when the funnel ID is unavailable.
+	 *
+	 * @since 1.5.0
+	 *
+	 * @param array $form Form row data containing funnel_id.
+	 *
+	 * @return string FunnelKit edit URL.
+	 */
+	private function resolve_funnelkit_edit_url( array $form ): string {
+
+		$funnel_id = (int) ( $form['funnel_id'] ?? 0 );
+
+		if ( $funnel_id <= 0 ) {
+			return admin_url( 'admin.php?page=bwf&path=/funnels' );
+		}
+
+		return admin_url( 'admin.php?page=bwf&path=/funnels/' . $funnel_id );
 	}
 
 	/**
@@ -736,6 +786,7 @@ style="display:none"<?php endif; ?>
 	 * @since 1.3.0 Added BuddyBoss icon mapping (assets/images/icons/BuddyBoss.png).
 	 * @since 1.4.0 Added AffiliateWP icon mapping (assets/images/icons/AffiliateWP.png).
 	 * @since 1.4.0 Added MemberPress and WS Form icon mappings.
+	 * @since 1.5.0 Added FunnelKit icon mapping.
 	 *
 	 * @param string $name Integration name.
 	 *
@@ -744,22 +795,24 @@ style="display:none"<?php endif; ?>
 	private function get_integration_icon_url( string $name ): string {
 
 		$icon_map = [
-			'WP Comments'      => 'WPComments.png',
-			'WooCommerce'      => 'WooCommerceReviews.png',
-			'WPForms'          => 'WPF.png',
-			'Contact Form 7'   => 'contactform7.png',
-			'Ninja Forms'      => 'NinjaForms.png',
-			'Formidable Forms' => 'FormiForms.png',
-			'Forminator'       => 'Forminator.png',
-			'Fluent Forms'     => 'FluentForms.png',
-			'SureForms'        => 'SureForms.png',
-			'Gravity Forms'    => 'GravityForms.png',
-			'Elementor Forms'  => 'ElementorForms.png',
-			'BuddyPress'       => 'BuddyPress.png',
-			'BuddyBoss'        => 'BuddyBoss.png',
-			'AffiliateWP'      => 'AffiliateWP.png',
-			'MemberPress'      => 'MemberPress.png',
-			'WS Form'          => 'WSForm.png',
+			'WP Comments'            => 'WPComments.png',
+			'WooCommerce'            => 'WooCommerceReviews.png',
+			'WPForms'                => 'WPF.png',
+			'Contact Form 7'         => 'contactform7.png',
+			'Ninja Forms'            => 'NinjaForms.png',
+			'Formidable Forms'       => 'FormiForms.png',
+			'Forminator'             => 'Forminator.png',
+			'Fluent Forms'           => 'FluentForms.png',
+			'SureForms'              => 'SureForms.png',
+			'Gravity Forms'          => 'GravityForms.png',
+			'Elementor Forms'        => 'ElementorForms.png',
+			'BuddyPress'             => 'BuddyPress.png',
+			'BuddyBoss'              => 'BuddyBoss.png',
+			'AffiliateWP'            => 'AffiliateWP.png',
+			'MemberPress'            => 'MemberPress.png',
+			'WS Form'                => 'WSForm.png',
+			'FunnelKit'              => 'FunnelKit.png',
+			'Easy Digital Downloads' => 'EasyDigitalDownloads.png',
 		];
 
 		$icon_file = $icon_map[ $name ] ?? '';
@@ -875,6 +928,7 @@ style="display:none"<?php endif; ?>
 	 * @since 1.1.0
 	 * @since 1.2.0 Cascade WooCommerce row toggle to wc_reviews + wc_registration sub options.
 	 * @since 1.2.0 Delegate WooCommerce cascade to AdminController::cascade_row_toggle().
+	 * @since 1.5.0 Cascade EDD row toggle to edd_reviews + edd_registration via AdminController::cascade_row_toggle().
 	 *
 	 * @param string $slug Integration registry slug.
 	 *
@@ -897,6 +951,8 @@ style="display:none"<?php endif; ?>
 
 		if ( $slug === 'woocommerce' ) {
 			$this->wc_admin->cascade_row_toggle( $enabled );
+		} elseif ( $slug === 'edd' ) {
+			$this->edd_admin->cascade_row_toggle( $enabled );
 		} else {
 			$option_key = $integration->get_option_key();
 			$settings   = get_option( $option_key, [] );

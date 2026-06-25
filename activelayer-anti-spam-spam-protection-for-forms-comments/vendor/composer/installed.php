@@ -3,7 +3,7 @@
         'name' => 'activelayer/activelayer-plugin',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '4db95b3339f7da390ed2eaceed9d885a9e7403ac',
+        'reference' => '294eea20fae32a72d7ded11b229678e7ad70fd1f',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'activelayer/activelayer-plugin' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '4db95b3339f7da390ed2eaceed9d885a9e7403ac',
+            'reference' => '294eea20fae32a72d7ded11b229678e7ad70fd1f',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

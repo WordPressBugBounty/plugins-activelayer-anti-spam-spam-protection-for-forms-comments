@@ -24,6 +24,10 @@ class SubmissionQueryBuilder {
 	 * @since 1.4.0 Added `ws_form` provider (WS Form integration).
 	 * @since 1.4.0 Added `affiliatewp` provider (AffiliateWP affiliate-registration integration).
 	 * @since 1.4.0 Added `memberpress` provider (MemberPress membership-signup integration).
+	 * @since 1.5.0 Added `funnelkit` provider (FunnelKit opt-in form integration).
+	 * @since 1.5.0 Added `edd` provider (Easy Digital Downloads registration integration).
+	 * @since 1.5.0 Added `edd_registration` provider (EDD Registration sub-integration).
+	 * @since 1.5.0 Added `edd_reviews` provider (EDD Reviews sub-integration).
 	 *
 	 * @var array
 	 */
@@ -45,6 +49,10 @@ class SubmissionQueryBuilder {
 		'ws_form',
 		'affiliatewp',
 		'memberpress',
+		'funnelkit',
+		'edd',
+		'edd_registration',
+		'edd_reviews',
 	];
 
 	/**

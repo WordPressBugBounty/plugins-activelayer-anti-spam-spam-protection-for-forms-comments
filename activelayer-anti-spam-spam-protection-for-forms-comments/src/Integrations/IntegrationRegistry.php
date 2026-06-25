@@ -203,6 +203,7 @@ class IntegrationRegistry {
 	 *
 	 * @since 1.0.0
 	 * @since 1.2.0 Added WC umbrella sub-provider display name map (wc_reviews, wc_registration).
+	 * @since 1.5.0 Added EDD umbrella sub-provider display names (edd_registration, edd_reviews).
 	 *
 	 * @param string $slug Provider slug from storage.
 	 *
@@ -219,8 +220,10 @@ class IntegrationRegistry {
 
 		// Sub-integrations that live inside an umbrella (e.g. WooCommerce children).
 		$sub_provider_names = [
-			'wc_reviews'      => 'WooCommerce Reviews',
-			'wc_registration' => 'WooCommerce Registration',
+			'wc_reviews'       => 'WooCommerce Reviews',
+			'wc_registration'  => 'WooCommerce Registration',
+			'edd_registration' => 'EDD Registration',
+			'edd_reviews'      => 'EDD Reviews',
 		];
 
 		if ( isset( $sub_provider_names[ $slug ] ) ) {

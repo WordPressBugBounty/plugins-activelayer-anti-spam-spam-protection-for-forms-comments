@@ -93,7 +93,7 @@ class SyncSubmissionProcessor {
 		}
 
 		$client     = $this->api_client ?? new ApiClient();
-		$api_result = $client->check_submission( $normalized_data );
+		$api_result = $this->call_check_endpoint( $client, $normalized_data );
 
 		if ( empty( $api_result['success'] ) ) {
 			$this->storage->update_status(
@@ -152,5 +152,28 @@ class SyncSubmissionProcessor {
 			'submission_id' => $submission_id,
 			'tracking_mode' => $meta['tracking_mode'],
 		];
+	}
+
+	/**
+	 * Call the API endpoint that matches the submission's data type.
+	 *
+	 * Product reviews and comments use the comment-specific endpoint (richer
+	 * comment-model priors), matching the async worker's routing; all other
+	 * submission types use the default form endpoint.
+	 *
+	 * @since 1.5.0
+	 *
+	 * @param ApiClient $client          API client.
+	 * @param array     $normalized_data Prepared submission payload.
+	 *
+	 * @return array API response.
+	 */
+	private function call_check_endpoint( ApiClient $client, array $normalized_data ): array {
+
+		if ( in_array( $normalized_data['data_type'] ?? '', [ 'review', 'comment' ], true ) ) {
+			return $client->check_comment( $normalized_data );
+		}
+
+		return $client->check_submission( $normalized_data );
 	}
 }

@@ -112,6 +112,7 @@ class SubmissionHandler {
 	 *
 	 * @since 1.0.0
 	 * @since 1.2.0 Skip review comment type and track pending submissions for force-pending filter.
+	 * @since 1.5.0 Skip edd_review comment type (handled by EDD Reviews integration).
 	 *
 	 * @param array $commentdata Comment data array.
 	 *
@@ -149,6 +150,11 @@ class SubmissionHandler {
 		$comment_type = $commentdata['comment_type'] ?? '';
 
 		if ( $comment_type === 'review' ) {
+			return $commentdata;
+		}
+
+		// EDD product reviews are handled by the EDD Reviews integration.
+		if ( $comment_type === 'edd_review' ) {
 			return $commentdata;
 		}
 

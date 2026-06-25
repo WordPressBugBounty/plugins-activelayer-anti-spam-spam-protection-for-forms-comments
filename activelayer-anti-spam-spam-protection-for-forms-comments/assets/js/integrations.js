@@ -152,10 +152,10 @@
 		const row     = toggle.closest( '.activelayer-integration-row' );
 		const badge   = row ? row.querySelector( '.status-badge' ) : null;
 
-		// Lock the panel checkboxes for the duration of the WooCommerce
-		// row-toggle AJAX so a sub-flag edit between click and response
-		// can't be silently overwritten by syncWooCommerceSubCheckboxes.
-		const panelInputs = ( slug === 'woocommerce' && row ) ? lockPanelCheckboxes( row ) : [];
+		// Lock the panel checkboxes for the duration of an umbrella (WooCommerce
+		// / EDD) row-toggle AJAX so a sub-flag edit between click and response
+		// can't be silently overwritten by syncUmbrellaSubCheckboxes.
+		const panelInputs = ( ( slug === 'woocommerce' || slug === 'edd' ) && row ) ? lockPanelCheckboxes( row ) : [];
 
 		const formData = new FormData();
 		formData.append( 'action', 'activelayer_save_integration_settings' );
@@ -192,12 +192,12 @@
 					updateConfigureVisibility( row, toggle.checked );
 					maybeUpdateOnboardingStep2( data.data );
 
-					// WooCommerce umbrella cascades the master toggle to both
+					// The WooCommerce and EDD umbrellas cascade the master toggle to both
 					// sub-options on the server. Sync the panel checkboxes so
 					// the next panel save doesn't post the stale unchecked
 					// state and revert what we just did.
-					if ( slug === 'woocommerce' && row ) {
-						syncWooCommerceSubCheckboxes( row, toggle.checked );
+					if ( ( slug === 'woocommerce' || slug === 'edd' ) && row ) {
+						syncUmbrellaSubCheckboxes( row, toggle.checked );
 					}
 
 					// Auto-expand the settings panel after enabling.
@@ -232,7 +232,7 @@
 	 *
 	 * Used to prevent the user from editing sub-flag checkboxes between
 	 * the row-toggle AJAX request and its response — otherwise the
-	 * subsequent `syncWooCommerceSubCheckboxes` would silently overwrite
+	 * subsequent `syncUmbrellaSubCheckboxes` would silently overwrite
 	 * the user's intermediate edit.
 	 *
 	 * @param {HTMLElement} row The integration row element.
@@ -283,7 +283,7 @@
 	 * @param {HTMLElement} row     The integration row element.
 	 * @param {boolean}     enabled New enabled state.
 	 */
-	function syncWooCommerceSubCheckboxes( row, enabled ) {
+	function syncUmbrellaSubCheckboxes( row, enabled ) {
 
 		const btn   = row.querySelector( '.activelayer-integration-configure' );
 		const pnlId = btn ? btn.getAttribute( 'aria-controls' ) : null;
@@ -411,12 +411,13 @@
 		formData.append( 'type', type );
 		formData.append( 'slug', slug );
 
-		if ( type === 'comments' || type === 'woocommerce' || type === 'memberpress' ) {
+		if ( type === 'comments' || type === 'woocommerce' || type === 'memberpress' || type === 'edd' ) {
 			// Gather settings from named inputs.
 			// Checkboxes: only append checked ones (omit unchecked) to match
 			// the isset() contract in update_*_settings() handlers.
-			// WooCommerce umbrella uses nested keys (settings[reviews][...]
-			// and settings[registration][...]) which the server splits.
+			// The WooCommerce and EDD umbrellas use nested keys
+			// (settings[reviews][...] and settings[registration][...]) which the
+			// server splits.
 			const inputs = form.querySelectorAll( '[name^="settings["]' );
 
 			inputs.forEach( function( input ) {

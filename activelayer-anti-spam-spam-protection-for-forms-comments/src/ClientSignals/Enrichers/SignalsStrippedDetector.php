@@ -15,24 +15,29 @@ use ActiveLayer\Logger\Logger;
 /**
  * Detects when expected client signals are stripped from the request.
  *
- * If environment or behavioral tracking is enabled but its corresponding
- * POST field is absent OR empty, sets context.signals_stripped = true.
- * Honeypot tracking is flagged only when the field is absent or malformed,
- * because an empty honeypot string is the expected clean value.
+ * Attaches a per-field `context.signal_integrity` report so the API can tell a
+ * field that arrived but is empty (`empty`) from one that was dropped entirely
+ * (`absent`). Environment and behavioral fields report `ok|empty|absent`; the
+ * honeypot reports `present|absent` because an empty honeypot string is the
+ * expected clean value (its filled/empty value travels separately in
+ * `context.honeypot_signals`). The legacy `context.signals_stripped` boolean is
+ * preserved unchanged for backward compatibility.
  *
  * @since 1.2.0
+ * @since 1.5.0 Add per-field signal_integrity report (ok|empty|absent).
  */
 class SignalsStrippedDetector {
 
 	/**
-	 * Append signals_stripped flag to context when applicable.
+	 * Attach the signal_integrity report (and legacy signals_stripped flag) to context.
 	 *
 	 * @since 1.2.0
+	 * @since 1.5.0 Add per-field signal_integrity report.
 	 *
 	 * @param array  $normalized_data Normalized submission data.
 	 * @param string $provider_slug   Integration slug (used for logging).
 	 *
-	 * @return array Submission data with signals_stripped flag (or unchanged).
+	 * @return array Submission data with signal_integrity (and signals_stripped when applicable).
 	 */
 	public function enrich( array $normalized_data, string $provider_slug ): array {
 
@@ -47,7 +52,8 @@ class SignalsStrippedDetector {
 			return $normalized_data;
 		}
 
-		if ( ! self::is_any_expected_signal_missing() ) {
+		// Nothing to diagnose when no signal tracker is enabled.
+		if ( ! self::is_any_tracker_enabled() ) {
 			return $normalized_data;
 		}
 
@@ -55,15 +61,20 @@ class SignalsStrippedDetector {
 			$normalized_data['context'] = [];
 		}
 
-		$normalized_data['context']['signals_stripped'] = true;
+		$normalized_data['context']['signal_integrity'] = self::build_integrity_report();
 
-		Logger::log(
-			'Client signals stripped',
-			[
-				'provider' => $provider_slug,
-				'form_id'  => $normalized_data['context']['form_id'] ?? 'unknown',
-			]
-		);
+		if ( self::is_any_expected_signal_missing() ) {
+			$normalized_data['context']['signals_stripped'] = true;
+
+			Logger::log(
+				'Client signals stripped',
+				[
+					'provider'  => $provider_slug,
+					'form_id'   => $normalized_data['context']['form_id'] ?? 'unknown',
+					'integrity' => $normalized_data['context']['signal_integrity'],
+				]
+			);
+		}
 
 		return $normalized_data;
 	}
@@ -97,6 +108,94 @@ class SignalsStrippedDetector {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Whether any signal tracker is enabled.
+	 *
+	 * @since 1.5.0
+	 *
+	 * @return bool
+	 */
+	private static function is_any_tracker_enabled(): bool {
+
+		return SettingsHelper::is_environment_tracking_enabled()
+			|| SettingsHelper::is_behavioral_tracking_enabled()
+			|| SettingsHelper::is_honeypot_tracking_enabled();
+	}
+
+	/**
+	 * Build the per-field integrity report.
+	 *
+	 * Environment/behavioral report ok|empty|absent; the honeypot reports
+	 * present|absent. Disabled trackers are omitted.
+	 *
+	 * @since 1.5.0
+	 *
+	 * @return array<string,string>
+	 */
+	private static function build_integrity_report(): array {
+
+		$report = [];
+
+		if ( SettingsHelper::is_environment_tracking_enabled() ) {
+			$report['environment'] = self::field_state( EnvironmentField::FIELD_NAME );
+		}
+
+		if ( SettingsHelper::is_behavioral_tracking_enabled() ) {
+			$report['behavioral'] = self::field_state( BehavioralField::FIELD_NAME );
+		}
+
+		if ( SettingsHelper::is_honeypot_tracking_enabled() ) {
+			$report['honeypot'] = self::field_presence( HoneypotField::FIELD_NAME );
+		}
+
+		return $report;
+	}
+
+	/**
+	 * Classify a value-bearing signal field as ok|empty|absent.
+	 *
+	 * `empty` means the field arrived but carries no value — either no JS ran or
+	 * (for behavioral) the collector never initialized; it is not, by itself,
+	 * proof of stripping. `absent` means the key is missing from $_POST entirely.
+	 *
+	 * @since 1.5.0
+	 *
+	 * @param string $field_name POST field name.
+	 *
+	 * @return string ok|empty|absent.
+	 */
+	private static function field_state( string $field_name ): string {
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified by form provider.
+		if ( ! isset( $_POST[ $field_name ] ) ) {
+			return 'absent';
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Nonce verified by form provider; emptiness check only.
+		$raw = wp_unslash( $_POST[ $field_name ] );
+
+		if ( ! is_string( $raw ) || trim( $raw ) === '' ) {
+			return 'empty';
+		}
+
+		return 'ok';
+	}
+
+	/**
+	 * Classify a presence-only field (honeypot) as present|absent.
+	 *
+	 * @since 1.5.0
+	 *
+	 * @param string $field_name POST field name.
+	 *
+	 * @return string present|absent.
+	 */
+	private static function field_presence( string $field_name ): string {
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified by form provider.
+		return isset( $_POST[ $field_name ] ) ? 'present' : 'absent';
 	}
 
 	/**
