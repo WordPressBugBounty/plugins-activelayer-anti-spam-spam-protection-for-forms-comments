@@ -142,7 +142,6 @@ class ReviewsIntegration extends BaseFormIntegration {
 	 * recomputes `edd_reviews_average_rating` immediately after this hook, so the
 	 * cached average reflects the spam flag without manual intervention.
 	 *
-	 * @since 1.5.0
 	 * @since 1.5.0 Mark non-discarded spam EDD-native (meta only) instead of moving the comment to the WordPress spam folder, so it appears in EDD's Reviews → Spam list.
 	 *
 	 * @param int    $comment_id    Review comment ID.

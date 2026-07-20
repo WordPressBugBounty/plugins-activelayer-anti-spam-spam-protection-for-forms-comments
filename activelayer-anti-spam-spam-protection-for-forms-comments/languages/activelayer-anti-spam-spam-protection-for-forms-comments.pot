@@ -7,7 +7,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language-Team: ActiveLayer Team <support@activelayer.com>\n"
-"POT-Creation-Date: 2026-06-25 11:06+0000\n"
+"POT-Creation-Date: 2026-07-20 11:13+0000\n"
 "Report-Msgid-Bugs-To: https://github.com/activelayer/activelayer-plugin/issues\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
@@ -24,169 +24,225 @@ msgstr ""
 msgid "Failed to create the submissions database table. Please deactivate and reactivate the plugin, or contact support if the issue persists."
 msgstr ""
 
-#: src/Plugin.php:321
+#: src/Plugin.php:328
 msgid "ActiveLayer automatically protects form submissions on this site after an API key is connected. When a form is submitted, ActiveLayer sends submission details (such as names, email addresses, form field values, IP addresses, and user agent strings) to the ActiveLayer API for spam analysis. This data is used exclusively to determine whether a submission is spam and may be stored temporarily in accordance with the ActiveLayer Privacy Policy. Site administrators can disable protection for individual forms in the ActiveLayer integration settings if needed."
 msgstr ""
 
-#: src/Plugin.php:322
+#: src/Plugin.php:329
 msgid "Data shared with ActiveLayer is transmitted over HTTPS. Site owners should ensure their own privacy policy explains this automatic processing and references the ActiveLayer service (https://activelayer.com/privacy) for additional information."
 msgstr ""
 
-#: src/Admin/AdminPages.php:216
-msgid "Create your ActiveLayer account"
-msgstr ""
-
-#: src/Admin/AdminPages.php:217
-msgid "Get ActiveLayer Account"
-msgstr ""
-
-#: src/Admin/AdminPages.php:210
-msgid "Manage Account"
-msgstr ""
-
-#: src/Admin/AdminPages.php:226, src/Admin/AdminPages.php:304, src/Admin/AdminPages.php:305, src/Admin/Onboarding/OnboardingManager.php:110, src/Admin/Pages/SettingsPage.php:140
-msgid "Settings"
-msgstr ""
-
-#: src/Admin/AdminPages.php:231
-msgid "Docs"
-msgstr ""
-
-#: src/Admin/AdminPages.php:250, src/Admin/AdminPages.php:270, src/Admin/Components/DashboardWidget.php:84, src/Integrations/ContactForm7/AdminSettings.php:57, src/Integrations/Forminator/Addon/ForminatorAddonFormSettings.php:144
+#: src/Abilities/Abilities.php:86, src/Admin/AdminPages.php:260, src/Admin/AdminPages.php:280, src/Admin/Components/DashboardWidget.php:84, src/Admin/Onboarding/WelcomeScreen.php:126, src/Integrations/ContactForm7/AdminSettings.php:57, src/Integrations/Forminator/Addon/ForminatorAddonFormSettings.php:144
 msgid "ActiveLayer"
 msgstr ""
 
-#: src/Admin/AdminPages.php:254
+#: src/Abilities/Abilities.php:87
+msgid "ActiveLayer anti-spam data: submissions, statistics, and settings."
+msgstr ""
+
+#: src/Abilities/Abilities.php:125
+msgid "You are not allowed to access ActiveLayer data."
+msgstr ""
+
+#: src/Abilities/Abilities.php:179
+msgid "A submission id is required."
+msgstr ""
+
+#: src/Abilities/Abilities.php:189, src/Admin/Components/SingleSubmissionView.php:62
+msgid "Submission not found."
+msgstr ""
+
+#: src/Abilities/Abilities.php:371
+msgid "List submissions"
+msgstr ""
+
+#: src/Abilities/Abilities.php:372
+msgid "List spam-check submissions filtered by status and provider."
+msgstr ""
+
+#: src/Abilities/Abilities.php:407
+msgid "Search submissions"
+msgstr ""
+
+#: src/Abilities/Abilities.php:408
+msgid "Search submissions by text matched against the submitted form data."
+msgstr ""
+
+#: src/Abilities/Abilities.php:441
+msgid "Get submission"
+msgstr ""
+
+#: src/Abilities/Abilities.php:442
+msgid "Get detailed information about a single submission."
+msgstr ""
+
+#: src/Abilities/Abilities.php:475
+msgid "Get statistics"
+msgstr ""
+
+#: src/Abilities/Abilities.php:476
+msgid "Get aggregated anti-spam statistics and subscription usage."
+msgstr ""
+
+#: src/Abilities/Abilities.php:513
+msgid "Get settings"
+msgstr ""
+
+#: src/Abilities/Abilities.php:514
+msgid "Get safe (non-sensitive) plugin settings and the integration list."
+msgstr ""
+
+#: src/Admin/AdminPages.php:226
+msgid "Create your ActiveLayer account"
+msgstr ""
+
+#: src/Admin/AdminPages.php:227
+msgid "Get ActiveLayer Account"
+msgstr ""
+
+#: src/Admin/AdminPages.php:220
+msgid "Manage Account"
+msgstr ""
+
+#: src/Admin/AdminPages.php:236, src/Admin/AdminPages.php:314, src/Admin/AdminPages.php:315, src/Admin/Onboarding/OnboardingManager.php:110, src/Admin/Pages/SettingsPage.php:140
+msgid "Settings"
+msgstr ""
+
+#: src/Admin/AdminPages.php:241
+msgid "Docs"
+msgstr ""
+
+#: src/Admin/AdminPages.php:264
 msgid "Help"
 msgstr ""
 
-#: src/Admin/AdminPages.php:269, src/Admin/AdminPages.php:281, src/Admin/AdminPages.php:282, src/Admin/Pages/DashboardPage.php:213
+#: src/Admin/AdminPages.php:279, src/Admin/AdminPages.php:291, src/Admin/AdminPages.php:292, src/Admin/Pages/DashboardPage.php:213
 msgid "Dashboard"
 msgstr ""
 
-#: src/Admin/AdminPages.php:291, src/Admin/AdminPages.php:292, src/Admin/Pages/SubmissionsPage.php:113
+#: src/Admin/AdminPages.php:301, src/Admin/AdminPages.php:302, src/Admin/Pages/SubmissionsPage.php:113
 msgid "Submissions"
 msgstr ""
 
-#: src/Admin/AdminPages.php:314, src/Admin/AdminPages.php:315, src/Admin/Onboarding/OnboardingManager.php:124, src/Admin/Pages/DashboardPage.php:393, src/Admin/Pages/IntegrationsPage.php:194
+#: src/Admin/AdminPages.php:324, src/Admin/AdminPages.php:325, src/Admin/Onboarding/OnboardingManager.php:124, src/Admin/Pages/DashboardPage.php:393, src/Admin/Pages/IntegrationsPage.php:194
 msgid "Integrations"
 msgstr ""
 
-#: src/Admin/AdminPages.php:324, src/Admin/AdminPages.php:325, src/Admin/Pages/ToolsPage.php:54
+#: src/Admin/AdminPages.php:334, src/Admin/AdminPages.php:335, src/Admin/Pages/ToolsPage.php:54
 msgid "Tools"
 msgstr ""
 
-#: src/Admin/AdminPages.php:335, src/Admin/AdminPages.php:336
+#: src/Admin/AdminPages.php:345, src/Admin/AdminPages.php:346
 msgid "Logs"
 msgstr ""
 
-#: src/Admin/AdminPages.php:350, src/Admin/Pages/DashboardPage.php:474, src/Admin/Pages/SettingsPage.php:369
+#: src/Admin/AdminPages.php:360, src/Admin/Pages/DashboardPage.php:474, src/Admin/Pages/SettingsPage.php:369
 msgid "Upgrade to Pro"
 msgstr ""
 
-#: src/Admin/AdminPages.php:411, src/Admin/Pages/SettingsPage.php:660
+#: src/Admin/AdminPages.php:421, src/Admin/Pages/SettingsPage.php:660
 msgid "Please enter an API key"
 msgstr ""
 
-#: src/Admin/AdminPages.php:412
+#: src/Admin/AdminPages.php:422
 msgid "Verifying..."
 msgstr ""
 
-#: src/Admin/AdminPages.php:413, src/Admin/Pages/SettingsPage.php:377
+#: src/Admin/AdminPages.php:423, src/Admin/Pages/SettingsPage.php:377
 msgid "Verify Key"
 msgstr ""
 
-#: src/Admin/AdminPages.php:414
+#: src/Admin/AdminPages.php:424
 msgid "Connection error. Please try again."
 msgstr ""
 
-#: src/Admin/AdminPages.php:415, src/Api/ApiClient.php:171, src/Admin/Pages/SettingsPage.php:364
+#: src/Admin/AdminPages.php:425, src/Api/ApiClient.php:172, src/Admin/Pages/SettingsPage.php:364
 msgid "API key is valid"
 msgstr ""
 
 #. translators: %s: number of selected submissions.
-#: src/Admin/AdminPages.php:417
+#: src/Admin/AdminPages.php:427
 msgid "Are you sure you want to delete %s submission(s)? This action cannot be undone."
 msgstr ""
 
-#: src/Admin/AdminPages.php:418
+#: src/Admin/AdminPages.php:428
 msgid "Are you sure you want to delete this submission? This action cannot be undone."
 msgstr ""
 
-#: src/Admin/AdminPages.php:419
+#: src/Admin/AdminPages.php:429
 msgid "Are you sure you want to skip the setup guide?"
 msgstr ""
 
-#: src/Admin/AdminPages.php:420
+#: src/Admin/AdminPages.php:430
 msgid "Installing..."
 msgstr ""
 
-#: src/Admin/AdminPages.php:421
+#: src/Admin/AdminPages.php:431
 msgid "Activating..."
 msgstr ""
 
-#: src/Admin/AdminPages.php:422
+#: src/Admin/AdminPages.php:432
 msgid "Installation failed. Please try again."
 msgstr ""
 
-#: src/Admin/AdminPages.php:423
+#: src/Admin/AdminPages.php:433
 msgid "Copied!"
 msgstr ""
 
-#: src/Admin/AdminPages.php:445
+#: src/Admin/AdminPages.php:455
 msgid "Saving..."
 msgstr ""
 
-#: src/Admin/AdminPages.php:446, src/Admin/Pages/IntegrationsPage.php:574, src/Admin/Pages/IntegrationsPage.php:974, src/Admin/Pages/IntegrationsPage.php:1023, src/Admin/Pages/IntegrationsPage.php:1091, src/Admin/Settings/SettingsPersistor.php:124, src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:211, src/Integrations/WooCommerce/Admin/AdminController.php:220
+#: src/Admin/AdminPages.php:456, src/Admin/Pages/IntegrationsPage.php:574, src/Admin/Pages/IntegrationsPage.php:974, src/Admin/Pages/IntegrationsPage.php:1023, src/Admin/Pages/IntegrationsPage.php:1091, src/Admin/Settings/SettingsPersistor.php:124, src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:211, src/Integrations/WooCommerce/Admin/AdminController.php:220
 msgid "Settings saved."
 msgstr ""
 
-#: src/Admin/AdminPages.php:447
+#: src/Admin/AdminPages.php:457
 msgid "Save failed. Please try again."
 msgstr ""
 
-#: src/Admin/AdminPages.php:448, src/Admin/Pages/IntegrationsPage.php:469, src/Admin/Pages/IntegrationsPage.php:510, src/Admin/Pages/IntegrationsPage.php:649, src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:152, src/Integrations/WooCommerce/Admin/AdminController.php:161
+#: src/Admin/AdminPages.php:458, src/Admin/Pages/IntegrationsPage.php:469, src/Admin/Pages/IntegrationsPage.php:510, src/Admin/Pages/IntegrationsPage.php:649, src/Integrations/EasyDigitalDownloads/Admin/AdminController.php:152, src/Integrations/WooCommerce/Admin/AdminController.php:161
 msgid "Save Settings"
 msgstr ""
 
-#: src/Admin/AdminPages.php:449, src/Admin/Pages/DashboardPage.php:416, src/Admin/Pages/IntegrationsPage.php:249
+#: src/Admin/AdminPages.php:459, src/Admin/Pages/DashboardPage.php:416, src/Admin/Pages/IntegrationsPage.php:249
 msgid "Active"
 msgstr ""
 
-#: src/Admin/AdminPages.php:450, src/Admin/Pages/DashboardPage.php:417, src/Admin/Pages/IntegrationsPage.php:250
+#: src/Admin/AdminPages.php:460, src/Admin/Pages/DashboardPage.php:417, src/Admin/Pages/IntegrationsPage.php:250
 msgid "Paused"
 msgstr ""
 
-#: src/Admin/AdminPages.php:451, src/Admin/Pages/IntegrationsPage.php:620
+#: src/Admin/AdminPages.php:461, src/Admin/Pages/IntegrationsPage.php:620
 msgid "Select All"
 msgstr ""
 
-#: src/Admin/AdminPages.php:452
+#: src/Admin/AdminPages.php:462
 msgid "Deselect All"
 msgstr ""
 
-#: src/Admin/AdminPages.php:587, src/Admin/AdminPages.php:607, src/Admin/Components/DashboardWidget.php:270, src/Admin/Components/PluginInstaller.php:84, src/Admin/Components/ReviewRequestNotice.php:186, src/Admin/Components/UsageLimitNotice.php:173, src/Admin/Pages/IntegrationsPage.php:112
+#: src/Admin/AdminPages.php:597, src/Admin/AdminPages.php:617, src/Admin/Components/DashboardWidget.php:270, src/Admin/Components/PluginInstaller.php:84, src/Admin/Components/ReviewRequestNotice.php:186, src/Admin/Components/UsageLimitNotice.php:173, src/Admin/Pages/IntegrationsPage.php:112
 msgid "Permission denied."
 msgstr ""
 
-#: src/Api/ApiClient.php:137
+#: src/Api/ApiClient.php:138
 msgid "API key is required"
 msgstr ""
 
-#: src/Api/ApiClient.php:154
+#: src/Api/ApiClient.php:155
 msgid "Invalid API key"
 msgstr ""
 
 #. translators: %s: error message.
-#: src/Api/ApiClient.php:162
+#: src/Api/ApiClient.php:163
 msgid "Connection error: %s"
 msgstr ""
 
-#: src/Connect/ConnectFlow.php:183
+#: src/Connect/ConnectFlow.php:190
 msgid "Connected to ActiveLayer. Your API key has been saved."
 msgstr ""
 
-#: src/Connect/ConnectFlow.php:168
+#: src/Connect/ConnectFlow.php:170
 msgid "Connection failed. Try Connect again, or paste your API key manually."
 msgstr ""
 
@@ -401,10 +457,6 @@ msgstr ""
 
 #: src/Admin/Components/SingleSubmissionView.php:56, src/Admin/Pages/SubmissionsPage.php:155, src/Admin/Pages/SubmissionsPage.php:298
 msgid "Sorry, you are not allowed to access this page."
-msgstr ""
-
-#: src/Admin/Components/SingleSubmissionView.php:62
-msgid "Submission not found."
 msgstr ""
 
 #: src/Admin/Components/SingleSubmissionView.php:68
@@ -770,6 +822,35 @@ msgstr ""
 
 #: src/Admin/Onboarding/OnboardingManager.php:133
 msgid "Submissions will appear automatically as your forms receive entries."
+msgstr ""
+
+#: src/Admin/Onboarding/WelcomeScreen.php:119, src/Admin/Onboarding/WelcomeScreen.php:148
+msgid "Welcome to ActiveLayer"
+msgstr ""
+
+#. translators: %s: current site domain.
+#: src/Admin/Onboarding/WelcomeScreen.php:134
+msgid "Connecting to %s"
+msgstr ""
+
+#: src/Admin/Onboarding/WelcomeScreen.php:139
+msgid "Skip setup and go to the dashboard"
+msgstr ""
+
+#: src/Admin/Onboarding/WelcomeScreen.php:150
+msgid "AI-powered spam protection for your forms and comments."
+msgstr ""
+
+#: src/Admin/Onboarding/WelcomeScreen.php:151
+msgid "Create your free account and be protected in minutes."
+msgstr ""
+
+#: src/Admin/Onboarding/WelcomeScreen.php:154
+msgid "Let's Get Started"
+msgstr ""
+
+#: src/Admin/Onboarding/WelcomeScreen.php:158
+msgid "I already have an API key"
 msgstr ""
 
 #: src/Admin/Pages/DashboardPage.php:58

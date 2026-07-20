@@ -144,6 +144,7 @@ class EmailReconstructor {
 	 *
 	 * @since 1.0.0
 	 * @since 1.2.0 Make method idempotent via wpforms_entry_meta marker.
+	 * @since 1.6.0 Bypass WPForms capability checks on entry/form lookups (Action Scheduler admin-ajax runner runs as user 0) and log failure paths.
 	 *
 	 * @param string $submission_id Submission ID.
 	 *
@@ -162,10 +163,22 @@ class EmailReconstructor {
 			return false;
 		}
 
-		// Get WPForms entry.
-		$entry = wpforms()->obj( 'entry' )->get( $submission['entry_id'] );
+		// Get WPForms entry. Capability checks must be bypassed: WPForms enforces
+		// view_entry_single/view_form_single when is_admin() is true, and the Action
+		// Scheduler async runner executes this in an unauthenticated admin-ajax
+		// request (user 0), which would silently return null and lose the email.
+		$entry = wpforms()->obj( 'entry' )->get( $submission['entry_id'], [ 'cap' => false ] );
 
 		if ( ! $entry ) {
+			Logger::log(
+				'WPForms: email release failed - entry not found',
+				[
+					'submission_id' => $submission_id,
+					'entry_id'      => (int) $submission['entry_id'],
+					'error'         => 'entry_not_found',
+				]
+			);
+
 			return false;
 		}
 
@@ -182,9 +195,20 @@ class EmailReconstructor {
 		}
 
 		// Get form data - same way as WPForms "Resend Notifications" functionality.
-		$form = wpforms()->obj( 'form' )->get( $entry->form_id );
+		// 'cap' => false for the same reason as the entry lookup above: user 0 in
+		// the Action Scheduler runner has no view_form_single capability.
+		$form = wpforms()->obj( 'form' )->get( $entry->form_id, [ 'cap' => false ] );
 
 		if ( ! $form ) {
+			Logger::log(
+				'WPForms: email release failed - form not found',
+				[
+					'submission_id' => $submission_id,
+					'form_id'       => (int) $entry->form_id,
+					'error'         => 'form_not_found',
+				]
+			);
+
 			return false;
 		}
 
@@ -192,6 +216,15 @@ class EmailReconstructor {
 		$form_data = wpforms_decode( $form->post_content );
 
 		if ( ! $form_data ) {
+			Logger::log(
+				'WPForms: email release failed - form data decode failed',
+				[
+					'submission_id' => $submission_id,
+					'form_id'       => (int) $entry->form_id,
+					'error'         => 'form_data_decode_failed',
+				]
+			);
+
 			return false;
 		}
 
@@ -199,6 +232,15 @@ class EmailReconstructor {
 		$fields = wpforms_decode( $entry->fields );
 
 		if ( ! $fields ) {
+			Logger::log(
+				'WPForms: email release failed - entry fields decode failed',
+				[
+					'submission_id' => $submission_id,
+					'entry_id'      => (int) $entry->entry_id,
+					'error'         => 'entry_fields_decode_failed',
+				]
+			);
+
 			return false;
 		}
 
@@ -226,6 +268,15 @@ class EmailReconstructor {
 			$success = true;
 		} catch ( Exception $e ) {
 			$success = false;
+
+			Logger::log(
+				'WPForms: email release failed - entry_email threw',
+				[
+					'submission_id' => $submission_id,
+					'entry_id'      => (int) $entry->entry_id,
+					'error'         => $e->getMessage(),
+				]
+			);
 		} finally {
 			// Always reset the flag.
 			$this->allow_emails_temporarily = false;

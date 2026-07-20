@@ -1,0 +1,174 @@
+@charset "UTF-8";
+/**
+ * Welcome Screen — standalone full-screen page printed outside wp-admin chrome.
+ *
+ * Brand tokens mirror activelayer.com: deep green primary, dark navy foreground.
+ */
+.activelayer-welcome {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  color: #141b38;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.activelayer-welcome *,
+.activelayer-welcome *::before,
+.activelayer-welcome *::after {
+  box-sizing: border-box;
+}
+.activelayer-welcome .welcome-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 32px;
+  border-top: 3px solid #065f46;
+  border-bottom: 1px solid #e8e8eb;
+}
+.activelayer-welcome .welcome-logo {
+  display: flex;
+  align-items: center;
+  line-height: 0;
+}
+.activelayer-welcome .welcome-logo img {
+  height: 34px;
+  width: auto;
+}
+.activelayer-welcome .welcome-header-side {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-width: 0;
+}
+.activelayer-welcome .welcome-connecting {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #434960;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.activelayer-welcome .welcome-connecting svg {
+  flex-shrink: 0;
+  color: #8c8f9a;
+}
+.activelayer-welcome .welcome-connecting strong {
+  color: #141b38;
+  font-weight: 600;
+}
+.activelayer-welcome .welcome-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 8px;
+  color: #8c8f9a;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+.activelayer-welcome .welcome-close:hover {
+  color: #141b38;
+  background: #f3f4f5;
+}
+.activelayer-welcome .welcome-close:focus-visible {
+  outline: 2px solid #065f46;
+  outline-offset: 2px;
+}
+.activelayer-welcome .welcome-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 24px 72px;
+}
+.activelayer-welcome .welcome-hero {
+  position: relative;
+  margin-bottom: 40px;
+}
+.activelayer-welcome .welcome-hero img {
+  display: block;
+  width: min(400px, 78vw);
+  height: auto;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(20, 27, 56, 0.08);
+}
+.activelayer-welcome .welcome-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  box-shadow: inset 0 0 24px 18px #fff;
+  pointer-events: none;
+}
+.activelayer-welcome h1 {
+  margin: 0 0 16px;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.activelayer-welcome .welcome-subtitle {
+  margin: 0 0 36px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: #434960;
+}
+.activelayer-welcome .welcome-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 32px;
+  border-radius: 8px;
+  background: #065f46;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+.activelayer-welcome .welcome-cta svg {
+  transition: transform 0.15s ease;
+}
+.activelayer-welcome .welcome-cta:hover {
+  background: #04452f;
+}
+.activelayer-welcome .welcome-cta:hover svg {
+  transform: translateX(3px);
+}
+.activelayer-welcome .welcome-cta:focus-visible {
+  outline: 2px solid #065f46;
+  outline-offset: 3px;
+}
+.activelayer-welcome .welcome-alt {
+  margin: 24px 0 0;
+  font-size: 14px;
+}
+.activelayer-welcome .welcome-alt a {
+  color: #8c8f9a;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+}
+.activelayer-welcome .welcome-alt a:hover {
+  color: #065f46;
+}
+@media (max-width: 600px) {
+  .activelayer-welcome .welcome-header {
+    padding: 12px 16px;
+  }
+  .activelayer-welcome .welcome-connecting {
+    display: none;
+  }
+  .activelayer-welcome h1 {
+    font-size: 28px;
+  }
+  .activelayer-welcome .welcome-subtitle {
+    font-size: 15px;
+  }
+}

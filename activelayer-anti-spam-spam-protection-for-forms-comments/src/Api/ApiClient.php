@@ -124,6 +124,7 @@ class ApiClient {
 	 * Verify API key by making a request to the verification endpoint.
 	 *
 	 * @since 1.0.0
+	 * @since 1.6.0 Send site metadata (site URL, WP version, active plugins) via POST.
 	 *
 	 * @param string $api_key API key to verify.
 	 *
@@ -139,7 +140,7 @@ class ApiClient {
 		}
 
 		// Use handler with custom API key.
-		$response = $this->handler->request( '/verify', [], $api_key, 'GET' );
+		$response = $this->handler->request( '/verify', $this->get_site_metadata(), $api_key );
 
 		// Handle WP_Error response.
 		if ( is_wp_error( $response ) ) {
@@ -170,6 +171,52 @@ class ApiClient {
 			'success' => true,
 			'message' => __( 'API key is valid', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 			'data'    => $response,
+		];
+	}
+
+	/**
+	 * Collect site metadata sent along with key verification.
+	 *
+	 * Best-effort telemetry: the API treats it as optional and stamps the
+	 * connection time server-side on receipt.
+	 *
+	 * @since 1.6.0
+	 *
+	 * @return array {
+	 *     @type string $site_url   Site home URL.
+	 *     @type string $wp_version WordPress core version.
+	 *     @type array  $plugins    Active plugins as { slug, name, version } items.
+	 * }
+	 */
+	private function get_site_metadata(): array {
+
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		$all_plugins = get_plugins();
+		$plugins     = [];
+
+		foreach ( (array) get_option( 'active_plugins', [] ) as $plugin_file ) {
+			if ( ! isset( $all_plugins[ $plugin_file ] ) ) {
+				continue;
+			}
+
+			// Single-file plugins (e.g. hello.php) have no directory.
+			$dir = dirname( $plugin_file );
+
+			// get_plugins() always populates Name/Version headers (empty string when absent).
+			$plugins[] = [
+				'slug'    => $dir !== '.' ? $dir : basename( $plugin_file, '.php' ),
+				'name'    => (string) $all_plugins[ $plugin_file ]['Name'],
+				'version' => (string) $all_plugins[ $plugin_file ]['Version'],
+			];
+		}
+
+		return [
+			'site_url'   => esc_url_raw( home_url() ),
+			'wp_version' => get_bloginfo( 'version' ),
+			'plugins'    => $plugins,
 		];
 	}
 

@@ -6,6 +6,10 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'ActiveLayer\\Abilities\\Abilities' => $baseDir . '/src/Abilities/Abilities.php',
+    'ActiveLayer\\Abilities\\SettingsFormatter' => $baseDir . '/src/Abilities/SettingsFormatter.php',
+    'ActiveLayer\\Abilities\\StatsFormatter' => $baseDir . '/src/Abilities/StatsFormatter.php',
+    'ActiveLayer\\Abilities\\SubmissionFormatter' => $baseDir . '/src/Abilities/SubmissionFormatter.php',
     'ActiveLayer\\ActionScheduler\\ActionSchedulerLoader' => $baseDir . '/src/ActionScheduler/ActionSchedulerLoader.php',
     'ActiveLayer\\Admin\\AdminPages' => $baseDir . '/src/Admin/AdminPages.php',
     'ActiveLayer\\Admin\\Components\\ConnectionBar' => $baseDir . '/src/Admin/Components/ConnectionBar.php',
@@ -21,6 +25,7 @@ return array(
     'ActiveLayer\\Admin\\Components\\UsageLimitNotice' => $baseDir . '/src/Admin/Components/UsageLimitNotice.php',
     'ActiveLayer\\Admin\\Onboarding\\OnboardingBanner' => $baseDir . '/src/Admin/Onboarding/OnboardingBanner.php',
     'ActiveLayer\\Admin\\Onboarding\\OnboardingManager' => $baseDir . '/src/Admin/Onboarding/OnboardingManager.php',
+    'ActiveLayer\\Admin\\Onboarding\\WelcomeScreen' => $baseDir . '/src/Admin/Onboarding/WelcomeScreen.php',
     'ActiveLayer\\Admin\\Pages\\DashboardPage' => $baseDir . '/src/Admin/Pages/DashboardPage.php',
     'ActiveLayer\\Admin\\Pages\\IntegrationsPage' => $baseDir . '/src/Admin/Pages/IntegrationsPage.php',
     'ActiveLayer\\Admin\\Pages\\LogsPage' => $baseDir . '/src/Admin/Pages/LogsPage.php',

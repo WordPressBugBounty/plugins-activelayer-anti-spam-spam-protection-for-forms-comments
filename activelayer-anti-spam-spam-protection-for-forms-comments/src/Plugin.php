@@ -2,6 +2,7 @@
 
 namespace ActiveLayer;
 
+use ActiveLayer\Abilities\Abilities;
 use ActiveLayer\ClientSignals\ScriptLoader;
 use ActiveLayer\Integrations\IntegrationRegistry;
 use ActiveLayer\Integrations\ContactForm7\ContactForm7Integration;
@@ -97,6 +98,7 @@ class Plugin {
 	 * @since 1.1.0 Added frontend script loader initialization.
 	 * @since 1.2.0 Wire NativeModerationFeedback listener for native comment moderation.
 	 * @since 1.3.0 Run UpgradeRunner first to detect opt-out announce state.
+	 * @since 1.6.0 Wire read-only Abilities registration on WP 6.9+.
 	 */
 	public function init(): void {
 
@@ -107,6 +109,11 @@ class Plugin {
 
 		// Bridge native WP comment moderation actions to the ActiveLayer feedback pipeline.
 		( new NativeModerationFeedback() )->init();
+
+		// Register read-only WordPress Abilities API endpoints (WP 6.9+ only).
+		if ( function_exists( 'wp_register_ability' ) ) {
+			( new Abilities() )->hooks();
+		}
 
 		// Arm the first-spam review request notice (listener must run in all contexts).
 		ReviewRequestNotice::init();

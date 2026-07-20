@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use ActiveLayer\Api\ApiClient;
 use ActiveLayer\Api\ConnectClient;
 use ActiveLayer\Helpers\AppUrlHelper;
 use ActiveLayer\Helpers\NoticeHelper;
@@ -123,6 +124,7 @@ final class ConnectFlow {
 	 * and redirect to a clean URL. No-op (no redirect) when there is nothing to do.
 	 *
 	 * @since 1.3.0
+	 * @since 1.6.0 Deliver site metadata via POST /verify after a successful claim.
 	 *
 	 * @return void
 	 */
@@ -177,6 +179,11 @@ final class ConnectFlow {
 
 				SubscriptionStats::get_instance()->clear_cache();
 				SubscriptionStats::get_instance()->schedule_refresh();
+
+				// Deliver site metadata to the API (same POST /verify as manual
+				// verification). Best-effort: the claim already validated the key,
+				// so a failure here never blocks the connection.
+				( new ApiClient() )->verify_key( $api_key );
 			}
 
 			$this->set_notice(

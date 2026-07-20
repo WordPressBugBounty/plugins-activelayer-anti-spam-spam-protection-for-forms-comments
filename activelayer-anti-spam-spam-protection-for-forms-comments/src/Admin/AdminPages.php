@@ -11,6 +11,7 @@ use ActiveLayer\Admin\Components\PluginInstaller;
 use ActiveLayer\Admin\Components\SubmissionsTable;
 use ActiveLayer\Admin\Components\UsageLimitNotice;
 use ActiveLayer\Admin\Onboarding\OnboardingManager;
+use ActiveLayer\Admin\Onboarding\WelcomeScreen;
 use ActiveLayer\Admin\Pages\DashboardPage;
 use ActiveLayer\Admin\Pages\IntegrationsPage;
 use ActiveLayer\Admin\Pages\LogsPage;
@@ -124,6 +125,9 @@ class AdminPages {
 
 		// Handle the one-click Connect return on admin_init (before output).
 		ConnectFlow::hooks();
+
+		// Full-screen welcome screen shown after first activation.
+		WelcomeScreen::hooks();
 	}
 
 
@@ -156,19 +160,22 @@ class AdminPages {
 	 * Redirect to dashboard page after first-time plugin activation.
 	 *
 	 * @since 1.1.0
+	 * @since 1.6.0 Land on the full-screen welcome screen when no API key is connected yet; AJAX/cron requests no longer consume the transient.
 	 */
 	public function maybe_redirect_after_activation(): void {
+
+		// Bail before touching the transient: admin-ajax/cron also fire admin_init,
+		// and consuming the transient there would steal the redirect from the
+		// user's first real admin page load (e.g. a Heartbeat tick).
+		if ( wp_doing_ajax() || wp_doing_cron() ) {
+			return;
+		}
 
 		if ( ! get_transient( 'activelayer_activation_redirect' ) ) {
 			return;
 		}
 
 		delete_transient( 'activelayer_activation_redirect' );
-
-		// Do not redirect on multisite bulk activation or during AJAX/cron.
-		if ( wp_doing_ajax() || wp_doing_cron() ) {
-			return;
-		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( isset( $_GET['activate-multi'] ) || is_network_admin() ) {
@@ -179,7 +186,10 @@ class AdminPages {
 			return;
 		}
 
-		wp_safe_redirect( admin_url( 'admin.php?page=activelayer-dashboard' ) );
+		// Not connected yet: land on the full-screen welcome screen instead.
+		$target = SettingsHelper::has_api_key() ? 'activelayer-dashboard' : WelcomeScreen::PAGE_SLUG;
+
+		wp_safe_redirect( admin_url( 'admin.php?page=' . $target ) );
 		exit;
 	}
 

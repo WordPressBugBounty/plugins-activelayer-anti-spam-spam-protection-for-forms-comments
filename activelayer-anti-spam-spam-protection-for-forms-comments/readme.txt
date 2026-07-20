@@ -3,7 +3,7 @@ Contributors: smub, dimitrism, ernest35
 Tags: anti-spam, antispam, spam protection, contact form, comment spam
 Requires at least: 5.5
 Tested up to: 7.0
-Stable tag: 1.5.0
+Stable tag: 1.6.0
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -218,6 +218,9 @@ This plugin connects to the ActiveLayer API to analyze form submissions and comm
 
 == Upgrade Notice ==
 
+= 1.6.0 =
+Adds read-only WordPress Abilities (WordPress 6.9+) so compatible tools and AI assistants can query your anti-spam data, plus a WPForms fix that releases held email notifications when the queue runs via admin-ajax. Recommended upgrade.
+
 = 1.5.0 =
 Adds Easy Digital Downloads and FunnelKit Funnel Builder spam protection, plus improved client-side signal-integrity diagnostics for more accurate detection. Recommended upgrade.
 
@@ -240,6 +243,10 @@ WooCommerce integration: spam protection for Product Reviews and Customer Regist
 Five new form integrations (Gravity Forms, Elementor Forms, Fluent Forms, Forminator, SureForms), global Sync Mode, client-side behavioral and environment signals, Tools page with bulk delete, conditional frontend script loading, and security hardening. Recommended upgrade for all users.
 
 == Changelog ==
+
+= 1.6.0 =
+* Added: WordPress Abilities support (WordPress 6.9+) — registers read-only abilities (list, search, and view submissions; get statistics; get settings) so compatible tools and AI assistants can query your anti-spam data without changing anything.
+* Fixed: WPForms — held email notifications are now released correctly when the background queue runs through the admin-ajax async runner.
 
 = 1.5.0 =
 * Added: Easy Digital Downloads integration — spam protection for product reviews and the standalone customer registration form. The EDD checkout is never gated, so spam protection can't interrupt a purchase.

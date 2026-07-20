@@ -21,6 +21,10 @@ class ComposerStaticInitd05dd8ea3c55d69a47c9fadb35a84df0
     );
 
     public static $classMap = array (
+        'ActiveLayer\\Abilities\\Abilities' => __DIR__ . '/../..' . '/src/Abilities/Abilities.php',
+        'ActiveLayer\\Abilities\\SettingsFormatter' => __DIR__ . '/../..' . '/src/Abilities/SettingsFormatter.php',
+        'ActiveLayer\\Abilities\\StatsFormatter' => __DIR__ . '/../..' . '/src/Abilities/StatsFormatter.php',
+        'ActiveLayer\\Abilities\\SubmissionFormatter' => __DIR__ . '/../..' . '/src/Abilities/SubmissionFormatter.php',
         'ActiveLayer\\ActionScheduler\\ActionSchedulerLoader' => __DIR__ . '/../..' . '/src/ActionScheduler/ActionSchedulerLoader.php',
         'ActiveLayer\\Admin\\AdminPages' => __DIR__ . '/../..' . '/src/Admin/AdminPages.php',
         'ActiveLayer\\Admin\\Components\\ConnectionBar' => __DIR__ . '/../..' . '/src/Admin/Components/ConnectionBar.php',
@@ -36,6 +40,7 @@ class ComposerStaticInitd05dd8ea3c55d69a47c9fadb35a84df0
         'ActiveLayer\\Admin\\Components\\UsageLimitNotice' => __DIR__ . '/../..' . '/src/Admin/Components/UsageLimitNotice.php',
         'ActiveLayer\\Admin\\Onboarding\\OnboardingBanner' => __DIR__ . '/../..' . '/src/Admin/Onboarding/OnboardingBanner.php',
         'ActiveLayer\\Admin\\Onboarding\\OnboardingManager' => __DIR__ . '/../..' . '/src/Admin/Onboarding/OnboardingManager.php',
+        'ActiveLayer\\Admin\\Onboarding\\WelcomeScreen' => __DIR__ . '/../..' . '/src/Admin/Onboarding/WelcomeScreen.php',
         'ActiveLayer\\Admin\\Pages\\DashboardPage' => __DIR__ . '/../..' . '/src/Admin/Pages/DashboardPage.php',
         'ActiveLayer\\Admin\\Pages\\IntegrationsPage' => __DIR__ . '/../..' . '/src/Admin/Pages/IntegrationsPage.php',
         'ActiveLayer\\Admin\\Pages\\LogsPage' => __DIR__ . '/../..' . '/src/Admin/Pages/LogsPage.php',
