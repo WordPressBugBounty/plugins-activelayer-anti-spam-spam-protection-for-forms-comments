@@ -3,7 +3,7 @@ Contributors: smub, dimitrism, ernest35
 Tags: anti-spam, antispam, spam protection, contact form, comment spam
 Requires at least: 5.5
 Tested up to: 7.0
-Stable tag: 1.6.0
+Stable tag: 1.6.1
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -218,6 +218,9 @@ This plugin connects to the ActiveLayer API to analyze form submissions and comm
 
 == Upgrade Notice ==
 
+= 1.6.1 =
+Fixes a multisite bug where subsites never created their submissions table, leaving the dashboard stuck loading and form submissions unchecked. Each site now provisions its table automatically. Recommended for all multisite networks.
+
 = 1.6.0 =
 Adds read-only WordPress Abilities (WordPress 6.9+) so compatible tools and AI assistants can query your anti-spam data, plus a WPForms fix that releases held email notifications when the queue runs via admin-ajax. Recommended upgrade.
 
@@ -243,6 +246,10 @@ WooCommerce integration: spam protection for Product Reviews and Customer Regist
 Five new form integrations (Gravity Forms, Elementor Forms, Fluent Forms, Forminator, SureForms), global Sync Mode, client-side behavioral and environment signals, Tools page with bulk delete, conditional frontend script loading, and security hardening. Recommended upgrade for all users.
 
 == Changelog ==
+
+= 1.6.1 =
+* Fixed: Multisite — subsites did not create their submissions table, so on those sites the dashboard stayed stuck loading and form submissions were never checked for spam. Each site now creates its table automatically.
+* Fixed: Dashboard — the analytics chart no longer spins an endless loading indicator on sites that have no submission data yet (e.g. brand-new installs).
 
 = 1.6.0 =
 * Added: WordPress Abilities support (WordPress 6.9+) — registers read-only abilities (list, search, and view submissions; get statistics; get settings) so compatible tools and AI assistants can query your anti-spam data without changing anything.

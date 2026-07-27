@@ -6,7 +6,7 @@
  * Requires at least: 5.5
  * Requires PHP:      7.2
  * Author:            ActiveLayer Team
- * Version:           1.6.0
+ * Version:           1.6.1
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       activelayer-anti-spam-spam-protection-for-forms-comments
@@ -44,7 +44,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-const ACTIVELAYER_PLUGIN_VERSION = '1.6.0';
+const ACTIVELAYER_PLUGIN_VERSION = '1.6.1';
 
 /**
  * Plugin file.
@@ -181,6 +181,8 @@ add_action( 'admin_init', 'activelayer_register_capabilities' );
  * Display admin notice when submissions table creation failed during activation.
  *
  * @since 1.1.0
+ * @since 1.6.1 Copy updated: also raised by the multisite self-heal path; advises checking DB permissions.
+ * @since 1.6.1 Suppress the notice when the table exists again (created or restored out-of-band); clears the stale flag either way.
  */
 function activelayer_table_creation_notice() {
 
@@ -192,12 +194,20 @@ function activelayer_table_creation_notice() {
 		return;
 	}
 
+	// Consume the one-shot flag regardless of outcome.
 	delete_transient( 'activelayer_table_creation_failed' );
+
+	// The table may have been created or restored out-of-band since the flag
+	// was set (self-heal on another request, or a manual restore). If it now
+	// exists the failure is stale — show nothing.
+	if ( Storage::get_instance()->table_exists() ) {
+		return;
+	}
 
 	printf(
 		'<div class="notice notice-error"><p><strong>%s</strong> %s</p></div>',
 		esc_html__( 'ActiveLayer:', 'activelayer-anti-spam-spam-protection-for-forms-comments' ), // phpcs:ignore WPForms.PHP.ValidateDomain.InvalidDomain
-		esc_html__( 'Failed to create the submissions database table. Please deactivate and reactivate the plugin, or contact support if the issue persists.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) // phpcs:ignore WPForms.PHP.ValidateDomain.InvalidDomain
+		esc_html__( 'Failed to create the submissions database table, so submissions are not being checked. Please make sure the database user can create tables, or contact support.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) // phpcs:ignore WPForms.PHP.ValidateDomain.InvalidDomain
 	);
 }
 

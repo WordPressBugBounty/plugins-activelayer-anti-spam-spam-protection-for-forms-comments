@@ -106,6 +106,7 @@ class SchemaManager {
 	 * Ensure the submissions table schema matches the expected version.
 	 *
 	 * @since 1.0.0
+	 * @since 1.6.1 Create the table when missing (multisite self-heal).
 	 *
 	 * @return void
 	 */
@@ -115,7 +116,23 @@ class SchemaManager {
 
 		$this->refresh_table_name();
 
+		// Self-heal: on multisite the activation hook only creates the table for
+		// the single site it runs on. Any other site (an existing subsite, a
+		// newly-created subsite, or one where activation never ran) reaches here
+		// with no table — create it now. Runs on plugins_loaded, before any
+		// submission handler, so storage works within the same request.
+		// Note: heals only the current site; a mid-request switch_to_blog() to a
+		// never-healed site still finds no table and fails open, same as before.
 		if ( ! $this->table_exists() ) {
+			// Throttle: while the failure transient is present, skip retrying the
+			// DDL. Front-end traffic retries at most once per hour; rendering the
+			// admin notice consumes the transient, so each admin page view
+			// re-enables one retry — intentional, for fast recovery while an
+			// admin is investigating.
+			if ( ! get_transient( 'activelayer_table_creation_failed' ) && ! $this->create_table() ) {
+				set_transient( 'activelayer_table_creation_failed', true, HOUR_IN_SECONDS );
+			}
+
 			return;
 		}
 
@@ -147,12 +164,17 @@ class SchemaManager {
 
 		update_option( self::OPTION_SCHEMA_VERSION, self::SCHEMA_VERSION, false );
 		$this->cache->clear_submission_cache();
+
+		// Adopting a table created out-of-band (bypassing create_table()) —
+		// clear any stale failure flag so no false notice survives recovery.
+		delete_transient( 'activelayer_table_creation_failed' );
 	}
 
 	/**
 	 * Create database table with simplified schema.
 	 *
 	 * @since 1.0.0
+	 * @since 1.6.1 Suppress DB errors on the fallback creation attempt (runs per-request via self-heal); clear the failure notice flag on success.
 	 *
 	 * @return bool True on success, false on failure.
 	 */
@@ -176,7 +198,11 @@ class SchemaManager {
 		$created = $this->table_exists( false );
 
 		if ( ! $created ) {
+			$previous_suppression = $wpdb->suppress_errors();
+
 			$wpdb->query( $this->get_schema_sql() ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+			$wpdb->suppress_errors( $previous_suppression );
+
 			wp_cache_delete( 'table_exists', $this->cache->get_cache_group() );
 			$created = $this->table_exists( false );
 		}
@@ -184,14 +210,23 @@ class SchemaManager {
 		if ( $created && ! $this->column_exists( 'retry_count' ) ) {
 			$table_name = esc_sql( $this->table_name );
 
+			// Self-heal runs on plugins_loaded, so concurrent front-end requests
+			// can both reach this ALTER before either sees the column; the loser
+			// gets a harmless "Duplicate column" error. Suppress it like the DDL
+			// above so it never surfaces as a DB warning.
+			$previous_suppression = $wpdb->suppress_errors();
+
 			$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				"ALTER TABLE `{$table_name}` ADD COLUMN retry_count TINYINT UNSIGNED NOT NULL DEFAULT 0 AFTER status" // phpcs:ignore WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 			);
+
+			$wpdb->suppress_errors( $previous_suppression );
 		}
 
 		if ( $created ) {
 			update_option( self::OPTION_SCHEMA_VERSION, self::SCHEMA_VERSION, false );
 			$this->cache->clear_submission_cache();
+			delete_transient( 'activelayer_table_creation_failed' );
 		}
 
 		return $created;

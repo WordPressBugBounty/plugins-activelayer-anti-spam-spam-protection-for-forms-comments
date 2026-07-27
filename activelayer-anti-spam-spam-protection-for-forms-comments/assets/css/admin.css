@@ -48,7 +48,7 @@
   white-space: nowrap;
 }
 .activelayer-admin-header .header-help:hover {
-  color: rgb(101.9391891892, 104.7972972973, 109.5608108108);
+  color: rgb(39.9761526232%, 41.0969793323%, 42.9650238474%);
 }
 .activelayer-admin-header .header-help:focus {
   outline: 2px solid #0073aa;
@@ -179,14 +179,14 @@
 }
 .activelayer-processing-status .processing-item.pending {
   background: rgba(133, 100, 4, 0.1);
-  color: rgb(33.9781021898, 25.5474452555, 1.0218978102);
+  color: rgb(13.3247459568%, 10.0186059825%, 0.4007442393%);
 }
 .activelayer-processing-status .processing-item.pending .dashicons {
   color: #856404;
 }
 .activelayer-processing-status .processing-item.failed {
   background: rgba(114, 28, 36, 0.1);
-  color: rgb(32.1126760563, 7.8873239437, 10.1408450704);
+  color: rgb(12.5932062966%, 3.0930682132%, 3.9768019884%);
 }
 .activelayer-processing-status .processing-item.failed .dashicons {
   color: #721c24;
@@ -313,7 +313,7 @@
   text-decoration: none;
 }
 .activelayer-upgrade-link:hover, .activelayer-upgrade-link:focus {
-  color: rgb(0, 80.5, 119);
+  color: rgb(0%, 31.568627451%, 46.6666666667%);
 }
 
 .usage-limit-message {
@@ -691,7 +691,7 @@
   text-decoration: none;
 }
 .wp-list-table .row-actions a:hover {
-  color: rgb(0, 80.5, 119);
+  color: rgb(0%, 31.568627451%, 46.6666666667%);
 }
 .wp-list-table .row-actions a.submitdelete {
   color: #D63638;
@@ -737,7 +737,7 @@
   text-decoration: none;
 }
 .subsubsub li a:hover {
-  color: rgb(0, 80.5, 119);
+  color: rgb(0%, 31.568627451%, 46.6666666667%);
 }
 .subsubsub li a.current {
   font-weight: 500;
@@ -792,7 +792,7 @@
   text-decoration: underline;
 }
 .activelayer-empty-state .activelayer-empty-state-link:hover {
-  color: rgb(0, 80.5, 119);
+  color: rgb(0%, 31.568627451%, 46.6666666667%);
 }
 
 .activelayer-submission-details {
@@ -1897,7 +1897,7 @@ button.activelayer-integration-configure[aria-expanded=false]::after {
   height: 16px;
 }
 .activelayer-dashboard-widget__link:hover {
-  color: rgb(0, 80.5, 119);
+  color: rgb(0%, 31.568627451%, 46.6666666667%);
 }
 
 .activelayer-dashboard-widget--stats {
@@ -2162,7 +2162,7 @@ button.activelayer-integration-configure[aria-expanded=false]::after {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgb(11.128358209, 128.671641791, 89.7223880597);
+  background: rgb(4.3640620427%, 50.459467369%, 35.1852502195%);
   color: #fff;
   border-radius: 50%;
 }
@@ -2186,7 +2186,7 @@ button.activelayer-integration-configure[aria-expanded=false]::after {
   transition: background 0.15s ease;
 }
 .activelayer-dashboard-upgrade__cta:hover, .activelayer-dashboard-upgrade__cta:focus {
-  background: rgb(12.752238806, 147.447761194, 102.8149253731);
+  background: rgb(5.0008779631%, 57.8226514486%, 40.3195785777%);
   color: #fff;
 }
 .activelayer-dashboard-upgrade__learn-more {

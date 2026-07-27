@@ -11799,6 +11799,8 @@
     function init() {
       if (config.daily && config.daily.length) {
         drawChart(config.daily);
+      } else {
+        toggleLoader(false);
       }
       if (config.stats) {
         updateStats(config.stats);
