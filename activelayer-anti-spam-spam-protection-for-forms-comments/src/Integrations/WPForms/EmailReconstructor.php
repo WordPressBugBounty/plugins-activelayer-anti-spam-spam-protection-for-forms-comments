@@ -145,6 +145,7 @@ class EmailReconstructor {
 	 * @since 1.0.0
 	 * @since 1.2.0 Make method idempotent via wpforms_entry_meta marker.
 	 * @since 1.6.0 Bypass WPForms capability checks on entry/form lookups (Action Scheduler admin-ajax runner runs as user 0) and log failure paths.
+	 * @since 1.6.2 Hydrate form data via WPForms so Repeater rows beyond the first render in the email.
 	 *
 	 * @param string $submission_id Submission ID.
 	 *
@@ -243,6 +244,24 @@ class EmailReconstructor {
 
 			return false;
 		}
+
+		/**
+		 * Filters the form data for the entry before processing notifications.
+		 *
+		 * WPForms' own filter, applied here for the same reason WPForms applies it
+		 * in "Resend Notifications": `post_content` only holds the template row of
+		 * a Repeater field's columns, and the per-row clone columns are expanded by
+		 * WPForms on this filter. Without it the released notification renders a
+		 * single row no matter how many rows were submitted.
+		 *
+		 * @since 1.9.2 of the WPForms plugin.
+		 *
+		 * @param array  $form_data Form data.
+		 * @param object $entry     Entry object.
+		 *
+		 * @return array
+		 */
+		$form_data = apply_filters( 'wpforms_entries_single_process_notifications_form_data', $form_data, $entry ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WPForms.PHP.ValidateHooks.InvalidHookName -- Using WPForms core hook.
 
 		/**
 		 * Filters the form data for the entry before processing notifications.

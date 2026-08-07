@@ -9,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 use ActiveLayer\Helpers\DetectionIdResolver;
 use ActiveLayer\Helpers\FormEditUrlResolver;
 use ActiveLayer\Helpers\NoticeHelper;
+use ActiveLayer\Helpers\RequestHelper;
 use ActiveLayer\Integrations\IntegrationRegistry;
 use ActiveLayer\Storage\Storage;
 use WP_List_Table;
@@ -784,6 +785,7 @@ class SubmissionsTable extends WP_List_Table {
 	 * Processed date column.
 	 *
 	 * @since 1.0.0
+	 * @since 1.6.2 Normalize timestamps via RequestHelper::to_timestamp().
 	 *
 	 * @param array $item Item data.
 	 *
@@ -795,7 +797,7 @@ class SubmissionsTable extends WP_List_Table {
 			return '<span class="not-processed">' . esc_html__( 'Not processed', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) . '</span>';
 		}
 
-		$timestamp = is_numeric( $item['processed_at'] ) ? $item['processed_at'] : strtotime( $item['processed_at'] );
+		$timestamp = RequestHelper::to_timestamp( $item['processed_at'] );
 
 		if ( ! $timestamp ) {
 			return '<span class="not-processed">' . esc_html__( 'Not processed', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) . '</span>';

@@ -134,6 +134,7 @@ class SubmissionRepository {
 			'verdict'      => null,
 			'form_data'    => wp_json_encode( $sanitized_payload ),
 			'api_response' => null,
+			// Site-local time by convention; RequestHelper::to_timestamp() is its inverse on read.
 			'created_at'   => current_time( 'mysql' ),
 			'processed_at' => null,
 		];

@@ -3,7 +3,7 @@ Contributors: smub, dimitrism, ernest35
 Tags: anti-spam, antispam, spam protection, contact form, comment spam
 Requires at least: 5.5
 Tested up to: 7.0
-Stable tag: 1.6.1
+Stable tag: 1.6.2
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -218,6 +218,10 @@ This plugin connects to the ActiveLayer API to analyze form submissions and comm
 
 == Upgrade Notice ==
 
+= 1.6.2 =
+Fixes a WPForms conflict where notification emails for forms with Repeater fields showed only the first row. Recommended for anyone using Repeater fields.
+Fixes submission dates being shown with the wrong time on any site not set to UTC. Recommended for all sites outside UTC.
+
 = 1.6.1 =
 Fixes a multisite bug where subsites never created their submissions table, leaving the dashboard stuck loading and form submissions unchecked. Each site now provisions its table automatically. Recommended for all multisite networks.
 
@@ -246,6 +250,10 @@ WooCommerce integration: spam protection for Product Reviews and Customer Regist
 Five new form integrations (Gravity Forms, Elementor Forms, Fluent Forms, Forminator, SureForms), global Sync Mode, client-side behavioral and environment signals, Tools page with bulk delete, conditional frontend script loading, and security hardening. Recommended upgrade for all users.
 
 == Changelog ==
+
+= 1.6.2 =
+* Fixed: WPForms — notification emails for forms with Repeater fields now include every row. Previously only the first row appeared in the email, even though the entry itself stored all of them.
+* Fixed: Submissions — dates and relative times are now shown in your site's timezone. On sites not set to UTC the times were off by the timezone offset (a submission made at 16:11 in Berlin appeared as 18:11), and a brand-new submission could read as "2 hours ago".
 
 = 1.6.1 =
 * Fixed: Multisite — subsites did not create their submissions table, so on those sites the dashboard stayed stuck loading and form submissions were never checked for spam. Each site now creates its table automatically.

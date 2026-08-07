@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use ActiveLayer\ClientSignals\EnvironmentSignals;
+use ActiveLayer\Helpers\RequestHelper;
 use ActiveLayer\Helpers\SettingsHelper;
 use ActiveLayer\Logger\Logger;
 
@@ -353,6 +354,7 @@ class ApiClient {
 	 * when submissions are processed asynchronously via queue.
 	 *
 	 * @since 1.0.0
+	 * @since 1.6.2 Normalize timestamps via RequestHelper::to_timestamp().
 	 *
 	 * @param array $submission_data Submission data that may contain created_at.
 	 *
@@ -362,16 +364,9 @@ class ApiClient {
 
 		// Use original submission time if provided.
 		if ( ! empty( $submission_data['created_at'] ) ) {
-			$timestamp = $submission_data['created_at'];
+			$timestamp = RequestHelper::to_timestamp( $submission_data['created_at'] );
 
-			// Handle MySQL datetime string.
-			if ( is_string( $timestamp ) && ! is_numeric( $timestamp ) ) {
-				$parsed = strtotime( $timestamp );
-
-				return $parsed !== false ? $parsed : time();
-			}
-
-			return (int) $timestamp;
+			return $timestamp > 0 ? $timestamp : time();
 		}
 
 		// Fall back to current time for sync requests.

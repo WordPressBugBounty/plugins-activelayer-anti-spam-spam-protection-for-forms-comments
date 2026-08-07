@@ -310,9 +310,38 @@ class RequestHelper {
 	}
 
 	/**
+	 * Convert a stored submission date to a Unix timestamp.
+	 *
+	 * The `created_at` and `processed_at` columns are written with
+	 * `current_time( 'mysql' )`, so they hold site-local time with no timezone
+	 * marker. PHP runs in UTC under WordPress, so a plain `strtotime()` would
+	 * read them as UTC and shift the result by the site's offset.
+	 *
+	 * @since 1.6.2
+	 *
+	 * @param mixed $value MySQL datetime string or Unix timestamp.
+	 *
+	 * @return int Unix timestamp, or 0 when the value cannot be parsed.
+	 */
+	public static function to_timestamp( $value ): int {
+
+		if ( empty( $value ) ) {
+			return 0;
+		}
+
+		if ( is_numeric( $value ) ) {
+			return (int) $value;
+		}
+
+		// Parses in the site timezone (DST aware) and returns UTC seconds.
+		return (int) get_gmt_from_date( (string) $value, 'U' );
+	}
+
+	/**
 	 * Format submission data for output.
 	 *
 	 * @since 1.0.0
+	 * @since 1.6.2 Parse stored dates in the site timezone.
 	 *
 	 * @param array $raw_submission Raw submission from database.
 	 *
@@ -335,11 +364,11 @@ class RequestHelper {
 
 		// Convert timestamps to Unix timestamps.
 		if ( ! empty( $submission['created_at'] ) ) {
-			$submission['created_at'] = strtotime( $submission['created_at'] );
+			$submission['created_at'] = self::to_timestamp( $submission['created_at'] );
 		}
 
 		if ( ! empty( $submission['processed_at'] ) ) {
-			$submission['processed_at'] = strtotime( $submission['processed_at'] );
+			$submission['processed_at'] = self::to_timestamp( $submission['processed_at'] );
 		}
 
 		if ( isset( $submission['retry_count'] ) ) {
