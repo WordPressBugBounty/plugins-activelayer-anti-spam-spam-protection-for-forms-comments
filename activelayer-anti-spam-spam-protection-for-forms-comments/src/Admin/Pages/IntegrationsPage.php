@@ -6,7 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use ActiveLayer\Admin\AdminPages;
 use ActiveLayer\Admin\Onboarding\OnboardingBanner;
 use ActiveLayer\Admin\Onboarding\OnboardingManager;
 use ActiveLayer\Helpers\ArrayHelper;
@@ -186,8 +185,6 @@ class IntegrationsPage {
 		}
 
 		$display_integrations = $this->sort_integrations_for_display( $display_integrations );
-
-		AdminPages::render_header();
 
 		?>
 		<div class="wrap activelayer-admin-wrap activelayer-page-integrations">

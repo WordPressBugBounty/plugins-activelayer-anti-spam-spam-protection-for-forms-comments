@@ -281,6 +281,7 @@ class SubmissionRepository {
 	 * Find submission by ID.
 	 *
 	 * @since 1.0.0
+	 * @since 1.7.0 Keep database reads and cache fills in the same generation.
 	 *
 	 * @param string $id Submission ID.
 	 *
@@ -288,7 +289,8 @@ class SubmissionRepository {
 	 */
 	public function find( string $id ): ?array {
 
-		$cached = $this->cache->get_submission( $id );
+		$generation = $this->cache->get_submission_cache_generation();
+		$cached     = $this->cache->get_submission( $id, $generation );
 
 		if ( $cached !== null ) {
 			return $cached;
@@ -316,9 +318,41 @@ class SubmissionRepository {
 
 		$formatted = RequestHelper::format_submission( $result );
 
-		$this->cache->set_submission( $id, $formatted );
+		$this->cache->set_submission( $id, $formatted, $generation );
 
 		return $formatted;
+	}
+
+	/**
+	 * Find the newest non-trashed submission stored for a provider entry.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @param string $provider Provider slug (e.g. wpforms).
+	 * @param string $entry_id Provider entry identifier.
+	 *
+	 * @return array|null Submission data or null if not found or table is absent.
+	 */
+	public function find_by_entry_id( string $provider, string $entry_id ): ?array {
+
+		if ( $provider === '' || $entry_id === '' || ! $this->schema_manager->table_exists() ) {
+			return null;
+		}
+
+		global $wpdb;
+
+		$table_name = esc_sql( $this->schema_manager->get_table_name() );
+
+		$result = $wpdb->get_row( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->prepare(
+				"SELECT * FROM `$table_name` WHERE provider = %s AND entry_id = %s AND status != 'trash' ORDER BY id DESC LIMIT 1", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$provider,
+				$entry_id
+			),
+			ARRAY_A
+		);
+
+		return $result ? RequestHelper::format_submission( $result ) : null;
 	}
 
 	/**
@@ -530,7 +564,7 @@ class SubmissionRepository {
 	}
 
 	/**
-	 * Delete all submissions with a given status.
+	 * Delete all submissions with a given status and invalidate cached results.
 	 *
 	 * @since 1.1.0
 	 *
@@ -564,14 +598,42 @@ class SubmissionRepository {
 		$deleted_count = (int) $wpdb->rows_affected;
 
 		if ( $deleted_count > 0 ) {
-			$this->cache->invalidate_list_cache();
+			$this->cache->clear_all_submission_cache();
 		}
 
 		return $deleted_count;
 	}
 
 	/**
-	 * Delete submissions older than specified days.
+	 * Delete every submission regardless of status.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @return int Number of deleted submissions, or 0 when the table is absent.
+	 */
+	public function delete_all(): int {
+
+		if ( ! $this->schema_manager->table_exists() ) {
+			return 0;
+		}
+
+		global $wpdb;
+
+		$table_name = esc_sql( $this->schema_manager->get_table_name() );
+
+		$wpdb->query( "DELETE FROM `$table_name`" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
+
+		$deleted_count = (int) $wpdb->rows_affected;
+
+		if ( $deleted_count > 0 ) {
+			$this->cache->clear_all_submission_cache();
+		}
+
+		return $deleted_count;
+	}
+
+	/**
+	 * Delete submissions older than specified days and invalidate cached results.
 	 *
 	 * @since 1.0.0
 	 *
@@ -609,7 +671,7 @@ class SubmissionRepository {
 		$deleted_count = (int) $wpdb->rows_affected;
 
 		if ( $deleted_count > 0 ) {
-			$this->cache->invalidate_list_cache();
+			$this->cache->clear_all_submission_cache();
 		}
 
 		return $deleted_count;

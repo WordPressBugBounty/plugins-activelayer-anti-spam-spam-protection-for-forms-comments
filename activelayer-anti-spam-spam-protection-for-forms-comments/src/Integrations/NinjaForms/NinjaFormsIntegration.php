@@ -212,7 +212,8 @@ class NinjaFormsIntegration extends BaseFormIntegration {
 	/**
 	 * Add the hidden environment signals field to the form HTML.
 	 *
-	 * Only adds for forms that have ActiveLayer protection enabled.
+	 * Only adds for forms that have ActiveLayer protection enabled. Also loads
+	 * the retry handler so a previous spam error cannot prevent a fresh check.
 	 *
 	 * @since 1.1.0
 	 *
@@ -232,6 +233,14 @@ class NinjaFormsIntegration extends BaseFormIntegration {
 		if ( ! $this->is_form_protected( $form_id ) ) {
 			return $html;
 		}
+
+		wp_enqueue_script(
+			'activelayer-ninja-forms',
+			ACTIVELAYER_PLUGIN_URL . 'assets/js/ninja-forms.js',
+			[ 'nf-front-end' ],
+			ACTIVELAYER_PLUGIN_VERSION,
+			true
+		);
 
 		return $html . FieldRenderer::render_all();
 	}

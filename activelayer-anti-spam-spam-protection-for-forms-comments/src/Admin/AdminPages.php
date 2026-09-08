@@ -142,6 +142,9 @@ class AdminPages {
 		add_action( 'admin_init', [ $this->settings_page, 'maybe_redirect_legacy_integration' ] );
 		add_action( 'admin_menu', [ $this, 'add_menu_pages' ] );
 		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_assets' ] );
+		// Priority 100 keeps us behind anything else on the hook; in_admin_header
+		// fires before #screen-meta, so the panel can no longer displace the header.
+		add_action( 'in_admin_header', [ $this, 'maybe_render_admin_header' ], 100 );
 		add_action( 'admin_print_scripts', [ $this, 'hide_unrelated_notices' ] );
 		add_action( 'admin_notices', [ SubmissionsTable::class, 'display_bulk_action_notices' ] );
 		add_action( 'wp_ajax_activelayer_verify_api_key', [ $this->settings_page, 'ajax_verify_api_key' ] );
@@ -246,6 +249,29 @@ class AdminPages {
 	}
 
 	/**
+	 * Render the branded admin header on ActiveLayer screens.
+	 *
+	 * Hooked to in_admin_header rather than printed inside each page callback:
+	 * WordPress outputs #screen-meta at the top of #wpbody-content, so a header
+	 * printed by the page was a later sibling and got pushed down the moment the
+	 * Screen Options panel expanded.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @return void
+	 */
+	public function maybe_render_admin_header(): void {
+
+		$screen = get_current_screen();
+
+		if ( ! $screen || strpos( $screen->id, 'activelayer' ) === false ) {
+			return;
+		}
+
+		self::render_header();
+	}
+
+	/**
 	 * Render admin header.
 	 *
 	 * @since 1.0.0
@@ -259,7 +285,7 @@ class AdminPages {
 			<div class="header-logo">
 				<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php esc_attr_e( 'ActiveLayer', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?>" />
 			</div>
-			<a href="https://activelayer.com/docs/api?utm_campaign=plugin&utm_source=WordPress&utm_medium=header_links&utm_content=help_button&utm_locale=en_US" target="_blank" class="header-help">
+			<a href="https://activelayer.com/docs/wordpress-plugin/?utm_campaign=plugin&utm_source=WordPress&utm_medium=header_links&utm_content=help_button&utm_locale=en_US" target="_blank" class="header-help">
 				<span class="dashicons dashicons-editor-help"></span>
 				<span class="help-text"><?php esc_html_e( 'Help', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></span>
 			</a>

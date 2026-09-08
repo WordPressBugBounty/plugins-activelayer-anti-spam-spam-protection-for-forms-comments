@@ -6,7 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use ActiveLayer\Admin\AdminPages;
 use ActiveLayer\Admin\Components\PaymentMethodNotice;
 use ActiveLayer\Admin\Settings\SettingsPersistor;
 use ActiveLayer\Api\ApiClient;
@@ -132,7 +131,6 @@ class SettingsPage {
 		$behavioral_tracking_enabled  = SettingsHelper::is_behavioral_tracking_enabled( $settings );
 		$retention_days               = SettingsHelper::get_retention_days( $settings );
 
-		AdminPages::render_header();
 		$this->render_notice();
 
 		?>

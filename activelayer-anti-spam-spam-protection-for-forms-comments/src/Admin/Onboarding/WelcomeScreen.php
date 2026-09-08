@@ -46,20 +46,22 @@ class WelcomeScreen {
 	}
 
 	/**
-	 * Register a hidden dashboard page for the welcome slug.
+	 * Register a hidden page for the welcome slug.
 	 *
 	 * Without a registered page, wp-admin's menu access check
 	 * (user_can_access_admin_page()) 403s the slug before admin_init runs.
-	 * Empty titles keep it out of the menu; the callback never renders
-	 * because maybe_render() exits first.
+	 * The empty parent slug parks the entry in an orphaned $submenu bucket
+	 * that no top-level menu renders, so nothing shows up in the sidebar;
+	 * the callback never renders because maybe_render() exits first.
 	 *
 	 * @since 1.6.0
+	 * @since 1.7.0 Registered without a parent; add_dashboard_page() left an empty item in the Dashboard submenu.
 	 *
 	 * @return void
 	 */
 	public function register_page(): void {
 
-		add_dashboard_page( '', '', 'manage_activelayer', self::PAGE_SLUG, '' );
+		add_submenu_page( '', '', '', 'manage_activelayer', self::PAGE_SLUG, '' );
 	}
 
 	/**

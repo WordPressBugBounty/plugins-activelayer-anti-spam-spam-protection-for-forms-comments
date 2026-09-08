@@ -2,8 +2,8 @@
 Contributors: smub, dimitrism, ernest35
 Tags: anti-spam, antispam, spam protection, contact form, comment spam
 Requires at least: 5.5
-Tested up to: 7.0
-Stable tag: 1.6.2
+Tested up to: 7.1
+Stable tag: 1.7.0
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -218,6 +218,9 @@ This plugin connects to the ActiveLayer API to analyze form submissions and comm
 
 == Upgrade Notice ==
 
+= 1.7.0 =
+Two-way spam status sync with WPForms Pro entries, a proper pre-save block that honours "Store Spam Entries" in sync mode, and a Submissions page with IP column, per-page setting, Delete bulk action and a Delete All tool. Also fixes WPForms notification emails being lost in asynchronous mode when Action Scheduler is unavailable. Tested up to WordPress 7.1. Recommended upgrade.
+
 = 1.6.2 =
 Fixes a WPForms conflict where notification emails for forms with Repeater fields showed only the first row. Recommended for anyone using Repeater fields.
 Fixes submission dates being shown with the wrong time on any site not set to UTC. Recommended for all sites outside UTC.
@@ -250,6 +253,25 @@ WooCommerce integration: spam protection for Product Reviews and Customer Regist
 Five new form integrations (Gravity Forms, Elementor Forms, Fluent Forms, Forminator, SureForms), global Sync Mode, client-side behavioral and environment signals, Tools page with bulk delete, conditional frontend script loading, and security hardening. Recommended upgrade for all users.
 
 == Changelog ==
+
+= 1.7.0 =
+* Added: WPForms — spam status now syncs both ways, including forms using tracking mode. Marking a submission as Spam or Clean in ActiveLayer updates the matching WPForms Pro entry, and using WPForms' own "Spam" / "Not Spam" entry actions (single or bulk) corrects the ActiveLayer submission and sends feedback to the API. Status sync preserves trashed submissions and trashed or incomplete WPForms entries.
+* Added: Submissions — new "IP Address" column so you can spot recurring IPs and subnets at a glance.
+* Added: Submissions — choose how many submissions to show per page (1–200) from the Screen Options panel. Defaults to 20 as before.
+* Added: Submissions — "Delete" bulk action that removes selected submissions permanently, alongside the existing "Move to Trash".
+* Added: Submissions — "Mark as Spam" and "Mark as Clean" bulk actions are now both offered on the All view, so you no longer have to switch to the Clean or Spam tab to change a status.
+* Added: Tools — "Delete All Submissions" tool that wipes every stored submission regardless of status or age, including Trash, and immediately refreshes submission lists, counts and cached details.
+* Fixed: WPForms — in synchronous mode, forms with "Store Spam Entries" turned off no longer save a spam entry. Spam is now rejected before the entry is written, so no notification, webhook, marketing or user-registration action fires for blocked submissions. Forms that store spam entries and payment forms keep the previous post-save behaviour. Retrying a failed check does not resend notifications already handled by WPForms.
+* Fixed: WPForms — the custom block message is now shown to the visitor. Previously WPForms discarded it and displayed only its generic error notice.
+* Fixed: WPForms — entries marked as spam now name ActiveLayer in the "This entry was marked as spam by …" notice on the entry details screen.
+* Fixed: WPForms — in asynchronous mode, notification emails are no longer lost on sites where Action Scheduler is unavailable. Previously the notification was held waiting for a verdict that could never arrive, so the email was never sent.
+* Fixed: Submissions — the bottom "Apply" button for bulk actions did nothing, and the confirmation dialog before permanent deletion never appeared. Both work now.
+* Fixed: Admin — the Help link in the plugin header now opens the WordPress plugin guide instead of the API developer docs.
+* Fixed: Admin — the welcome screen no longer leaves an empty item in the WordPress Dashboard submenu.
+* Fixed: Admin — the WordPress toolbar no longer overlaps the ActiveLayer logo and Help link on mobile screens.
+* Fixed: Ninja Forms — forms without entry storage can be submitted again after a spam rejection without reloading the page. Each retry is checked for spam again.
+* Fixed: Tools — Empty Trash, Delete All Spam and deletion of old submissions now immediately refresh cached counts, charts and submission details on sites using a persistent object cache.
+* Compatibility: Tested up to WordPress 7.1.
 
 = 1.6.2 =
 * Fixed: WPForms — notification emails for forms with Repeater fields now include every row. Previously only the first row appeared in the email, even though the entry itself stored all of them.

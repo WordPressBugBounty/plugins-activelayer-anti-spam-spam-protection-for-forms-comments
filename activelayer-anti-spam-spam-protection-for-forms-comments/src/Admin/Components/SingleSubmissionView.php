@@ -2,7 +2,6 @@
 
 namespace ActiveLayer\Admin\Components;
 
-use ActiveLayer\Admin\AdminPages;
 use ActiveLayer\Helpers\FormDisplayResolver;
 use ActiveLayer\Integrations\IntegrationRegistry;
 use ActiveLayer\Storage\Storage;
@@ -62,7 +61,6 @@ class SingleSubmissionView {
 			wp_die( esc_html__( 'Submission not found.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) );
 		}
 
-		AdminPages::render_header();
 		?>
 		<div class="wrap activelayer-admin-wrap activelayer-page-submissions">
 			<h1><?php esc_html_e( 'View Submission', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></h1>

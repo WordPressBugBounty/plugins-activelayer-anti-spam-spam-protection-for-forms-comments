@@ -162,6 +162,7 @@ class ComposerStaticInitd05dd8ea3c55d69a47c9fadb35a84df0
         'ActiveLayer\\Integrations\\Traits\\SilentDiscardTrait' => __DIR__ . '/../..' . '/src/Integrations/Traits/SilentDiscardTrait.php',
         'ActiveLayer\\Integrations\\WPForms\\AdminSettings' => __DIR__ . '/../..' . '/src/Integrations/WPForms/AdminSettings.php',
         'ActiveLayer\\Integrations\\WPForms\\EmailReconstructor' => __DIR__ . '/../..' . '/src/Integrations/WPForms/EmailReconstructor.php',
+        'ActiveLayer\\Integrations\\WPForms\\EntryStatusSync' => __DIR__ . '/../..' . '/src/Integrations/WPForms/EntryStatusSync.php',
         'ActiveLayer\\Integrations\\WPForms\\SubmissionHandler' => __DIR__ . '/../..' . '/src/Integrations/WPForms/SubmissionHandler.php',
         'ActiveLayer\\Integrations\\WPForms\\WPFormsIntegration' => __DIR__ . '/../..' . '/src/Integrations/WPForms/WPFormsIntegration.php',
         'ActiveLayer\\Integrations\\WSForm\\AdminSettings' => __DIR__ . '/../..' . '/src/Integrations/WSForm/AdminSettings.php',

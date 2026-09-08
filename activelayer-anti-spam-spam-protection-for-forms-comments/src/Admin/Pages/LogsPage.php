@@ -6,7 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use ActiveLayer\Admin\AdminPages;
 use ActiveLayer\Helpers\NoticeHelper;
 use ActiveLayer\Logger\Logger;
 
@@ -33,7 +32,6 @@ class LogsPage {
 
 		$logs = Logger::get_logs();
 
-		AdminPages::render_header();
 		?>
 		<div class="wrap activelayer-admin-wrap activelayer-page-logs">
 			<h1><?php esc_html_e( 'ActiveLayer Logs', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></h1>

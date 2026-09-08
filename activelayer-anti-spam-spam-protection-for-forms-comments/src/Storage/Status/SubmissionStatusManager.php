@@ -385,6 +385,7 @@ class SubmissionStatusManager {
 	 * Find submission by ID.
 	 *
 	 * @since 1.0.0
+	 * @since 1.7.0 Keep database reads and cache fills in the same generation.
 	 *
 	 * @param string $id Submission ID.
 	 *
@@ -392,7 +393,8 @@ class SubmissionStatusManager {
 	 */
 	private function find_submission( string $id ): ?array {
 
-		$cached = $this->cache->get_submission( $id );
+		$generation = $this->cache->get_submission_cache_generation();
+		$cached     = $this->cache->get_submission( $id, $generation );
 
 		if ( $cached !== null ) {
 			return $cached;
@@ -420,7 +422,7 @@ class SubmissionStatusManager {
 
 		$formatted = RequestHelper::format_submission( $result );
 
-		$this->cache->set_submission( $id, $formatted );
+		$this->cache->set_submission( $id, $formatted, $generation );
 
 		return $formatted;
 	}

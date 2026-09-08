@@ -231,6 +231,21 @@ class Storage {
 	}
 
 	/**
+	 * Find the newest non-trashed submission stored for a provider entry.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @param string $provider Provider slug (e.g. wpforms).
+	 * @param string $entry_id Provider entry identifier.
+	 *
+	 * @return array|null Submission data or null if not found.
+	 */
+	public function find_by_entry_id( string $provider, string $entry_id ): ?array {
+
+		return $this->repository->find_by_entry_id( $provider, $entry_id );
+	}
+
+	/**
 	 * Get submissions for admin interface with basic filtering.
 	 * Sanitizes filter arguments before querying the submissions table.
 	 *
@@ -403,5 +418,17 @@ class Storage {
 	public function delete_older_than( int $days ): int {
 
 		return $this->repository->delete_older_than( $days );
+	}
+
+	/**
+	 * Delete every submission regardless of status.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @return int Number of deleted submissions, or 0 when the table is absent.
+	 */
+	public function delete_all(): int {
+
+		return $this->repository->delete_all();
 	}
 }

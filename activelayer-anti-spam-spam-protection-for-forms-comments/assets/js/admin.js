@@ -212,9 +212,13 @@
 	} );
 
 	// Bulk actions confirmation
-	$( '.wp-list-table' ).on( 'submit', function( e ) {
-		const action = $( this ).find( 'select[name="action"]' ).val();
-		const selectedItems = $( this ).find( 'input[name="submission[]"]:checked' ).length;
+	$( '.activelayer-page-submissions form' ).on( 'submit', function( e ) {
+		const $form = $( this );
+		// Only one of the two bulk selects is set to a real action at a time.
+		const action = [ 'select[name="action"]', 'select[name="action2"]' ]
+			.map( ( selector ) => $form.find( selector ).val() )
+			.find( ( value ) => value && value !== '-1' );
+		const selectedItems = $form.find( 'input[name="submission[]"]:checked' ).length;
 
 		if ( action === 'delete' && selectedItems > 0 ) {
 			const template = getString( 'bulkDeleteConfirm' );

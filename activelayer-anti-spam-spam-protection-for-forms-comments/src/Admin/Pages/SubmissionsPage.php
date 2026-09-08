@@ -2,7 +2,6 @@
 
 namespace ActiveLayer\Admin\Pages;
 
-use ActiveLayer\Admin\AdminPages;
 use ActiveLayer\Admin\Components\SingleSubmissionView;
 use ActiveLayer\Admin\Components\SubmissionActionHandler;
 use ActiveLayer\Admin\Components\SubmissionsTable;
@@ -70,13 +69,66 @@ class SubmissionsPage {
 	 * Register WordPress hooks.
 	 *
 	 * @since 1.0.0
+	 * @since 1.7.0 Register the per-page screen option and its save handler.
 	 */
 	private function hooks(): void {
 
 		add_action( 'admin_init', [ $this, 'handle_single_actions' ] );
+		// Screen options must be registered on the screen load hook, before admin-header.php renders the panel.
+		add_action( 'load-activelayer_page_activelayer-submissions', [ $this, 'add_screen_options' ] );
 		// WP_List_Table bulk actions fire on the screen load hook for the submenu page.
 		add_action( 'load-activelayer_page_activelayer-submissions', [ $this, 'handle_bulk_actions' ] );
+		// set_screen_options() runs before any load-* hook, so this filter is registered on plugin init.
+		add_filter( 'set_screen_option_submissions_per_page', [ $this, 'save_per_page_option' ], 10, 3 );
 		add_action( 'admin_notices', [ $this, 'display_single_action_notice' ] );
+	}
+
+	/**
+	 * Register the "Submissions per page" screen option.
+	 *
+	 * @since 1.7.0
+	 */
+	public function add_screen_options(): void {
+
+		add_screen_option(
+			'per_page',
+			[
+				'label'   => esc_html__( 'Submissions per page', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+				'default' => 20,
+				'option'  => 'submissions_per_page',
+			]
+		);
+	}
+
+	/**
+	 * Sanitize the per-page screen option before it is stored in user meta.
+	 *
+	 * Out-of-range values are ignored so the previously stored choice survives,
+	 * mirroring how WordPress handles its own per-page options.
+	 *
+	 * set_screen_options() skips saving only on a strict false, and the value it
+	 * hands this filter has already passed through the deprecated
+	 * 'set-screen-option' filter, which other active plugins hook and return the
+	 * raw submitted number from. Returning that incoming value would therefore
+	 * store the rejected number, so bail with an explicit false instead.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @param mixed  $screen_option Value to save instead of the submitted one, or false to skip saving.
+	 * @param string $option        Option name.
+	 * @param mixed  $value         Submitted option value.
+	 *
+	 * @return int|false Sanitized submissions per page, or false to skip saving.
+	 */
+	public function save_per_page_option( $screen_option, string $option, $value ) {
+
+		$per_page = (int) $value;
+
+		if ( $per_page < 1 || $per_page > 200 ) {
+			return false;
+		}
+
+		return $per_page;
 	}
 
 	/**
@@ -105,8 +157,6 @@ class SubmissionsPage {
 		$table = new SubmissionsTable();
 
 		$table->prepare_items();
-
-		AdminPages::render_header();
 
 		?>
 		<div class="wrap activelayer-admin-wrap activelayer-page-submissions">
@@ -147,6 +197,7 @@ class SubmissionsPage {
 	 * Handle bulk actions (called on page load before any output).
 	 *
 	 * @since 1.0.0
+	 * @since 1.7.0 Allowed the permanent delete bulk action and resolved the bottom bulk selector.
 	 */
 	public function handle_bulk_actions(): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.MaxExceeded
 
@@ -155,11 +206,16 @@ class SubmissionsPage {
 			wp_die( esc_html__( 'Sorry, you are not allowed to access this page.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) );
 		}
 
-		// Get current action.
+		// Get current action. The unused select posts "-1", so skip it like WP_List_Table::current_action() does.
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Sanitized immediately, validated below.
-		$action = sanitize_key( wp_unslash( $_REQUEST['action'] ?? $_REQUEST['action2'] ?? '' ) );
+		$action = sanitize_key( wp_unslash( $_REQUEST['action'] ?? '' ) );
 
-		$allowed_actions = [ 'recheck', 'mark_clean', 'mark_spam', 'trash', 'restore', 'delete_permanently' ];
+		if ( $action === '' || $action === '-1' ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Sanitized immediately, validated below.
+			$action = sanitize_key( wp_unslash( $_REQUEST['action2'] ?? '' ) );
+		}
+
+		$allowed_actions = [ 'recheck', 'mark_clean', 'mark_spam', 'trash', 'delete', 'restore', 'delete_permanently' ];
 
 		if ( ! in_array( $action, $allowed_actions, true ) ) {
 			return;

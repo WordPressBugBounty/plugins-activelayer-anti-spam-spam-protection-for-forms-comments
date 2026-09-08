@@ -6,7 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use ActiveLayer\Admin\AdminPages;
 use ActiveLayer\Admin\Components\DashboardWidget;
 use ActiveLayer\Admin\Components\PluginInstaller;
 use ActiveLayer\Admin\Onboarding\OnboardingBanner;
@@ -205,8 +204,6 @@ class DashboardPage {
 	public function render(): void {
 
 		$has_api_key = SettingsHelper::has_api_key();
-
-		AdminPages::render_header();
 
 		?>
 		<div class="wrap activelayer-admin-wrap activelayer-page-dashboard">

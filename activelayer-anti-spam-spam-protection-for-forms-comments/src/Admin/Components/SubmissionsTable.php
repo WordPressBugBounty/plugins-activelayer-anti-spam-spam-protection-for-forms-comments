@@ -66,6 +66,7 @@ class SubmissionsTable extends WP_List_Table {
 	 * Get table columns.
 	 *
 	 * @since 1.0.0
+	 * @since 1.7.0 Added the IP address column.
 	 *
 	 * @return array Columns array.
 	 */
@@ -75,6 +76,7 @@ class SubmissionsTable extends WP_List_Table {
 			'cb'           => '<input type="checkbox" />',
 			'id'           => __( 'ID', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 			'email'        => __( 'Email', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+			'ip'           => __( 'IP Address', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 			'provider'     => __( 'Provider', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 			'status'       => __( 'Status', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 			'processed_at' => __( 'Processed', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
@@ -97,6 +99,8 @@ class SubmissionsTable extends WP_List_Table {
 	 * Get bulk actions.
 	 *
 	 * @since 1.0.0
+	 * @since 1.7.0 Offer mark as spam/clean in every non-trash view and add a permanent delete action.
+	 * @since 1.7.0 Offer mark actions only where clean/spam rows can exist, minus the current status.
 	 *
 	 * @return array Bulk actions.
 	 */
@@ -118,15 +122,20 @@ class SubmissionsTable extends WP_List_Table {
 			$actions['recheck'] = __( 'Recheck with API', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
 		}
 
-		if ( $current_status === 'spam' ) {
+		// Only clean <-> spam transitions are allowed (SubmissionActionHandler::is_valid_transition()),
+		// so pending and failed rows can never be marked and the current status is a no-op target.
+		$can_mark = ! in_array( $current_status, [ 'pending', 'failed' ], true );
+
+		if ( $can_mark && $current_status !== 'clean' ) {
 			$actions['mark_clean'] = __( 'Mark as Clean', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
 		}
 
-		if ( $current_status === 'clean' ) {
+		if ( $can_mark && $current_status !== 'spam' ) {
 			$actions['mark_spam'] = __( 'Mark as Spam', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
 		}
 
-		$actions['trash'] = __( 'Move to Trash', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
+		$actions['trash']  = __( 'Move to Trash', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
+		$actions['delete'] = __( 'Delete', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
 
 		return $actions;
 	}
@@ -563,6 +572,23 @@ class SubmissionsTable extends WP_List_Table {
 	}
 
 	/**
+	 * IP address column.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @param array $item Item data.
+	 *
+	 * @return string Column HTML.
+	 */
+	protected function column_ip( array $item ): string {
+
+		$form_data = $item['form_data'] ?? [];
+		$ip        = ! empty( $form_data['ip'] ) ? $form_data['ip'] : __( 'N/A', 'activelayer-anti-spam-spam-protection-for-forms-comments' );
+
+		return esc_html( $ip );
+	}
+
+	/**
 	 * Build row actions for a submission entry.
 	 *
 	 * @since 1.0.0
@@ -824,6 +850,7 @@ class SubmissionsTable extends WP_List_Table {
 	 * Display admin notices for bulk actions.
 	 *
 	 * @since 1.0.0
+	 * @since 1.7.0 Added the permanent delete bulk action message.
 	 */
 	public static function display_bulk_action_notices(): void {
 
@@ -870,6 +897,13 @@ class SubmissionsTable extends WP_List_Table {
 			'trash'              => _n(
 				'%d submission moved to trash.',
 				'%d submissions moved to trash.',
+				$count,
+				'activelayer-anti-spam-spam-protection-for-forms-comments'
+			),
+			/* translators: %d: number of submissions. */
+			'delete'             => _n(
+				'%d submission deleted permanently.',
+				'%d submissions deleted permanently.',
 				$count,
 				'activelayer-anti-spam-spam-protection-for-forms-comments'
 			),

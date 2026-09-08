@@ -6,7 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-use ActiveLayer\Admin\AdminPages;
 use ActiveLayer\Admin\Onboarding\OnboardingBanner;
 use ActiveLayer\Admin\Onboarding\OnboardingManager;
 use ActiveLayer\Helpers\NoticeHelper;
@@ -43,12 +42,12 @@ class ToolsPage {
 	 * Render tools page.
 	 *
 	 * @since 1.0.0
+	 * @since 1.7.0 Added the Delete All Submissions tool.
 	 */
 	public function render(): void {
 
 		$this->handle_form_submission();
 
-		AdminPages::render_header();
 		?>
 		<div class="wrap activelayer-admin-wrap activelayer-page-tools">
 			<h1><?php esc_html_e( 'Tools', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></h1>
@@ -165,6 +164,26 @@ class ToolsPage {
 				</form>
 			</div>
 
+			<div class="card activelayer-tool-card">
+				<h2><?php esc_html_e( 'Delete All Submissions', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></h2>
+				<p class="description">
+					<?php esc_html_e( 'Permanently delete every submission, whatever its status, including trashed ones. This action cannot be undone.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?>
+				</p>
+				<form method="post" class="activelayer-tool-form">
+					<?php wp_nonce_field( 'activelayer_tools_delete_all_submissions' ); ?>
+					<p class="submit">
+						<button
+							type="submit"
+							name="activelayer_delete_all_submissions"
+							class="button button-secondary"
+							onclick="return confirm('<?php echo esc_js( __( 'Are you sure you want to permanently delete all submissions, including trashed ones? This action cannot be undone.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) ); ?>')"
+						>
+							<?php esc_html_e( 'Delete All Submissions', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?>
+						</button>
+					</p>
+				</form>
+			</div>
+
 		</div>
 		<?php
 	}
@@ -173,6 +192,7 @@ class ToolsPage {
 	 * Handle form submission for tools page actions.
 	 *
 	 * @since 1.0.0
+	 * @since 1.7.0 Route the Delete All Submissions action.
 	 */
 	private function handle_form_submission(): void {
 
@@ -198,6 +218,13 @@ class ToolsPage {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Routing only; nonce verified in handle_delete_all_spam().
 		if ( isset( $_POST['activelayer_delete_all_spam'] ) ) {
 			$this->handle_delete_all_spam();
+
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Routing only; nonce verified in handle_delete_all_submissions().
+		if ( isset( $_POST['activelayer_delete_all_submissions'] ) ) {
+			$this->handle_delete_all_submissions();
 
 			return;
 		}
@@ -332,6 +359,50 @@ class ToolsPage {
 				_n(
 					'%d spam submission deleted.',
 					'%d spam submissions deleted.',
+					$deleted_count,
+					'activelayer-anti-spam-spam-protection-for-forms-comments'
+				),
+				$deleted_count
+			),
+		];
+	}
+
+	/**
+	 * Handle delete all submissions action.
+	 *
+	 * Deletes every submission regardless of status, trashed ones included.
+	 *
+	 * @since 1.7.0
+	 */
+	private function handle_delete_all_submissions(): void {
+
+		if ( ! check_admin_referer( 'activelayer_tools_delete_all_submissions' ) ) {
+			$this->notice = [
+				'type'    => 'error',
+				'message' => __( 'Security check failed. Please try again.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+			];
+
+			return;
+		}
+
+		if ( ! current_user_can( 'manage_activelayer' ) ) {
+			$this->notice = [
+				'type'    => 'error',
+				'message' => __( 'You do not have permission to perform this action.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+			];
+
+			return;
+		}
+
+		$deleted_count = Storage::get_instance()->delete_all();
+
+		$this->notice = [
+			'type'    => 'success',
+			'message' => sprintf(
+				/* translators: %d: number of deleted submissions. */
+				_n(
+					'%d submission deleted.',
+					'%d submissions deleted.',
 					$deleted_count,
 					'activelayer-anti-spam-spam-protection-for-forms-comments'
 				),

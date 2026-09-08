@@ -695,6 +695,9 @@
 .wp-list-table .column-id {
   width: 35px;
 }
+.wp-list-table .column-ip {
+  width: 130px;
+}
 .wp-list-table .column-provider {
   width: 160px;
 }

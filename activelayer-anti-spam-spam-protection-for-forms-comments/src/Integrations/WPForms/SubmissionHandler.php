@@ -88,7 +88,10 @@ class SubmissionHandler {
 		}
 
 		if ( $strategy === WPFormsIntegration::STRATEGY_SYNC_BLOCK ) {
-			// Already handled by maybe_handle_sync_submission().
+			// The verdict was already handled by maybe_handle_sync_submission(), which ran
+			// before the entry existed - attach the entry now so status sync can find it.
+			$this->integration->link_sync_submission_to_entry( (int) ( $form_data['id'] ?? 0 ), $entry_id );
+
 			return;
 		}
 
@@ -160,8 +163,14 @@ class SubmissionHandler {
 	 * Runs a blocking API check after the entry is created, then marks
 	 * the entry as spam or allows emails based on the verdict.
 	 *
+	 * Reached for forms that store spam entries - marking the entry afterwards is what
+	 * that setting asks for - and for payment forms. Forms that do not store spam
+	 * entries are verified before entry creation in
+	 * WPFormsIntegration::maybe_handle_sync_submission() instead.
+	 *
 	 * @since 1.1.0
 	 * @since 1.4.0 Attach payment signals to submission context.
+	 * @since 1.7.0 No longer reached by forms that do not store spam entries.
 	 *
 	 * @param array $fields    Form fields data.
 	 * @param array $form_data Form configuration.

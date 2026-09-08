@@ -56,6 +56,15 @@ class WPFormsIntegration extends BaseFormIntegration {
 	private $admin_settings;
 
 	/**
+	 * Entry status sync instance.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @var EntryStatusSync
+	 */
+	private $entry_status_sync;
+
+	/**
 	 * Queue failure cache for current request.
 	 *
 	 * @since 1.0.0
@@ -77,9 +86,22 @@ class WPFormsIntegration extends BaseFormIntegration {
 	private $sync_validated_forms = [];
 
 	/**
+	 * Submissions created on the pre-save path, keyed by form ID.
+	 *
+	 * The entry does not exist yet when `maybe_handle_sync_submission()` runs, so the
+	 * submission is stored without an entry ID and linked once WPForms saves the entry.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @var array<int,string>
+	 */
+	private $sync_submission_ids = [];
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
+	 * @since 1.7.0 Added the entry status sync component.
 	 */
 	public function __construct() {
 
@@ -89,6 +111,7 @@ class WPFormsIntegration extends BaseFormIntegration {
 		$this->submission_handler  = new SubmissionHandler( $this );
 		$this->email_reconstructor = new EmailReconstructor( $this );
 		$this->admin_settings      = new AdminSettings( $this );
+		$this->entry_status_sync   = new EntryStatusSync( $this );
 	}
 
 	/**
@@ -105,6 +128,7 @@ class WPFormsIntegration extends BaseFormIntegration {
 	 * Register WordPress hooks.
 	 *
 	 * @since 1.0.0
+	 * @since 1.7.0 Registers the entry status sync hooks.
 	 */
 	private function hooks(): void {
 
@@ -129,6 +153,9 @@ class WPFormsIntegration extends BaseFormIntegration {
 
 		// Add hidden field for environment signals to protected forms.
 		add_action( 'wpforms_display_submit_before', [ $this, 'output_environment_signals_field' ], 10, 1 );
+
+		// Keep WPForms entry spam status and ActiveLayer submission status in sync both ways.
+		$this->entry_status_sync->hooks();
 	}
 
 	/**
@@ -469,13 +496,11 @@ class WPFormsIntegration extends BaseFormIntegration {
 	 * submitted fields, with no database query and no Pro/entries requirement.
 	 * Returns an empty array for non-payment forms so callers attach nothing.
 	 *
-	 * A form counts as a payment form only when it has a WPForms payment field
-	 * (`wpforms_has_payment( 'form' )`). An enabled gateway alone is not
-	 * sufficient: WPForms cannot charge a form that has no payment field, so a
-	 * gateway-only form would otherwise be flagged sensitive without ever
-	 * collecting payment.
+	 * A form counts as a payment form only when it has a WPForms payment field - see
+	 * has_payment_field().
 	 *
 	 * @since 1.4.0
+	 * @since 1.7.0 Payment field detection extracted to has_payment_field().
 	 *
 	 * @param array $form_data Form configuration.
 	 * @param array $fields    Submitted form fields.
@@ -489,7 +514,7 @@ class WPFormsIntegration extends BaseFormIntegration {
 	 */
 	public function get_payment_signals( array $form_data, array $fields ): array {
 
-		if ( ! function_exists( 'wpforms_has_payment' ) || ! wpforms_has_payment( 'form', $form_data ) ) {
+		if ( ! $this->has_payment_field( $form_data ) ) {
 			return [];
 		}
 
@@ -543,9 +568,11 @@ class WPFormsIntegration extends BaseFormIntegration {
 	/**
 	 * Mark a WPForms entry as spam.
 	 *
-	 * Updates the entry status to 'spam' in the WPForms entries table.
+	 * Updates the entry status to 'spam' in the WPForms entries table and names
+	 * ActiveLayer as the spam reason.
 	 *
 	 * @since 1.1.0
+	 * @since 1.7.0 Record the spam reason meta.
 	 *
 	 * @param int   $entry_id  Entry identifier.
 	 * @param array $form_data Form configuration.
@@ -562,6 +589,34 @@ class WPFormsIntegration extends BaseFormIntegration {
 			'',
 			'',
 			[ 'cap' => false ]
+		);
+
+		$this->add_spam_reason_meta( $entry_id, (int) ( $form_data['id'] ?? 0 ) );
+	}
+
+	/**
+	 * Record ActiveLayer as the WPForms spam reason for an entry.
+	 *
+	 * WPForms Pro reads the `spam` entry meta to name the anti-spam method in the
+	 * "This entry was marked as spam by %s." notice on the entry details screen
+	 * (`WPForms\Pro\AntiSpam\SpamEntry::get_spam_reason()`). Without the row the
+	 * sentence renders with an empty name.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @param int $entry_id Entry identifier.
+	 * @param int $form_id  Form identifier.
+	 */
+	private function add_spam_reason_meta( int $entry_id, int $form_id ): void {
+
+		wpforms()->obj( 'entry_meta' )->add(
+			[
+				'entry_id' => $entry_id,
+				'form_id'  => $form_id,
+				'type'     => 'spam',
+				'data'     => 'ActiveLayer',
+			],
+			'entry_meta'
 		);
 	}
 
@@ -584,14 +639,52 @@ class WPFormsIntegration extends BaseFormIntegration {
 	}
 
 	/**
+	 * Check whether the form stores spam entries.
+	 *
+	 * Mirrors the `$store_spam_entries` read in `WPForms_Process::process()`: when the
+	 * setting is off, WPForms converts a spam verdict into a form error instead of
+	 * saving the entry. Absent means off, matching WPForms.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @param array $form_data Form configuration.
+	 *
+	 * @return bool
+	 */
+	public function should_store_spam_entry( array $form_data ): bool {
+
+		return $this->can_store_entries( $form_data ) && ! empty( $form_data['settings']['store_spam_entries'] );
+	}
+
+	/**
+	 * Check whether the form has a WPForms payment field.
+	 *
+	 * An enabled gateway alone is not enough: WPForms cannot charge a form that has
+	 * no payment field.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @param array $form_data Form configuration.
+	 *
+	 * @return bool
+	 */
+	public function has_payment_field( array $form_data ): bool {
+
+		return function_exists( 'wpforms_has_payment' ) && (bool) wpforms_has_payment( 'form', $form_data );
+	}
+
+	/**
 	 * Determine the processing strategy for the form.
 	 *
 	 * Returns the strategy based on sync mode and entry storage capability:
 	 * - 'async': background processing via Action Scheduler.
-	 * - 'sync_block': synchronous API check, block spam before entry creation.
-	 * - 'sync_save': synchronous API check after entry is saved.
+	 * - 'sync_block': synchronous API check on `wpforms_process`, before the entry is
+	 *   created, so a spam verdict stops the submission outright.
+	 * - 'sync_save': synchronous API check on `wpforms_process_complete`, after the
+	 *   entry is saved, which marks the entry as spam after the fact.
 	 *
 	 * @since 1.1.0
+	 * @since 1.7.0 Forms that do not store spam entries are now checked before entry creation.
 	 *
 	 * @param array $form_data Form configuration.
 	 *
@@ -600,17 +693,29 @@ class WPFormsIntegration extends BaseFormIntegration {
 	public function get_processing_strategy( array $form_data ): string {
 
 		if ( $this->is_sync_mode() ) {
-			return $this->can_store_entries( $form_data ) ? self::STRATEGY_SYNC_SAVE : self::STRATEGY_SYNC_BLOCK;
+			// Keep the post-save path for forms that store spam entries - marking the
+			// entry afterwards is what that setting asks for - and for payment forms,
+			// where gateways charge on `wpforms_process` priority 10: rejecting a
+			// submission one priority earlier would refuse a paid order, and on a 3D
+			// Secure confirmation re-submission the money has already moved.
+			if ( $this->can_store_entries( $form_data )
+				&& ( $this->should_store_spam_entry( $form_data ) || $this->has_payment_field( $form_data ) )
+			) {
+				return self::STRATEGY_SYNC_SAVE;
+			}
+
+			return self::STRATEGY_SYNC_BLOCK;
 		}
 
 		return $this->can_store_entries( $form_data ) ? self::STRATEGY_ASYNC : self::STRATEGY_SYNC_BLOCK;
 	}
 
 	/**
-	 * Handle synchronous verification when WPForms skips entry storage.
+	 * Handle synchronous verification before WPForms creates the entry.
 	 *
 	 * @since 1.0.0
 	 * @since 1.4.0 Attach payment signals to submission context.
+	 * @since 1.7.0 Also runs for forms that store entries but not spam entries. Retain tracking submissions for the later entry link.
 	 *
 	 * @param array $fields    Form fields data.
 	 * @param array $entry     Raw entry data (unused).
@@ -636,6 +741,14 @@ class WPFormsIntegration extends BaseFormIntegration {
 
 		$form_id = isset( $form_data['id'] ) ? (int) $form_data['id'] : 0;
 
+		// WPForms already rejected this submission - its own spam checks, or plain
+		// field validation. There is nothing left to enforce and no reason to spend a
+		// metered API call, which matters now that honeypot-caught bot traffic on
+		// entry-storing forms reaches this hook too.
+		if ( $this->wpforms_already_rejected( $form_id ) ) {
+			return;
+		}
+
 		if ( $form_id && ! empty( $this->sync_validated_forms[ $form_id ] ) ) {
 			return;
 		}
@@ -657,7 +770,7 @@ class WPFormsIntegration extends BaseFormIntegration {
 
 		if ( $tracking_mode ) {
 			try {
-				// Tracking mode with disabled WPForms entries: queue for async analysis so the submitter is never blocked.
+				// Tracking mode queues analysis without blocking entry creation or the submitter.
 				$submission_id = $this->process_submission( $fields, $meta );
 			} catch ( \Exception $exception ) {
 				Logger::log(
@@ -669,6 +782,10 @@ class WPFormsIntegration extends BaseFormIntegration {
 				);
 
 				$submission_id = '';
+			}
+
+			if ( $form_id && $submission_id ) {
+				$this->sync_submission_ids[ $form_id ] = (string) $submission_id;
 			}
 
 			if ( ! empty( $meta['queue_failed'] ) ) {
@@ -690,19 +807,106 @@ class WPFormsIntegration extends BaseFormIntegration {
 
 		$result = $this->process_submission_synchronously( $fields, $meta );
 
+		if ( $form_id && ! empty( $result['submission_id'] ) ) {
+			$this->sync_submission_ids[ $form_id ] = (string) $result['submission_id'];
+		}
+
 		if ( empty( $result['success'] ) ) {
 			return;
 		}
 
 		if ( 'spam' === ( $result['verdict'] ?? 'clean' ) && empty( $result['tracking_mode'] ) ) {
-			wpforms()->process->errors[ $form_data['id'] ]['activelayer'] = $this->get_sync_block_message();
+			$process = $this->get_wpforms_process();
+
+			if ( $process ) {
+				// The message must go in the `header` key. WPForms renders only
+				// `header` and `footer`, and its AJAX handler filters every other key
+				// out, so a custom key is silently dropped and the visitor is left
+				// with WPForms' generic notice and nothing under it.
+				$process->errors[ $form_id ]['header'] = $this->get_sync_block_message();
+			}
 		}
+	}
+
+	/**
+	 * Attach the WPForms entry to the submission created on the pre-save path.
+	 *
+	 * `maybe_handle_sync_submission()` runs before `entry_save()`, so the submission is
+	 * stored with no entry ID. Without this link the entry and the submission stay
+	 * unrelated and EntryStatusSync cannot mirror a status change in either direction.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @param int $form_id  Form identifier.
+	 * @param int $entry_id WPForms entry identifier.
+	 */
+	public function link_sync_submission_to_entry( int $form_id, int $entry_id ): void {
+
+		if ( $form_id <= 0 || $entry_id <= 0 || empty( $this->sync_submission_ids[ $form_id ] ) ) {
+			return;
+		}
+
+		$submission_id = $this->sync_submission_ids[ $form_id ];
+
+		unset( $this->sync_submission_ids[ $form_id ] );
+
+		// WPForms completes its native notification pipeline before this hook. Mark
+		// it before exposing the entry to retry workers, which must not replay it.
+		$this->email_reconstructor->mark_notifications_released( $entry_id, $form_id );
+		$this->get_storage()->update_entry_id( $submission_id, (string) $entry_id );
+	}
+
+	/**
+	 * Check whether WPForms has already rejected the submission in this request.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @param int $form_id Form identifier.
+	 *
+	 * @return bool
+	 */
+	private function wpforms_already_rejected( int $form_id ): bool {
+
+		$process = $this->get_wpforms_process();
+
+		if ( ! $process ) {
+			return false;
+		}
+
+		return ! empty( $process->spam_reason ) || ! empty( $process->errors[ $form_id ] );
+	}
+
+	/**
+	 * Get the live WPForms process instance.
+	 *
+	 * Only available while WPForms is processing a submission. WPForms resolves it
+	 * through `__get()` off its object registry, so the return value is guarded
+	 * rather than assumed.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @return object|null
+	 */
+	private function get_wpforms_process() {
+
+		if ( ! function_exists( 'wpforms' ) ) {
+			return null;
+		}
+
+		$process = wpforms()->process;
+
+		return is_object( $process ) ? $process : null;
 	}
 
 	/**
 	 * Determine if email interception should be skipped and notifications sent immediately.
 	 *
+	 * True for every pre-save synchronous form: a spam verdict stops the submission
+	 * before WPForms sends anything, so holding emails there would only risk losing
+	 * the notifications of clean submissions.
+	 *
 	 * @since 1.0.0
+	 * @since 1.7.0 Now also covers sync forms that store entries but not spam entries.
 	 *
 	 * @param array $form_data Form configuration.
 	 *
@@ -774,6 +978,7 @@ class WPFormsIntegration extends BaseFormIntegration {
 	 * Update WPForms entry status.
 	 *
 	 * @since 1.0.0
+	 * @since 1.7.0 Mark spam through mark_entry_spam() so the spam reason is recorded.
 	 *
 	 * @param string $submission_id Submission ID.
 	 * @param string $status        Status (clean/spam).
@@ -807,13 +1012,7 @@ class WPFormsIntegration extends BaseFormIntegration {
 
 		// Update entry status if spam.
 		if ( $status === 'spam' ) {
-			wpforms()->obj( 'entry' )->update(
-				$entry_id,
-				[ 'status' => 'spam' ],
-				'',
-				'',
-				[ 'cap' => false ]
-			);
+			$this->mark_entry_spam( (int) $entry_id, [ 'id' => $form_id ] );
 		}
 	}
 

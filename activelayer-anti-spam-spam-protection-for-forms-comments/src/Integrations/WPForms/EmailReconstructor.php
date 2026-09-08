@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+use ActiveLayer\ActionScheduler\ActionSchedulerLoader;
 use ActiveLayer\Logger\Logger;
 use Exception;
 
@@ -77,6 +78,7 @@ class EmailReconstructor {
 	 *
 	 * @since 1.0.0
 	 * @since 1.4.0 Bail outside live form processing (admin un-spam re-fire, manual resend).
+	 * @since 1.7.0 Release notifications in async mode when the queue cannot deliver a verdict.
 	 *
 	 * @param bool   $disable       Current disable status.
 	 * @param object $notifications Notifications object.
@@ -121,6 +123,20 @@ class EmailReconstructor {
 		}
 
 		if ( $this->integration->has_queue_failure( $form_data, $entry_id ) ) {
+			return false;
+		}
+
+		// In asynchronous mode the queue is the only path to a verdict, and WPForms sends
+		// notifications in `entry_email()` - before the `wpforms_process_complete` handler
+		// that registers a queue failure runs. Without this check a site whose Action
+		// Scheduler is unavailable holds every notification forever: the submission stays
+		// pending, so nothing ever releases the email.
+		if ( ! $this->integration->is_sync_mode_enabled() && ! ActionSchedulerLoader::is_available() ) {
+			Logger::log(
+				'Queue unavailable - releasing WPForms notifications immediately',
+				[ 'form_id' => $form_data['id'] ?? 0 ]
+			);
+
 			return false;
 		}
 
@@ -349,15 +365,18 @@ class EmailReconstructor {
 	 *
 	 * Writes a marker row into the WPForms entry_meta store so subsequent
 	 * `allow_submission()` calls for the same entry short-circuit.
+	 * The pre-save entry link also calls this after WPForms completes its native
+	 * notification pipeline, including notifications suppressed by form settings.
 	 *
 	 * @since 1.2.0
+	 * @since 1.7.0 Allow the completed native notification pipeline to mark delivery ownership.
 	 *
 	 * @param int $entry_id WPForms entry ID.
 	 * @param int $form_id  WPForms form ID.
 	 *
 	 * @return void
 	 */
-	private function mark_notifications_released( int $entry_id, int $form_id ): void {
+	public function mark_notifications_released( int $entry_id, int $form_id ): void {
 
 		if ( $entry_id <= 0 || ! function_exists( 'wpforms' ) ) {
 			return;

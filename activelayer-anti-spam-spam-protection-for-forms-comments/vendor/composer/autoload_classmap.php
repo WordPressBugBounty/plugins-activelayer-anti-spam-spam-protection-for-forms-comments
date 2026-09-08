@@ -147,6 +147,7 @@ return array(
     'ActiveLayer\\Integrations\\Traits\\SilentDiscardTrait' => $baseDir . '/src/Integrations/Traits/SilentDiscardTrait.php',
     'ActiveLayer\\Integrations\\WPForms\\AdminSettings' => $baseDir . '/src/Integrations/WPForms/AdminSettings.php',
     'ActiveLayer\\Integrations\\WPForms\\EmailReconstructor' => $baseDir . '/src/Integrations/WPForms/EmailReconstructor.php',
+    'ActiveLayer\\Integrations\\WPForms\\EntryStatusSync' => $baseDir . '/src/Integrations/WPForms/EntryStatusSync.php',
     'ActiveLayer\\Integrations\\WPForms\\SubmissionHandler' => $baseDir . '/src/Integrations/WPForms/SubmissionHandler.php',
     'ActiveLayer\\Integrations\\WPForms\\WPFormsIntegration' => $baseDir . '/src/Integrations/WPForms/WPFormsIntegration.php',
     'ActiveLayer\\Integrations\\WSForm\\AdminSettings' => $baseDir . '/src/Integrations/WSForm/AdminSettings.php',

@@ -69,10 +69,18 @@
   .activelayer-admin-header {
     padding: 15px 20px;
     margin-left: -10px;
-    width: calc(100% + 10px);
+    width: auto;
   }
   .activelayer-admin-header .header-help .help-text {
     display: none;
+  }
+}
+@media screen and (max-width: 600px) {
+  .activelayer-admin-header {
+    padding-top: calc(var(--wp-admin--admin-bar--height, 46px) + 15px);
+  }
+  .activelayer-admin-header + #wpbody {
+    padding-top: 0;
   }
 }
 
@@ -645,6 +653,9 @@
 }
 .wp-list-table .column-id {
   width: 35px;
+}
+.wp-list-table .column-ip {
+  width: 130px;
 }
 .wp-list-table .column-provider {
   width: 160px;
@@ -2643,6 +2654,10 @@ button.activelayer-integration-configure[aria-expanded=false]::after {
 .activelayer-page-submissions .page-header .bulk-actions-info {
   font-size: 12px;
   color: #8c8f94;
+}
+.activelayer-page-submissions .subsubsub {
+  margin: 11px 0;
+  line-height: 32px;
 }
 
 .activelayer-page-settings .settings-nav {
