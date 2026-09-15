@@ -273,16 +273,48 @@ class SettingsPage {
 			return;
 		}
 
+		$previous_api_key = SettingsHelper::get_api_key();
+
 		$notice_data = $this->persistor->save_settings( wp_unslash( $_POST ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified above.
 
 		// Refresh registry to update cached settings.
 		$this->registry->refresh();
+
+		$this->maybe_verify_saved_key( $previous_api_key );
 
 		// Refresh subscription stats.
 		SubscriptionStats::get_instance()->schedule_refresh();
 
 		if ( ! empty( $notice_data['message'] ) ) {
 			$this->set_notice( $notice_data['message'], $notice_data['type'] ?? 'success' );
+		}
+	}
+
+	/**
+	 * Verify a newly saved API key the same way the Verify Key button does.
+	 *
+	 * Save Changes used to store the key without ever calling POST /verify, so
+	 * the API never learned which site the key runs on: no connected_sites row,
+	 * no first_verified_at, and referral activation never fired for anyone who
+	 * saved instead of clicking Verify. Best-effort, like the Connect flow: a
+	 * failed verification keeps the key saved and leaves it unvalidated.
+	 *
+	 * @since 1.7.1
+	 *
+	 * @param string $previous_api_key API key stored before this submission.
+	 */
+	private function maybe_verify_saved_key( string $previous_api_key ): void {
+
+		$api_key = SettingsHelper::get_api_key();
+
+		if ( $api_key === '' || $api_key === $previous_api_key ) {
+			return;
+		}
+
+		$result = ( new ApiClient() )->verify_key( $api_key );
+
+		if ( ! empty( $result['success'] ) ) {
+			SettingsHelper::persist_validated_key( $api_key );
 		}
 	}
 

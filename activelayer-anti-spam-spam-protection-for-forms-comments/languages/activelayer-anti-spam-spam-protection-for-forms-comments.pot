@@ -7,7 +7,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language-Team: ActiveLayer Team <support@activelayer.com>\n"
-"POT-Creation-Date: 2026-09-08 14:47+0000\n"
+"POT-Creation-Date: 2026-09-15 05:32+0000\n"
 "Report-Msgid-Bugs-To: https://github.com/activelayer/activelayer-plugin/issues\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
@@ -136,11 +136,11 @@ msgstr ""
 msgid "Logs"
 msgstr ""
 
-#: src/Admin/AdminPages.php:386, src/Admin/Pages/DashboardPage.php:471, src/Admin/Pages/SettingsPage.php:367
+#: src/Admin/AdminPages.php:386, src/Admin/Pages/DashboardPage.php:471, src/Admin/Pages/SettingsPage.php:399
 msgid "Upgrade to Pro"
 msgstr ""
 
-#: src/Admin/AdminPages.php:447, src/Admin/Pages/SettingsPage.php:658
+#: src/Admin/AdminPages.php:447, src/Admin/Pages/SettingsPage.php:690
 msgid "Please enter an API key"
 msgstr ""
 
@@ -148,7 +148,7 @@ msgstr ""
 msgid "Verifying..."
 msgstr ""
 
-#: src/Admin/AdminPages.php:449, src/Admin/Pages/SettingsPage.php:375
+#: src/Admin/AdminPages.php:449, src/Admin/Pages/SettingsPage.php:407
 msgid "Verify Key"
 msgstr ""
 
@@ -156,7 +156,7 @@ msgstr ""
 msgid "Connection error. Please try again."
 msgstr ""
 
-#: src/Admin/AdminPages.php:451, src/Api/ApiClient.php:173, src/Admin/Pages/SettingsPage.php:362
+#: src/Admin/AdminPages.php:451, src/Api/ApiClient.php:173, src/Admin/Pages/SettingsPage.php:394
 msgid "API key is valid"
 msgstr ""
 
@@ -1270,105 +1270,105 @@ msgstr ""
 msgid "Logs plugin activity to database. Only available when WP_DEBUG is enabled. View logs in Anti-Spam → Logs menu."
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:354
+#: src/Admin/Pages/SettingsPage.php:386
 msgid "API Key"
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:358
+#: src/Admin/Pages/SettingsPage.php:390
 msgid "Enter your API key..."
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:360
+#: src/Admin/Pages/SettingsPage.php:392
 msgid "API usage limit reached"
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:367
+#: src/Admin/Pages/SettingsPage.php:399
 msgid "Upgrade Plan"
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:370
+#: src/Admin/Pages/SettingsPage.php:402
 msgid "Remove the current API key?"
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:371
+#: src/Admin/Pages/SettingsPage.php:403
 msgid "Remove Key"
 msgstr ""
 
 #. translators: 1: Account dashboard URL.
-#: src/Admin/Pages/SettingsPage.php:387
+#: src/Admin/Pages/SettingsPage.php:419
 msgid "Your API key can be found in your <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">ActiveLayer Account Dashboard</a>."
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:430
+#: src/Admin/Pages/SettingsPage.php:462
 msgid "API key required to enable spam protection"
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:425
+#: src/Admin/Pages/SettingsPage.php:457
 msgid "API key configured"
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:418
+#: src/Admin/Pages/SettingsPage.php:450
 msgid "Your API usage has run out!"
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:466
+#: src/Admin/Pages/SettingsPage.php:498
 msgid "API Usage"
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:480
+#: src/Admin/Pages/SettingsPage.php:512
 msgid "Used"
 msgstr ""
 
 #. translators: %s: bold text about monthly reset.
-#: src/Admin/Pages/SettingsPage.php:513
+#: src/Admin/Pages/SettingsPage.php:545
 msgid "Usage credits allow you to access ActiveLayer's spam protection checks. These limits depend on your plan and can be increased by upgrading. <br />%s"
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:514
+#: src/Admin/Pages/SettingsPage.php:546
 msgid "API usage resets every month on the 1st."
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:507
+#: src/Admin/Pages/SettingsPage.php:539
 msgid "Usage credits allow you to access ActiveLayer's spam protection checks. These limits depend on your plan and can be increased by upgrading."
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:547
+#: src/Admin/Pages/SettingsPage.php:579
 msgid "Usage"
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:543
+#: src/Admin/Pages/SettingsPage.php:575
 msgid "%s Usage"
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:552
+#: src/Admin/Pages/SettingsPage.php:584
 msgid "Upgrade for More"
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:576
+#: src/Admin/Pages/SettingsPage.php:608
 msgid "You've hit your usage limit!"
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:580
+#: src/Admin/Pages/SettingsPage.php:612
 msgid "Spam protection will be temporarily disabled until your usage resets next month or your limit is increased."
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:578
+#: src/Admin/Pages/SettingsPage.php:610
 msgid "Spam protection will be temporarily disabled until your usage limit is increased."
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:637, src/Admin/Pages/SubmissionsPage.php:235, src/Admin/Pages/SubmissionsPage.php:359
+#: src/Admin/Pages/SettingsPage.php:669, src/Admin/Pages/SubmissionsPage.php:235, src/Admin/Pages/SubmissionsPage.php:359
 msgid "Security check failed"
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:644
+#: src/Admin/Pages/SettingsPage.php:676
 msgid "Insufficient permissions"
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:687
+#: src/Admin/Pages/SettingsPage.php:719
 msgid "API key verification failed"
 msgstr ""
 
-#: src/Admin/Pages/SettingsPage.php:675
+#: src/Admin/Pages/SettingsPage.php:707
 msgid "API key verified and saved!"
 msgstr ""
 
