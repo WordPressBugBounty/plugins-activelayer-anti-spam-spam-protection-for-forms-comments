@@ -3,7 +3,7 @@ Contributors: smub, dimitrism, ernest35
 Tags: anti-spam, antispam, spam protection, contact form, comment spam
 Requires at least: 5.5
 Tested up to: 7.1
-Stable tag: 1.7.1
+Stable tag: 1.7.2
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -218,11 +218,14 @@ This plugin connects to the ActiveLayer API to analyze form submissions and comm
 
 == Upgrade Notice ==
 
+= 1.7.2 =
+Fixes a critical error when creating new Contact Form 7 forms. Recommended for sites using Contact Form 7.
+
 = 1.7.1 =
-Fixes site connection for API keys saved with "Save Changes" instead of "Verify Key": the site was never registered with ActiveLayer, so the dashboard did not list it and referral bonuses tied to connecting a site never arrived. Recommended for everyone who entered the key manually.
+Fixes site connection for API keys saved via Save Changes instead of Verify Key: the site was never registered with ActiveLayer, so the dashboard did not list it and connection referral bonuses never arrived. Recommended for everyone who entered the key manually.
 
 = 1.7.0 =
-Two-way spam status sync with WPForms Pro entries, a proper pre-save block that honours "Store Spam Entries" in sync mode, and a Submissions page with IP column, per-page setting, Delete bulk action and a Delete All tool. Also fixes WPForms notification emails being lost in asynchronous mode when Action Scheduler is unavailable. Tested up to WordPress 7.1. Recommended upgrade.
+Two-way spam status sync with WPForms Pro entries, pre-save blocking that honours Store Spam Entries in sync mode, and a Submissions page with IP column, per-page setting, Delete bulk action and Delete All tool. Also fixes lost WPForms emails in async mode. Tested up to WordPress 7.1.
 
 = 1.6.2 =
 Fixes a WPForms conflict where notification emails for forms with Repeater fields showed only the first row. Recommended for anyone using Repeater fields.
@@ -256,6 +259,12 @@ WooCommerce integration: spam protection for Product Reviews and Customer Regist
 Five new form integrations (Gravity Forms, Elementor Forms, Fluent Forms, Forminator, SureForms), global Sync Mode, client-side behavioral and environment signals, Tools page with bulk delete, conditional frontend script loading, and security hardening. Recommended upgrade for all users.
 
 == Changelog ==
+
+= 1.7.2 =
+* Added: Submissions — new Message column after Email shows up to 200 characters of each message for quicker review.
+* Fixed: Contact Form 7 — creating a new form no longer causes a critical error when the form has not yet been assigned an ID. New forms default to protection enabled; saved forms retain their protection settings.
+* Improved: Admin — the payment method notice now highlights the 100 extra requests available when adding a payment method.
+* Maintenance: Resolved WordPress Plugin Check warnings in upgrade notices and database query annotations.
 
 = 1.7.1 =
 * Fixed: Settings — saving a new API key with "Save Changes" now verifies it and registers the site with ActiveLayer, exactly like the "Verify Key" button. Previously only "Verify Key" and the one-click Connect flow did this, and "Verify Key" disappears once a key is stored, so sites set up by pasting the key and saving were never registered: they did not appear as connected in the ActiveLayer dashboard and referral bonuses that depend on connecting a site were never granted. Existing keys are not re-verified until you save a different one.

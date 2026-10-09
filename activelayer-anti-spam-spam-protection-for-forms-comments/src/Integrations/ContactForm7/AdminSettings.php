@@ -64,13 +64,15 @@ class AdminSettings implements \ActiveLayer\Integrations\FormAdminSettingsInterf
 	/**
 	 * Render ActiveLayer settings panel in CF7 editor.
 	 *
+	 * New forms have no ID yet and use the default protection settings.
+	 *
 	 * @since 1.0.0
 	 *
 	 * @param WPCF7_ContactForm $contact_form Contact form instance.
 	 */
 	public function render_editor_panel( WPCF7_ContactForm $contact_form ): void {
 
-		$form_id       = $contact_form->id();
+		$form_id       = (int) $contact_form->id();
 		$form_settings = $this->get_form_settings( $form_id );
 
 		?>

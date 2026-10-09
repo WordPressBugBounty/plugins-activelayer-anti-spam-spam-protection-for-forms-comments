@@ -45,7 +45,7 @@ class PaymentMethodNotice {
 				<strong><?php esc_html_e( 'Connect Your Payment Method', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></strong>
 			</p>
 			<p>
-				<?php esc_html_e( "You're on the Free plan. Please add your payment method to keep spam protection running past your free ActiveLayer usage limit. We will never charge you without notifying you first, and your card is only charged when you exceed the free usage limit.", 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?>
+				<?php esc_html_e( "You're on the Free plan. Add your payment method and get 100 extra requests on top of your free ActiveLayer usage limit. We will never charge you without notifying you first, and your card is only charged when you exceed the free usage limit.", 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?>
 			</p>
 			<p>
 				<a href="<?php echo esc_url( $billing_url ); ?>" target="_blank" rel="noopener noreferrer" class="button button-primary">

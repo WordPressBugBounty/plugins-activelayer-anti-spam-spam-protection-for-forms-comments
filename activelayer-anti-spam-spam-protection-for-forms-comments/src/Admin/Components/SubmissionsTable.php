@@ -67,6 +67,7 @@ class SubmissionsTable extends WP_List_Table {
 	 *
 	 * @since 1.0.0
 	 * @since 1.7.0 Added the IP address column.
+	 * @since 1.7.2 Added the message preview after the email column.
 	 *
 	 * @return array Columns array.
 	 */
@@ -76,6 +77,7 @@ class SubmissionsTable extends WP_List_Table {
 			'cb'           => '<input type="checkbox" />',
 			'id'           => __( 'ID', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 			'email'        => __( 'Email', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+			'message'      => __( 'Message', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 			'ip'           => __( 'IP Address', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 			'provider'     => __( 'Provider', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 			'status'       => __( 'Status', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
@@ -569,6 +571,41 @@ class SubmissionsTable extends WP_List_Table {
 			esc_html( $email ),
 			$this->row_actions( $actions )
 		);
+	}
+
+	/**
+	 * Message column with a plain-text preview of up to 200 characters.
+	 *
+	 * Decodes entities before counting UTF-8 characters and includes the ellipsis
+	 * in the limit. The full stored message remains available in the detail view.
+	 *
+	 * @since 1.7.2
+	 *
+	 * @param array $item Item data.
+	 *
+	 * @return string Escaped message preview or an em dash when no text is available.
+	 */
+	protected function column_message( array $item ): string {
+
+		$message = $item['form_data']['message'] ?? '';
+
+		if ( ! is_string( $message ) ) {
+			return '&mdash;';
+		}
+
+		$message = wp_strip_all_tags( $message );
+		$message = html_entity_decode( $message, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+		$message = trim( (string) preg_replace( '/[\s\p{Z}]+/u', ' ', $message ) );
+
+		if ( $message === '' ) {
+			return '&mdash;';
+		}
+
+		if ( mb_strlen( $message, 'UTF-8' ) > 200 ) {
+			$message = mb_substr( $message, 0, 199, 'UTF-8' ) . '…';
+		}
+
+		return esc_html( $message );
 	}
 
 	/**

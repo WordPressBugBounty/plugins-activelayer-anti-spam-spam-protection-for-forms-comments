@@ -407,7 +407,7 @@ class SubmissionRepository {
 		$where_values  = $where['values'];
 		$select_values = array_merge( $where_values, [ $limit, $offset ] );
 
-		$results = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+		$results = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $where_clause holds only placeholders; values are bound via prepare().
 			$wpdb->prepare( // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- $select_values is a dynamic array containing WHERE values + LIMIT + OFFSET.
 				"SELECT * FROM `$table_name` {$where_clause} ORDER BY created_at DESC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				$select_values
@@ -416,7 +416,7 @@ class SubmissionRepository {
 		);
 
 		if ( $where_values ) {
-			$total = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			$total = (int) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $where_clause holds only placeholders; values are bound via prepare().
 				$wpdb->prepare(
 					"SELECT COUNT(*) FROM `$table_name` {$where_clause}", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
 					$where_values

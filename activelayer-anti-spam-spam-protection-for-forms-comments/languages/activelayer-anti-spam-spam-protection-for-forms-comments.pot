@@ -7,7 +7,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language-Team: ActiveLayer Team <support@activelayer.com>\n"
-"POT-Creation-Date: 2026-09-15 05:32+0000\n"
+"POT-Creation-Date: 2026-10-09 16:51+0000\n"
 "Report-Msgid-Bugs-To: https://github.com/activelayer/activelayer-plugin/issues\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-KeywordsList: __;_e;_ex:1,2c;_n:1,2;_n_noop:1,2;_nx:1,2,4c;_nx_noop:1,2,3c;_x:1,2c;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c\n"
@@ -246,20 +246,20 @@ msgstr ""
 msgid "Connection failed. Try Connect again, or paste your API key manually."
 msgstr ""
 
-#: src/Helpers/FormDisplayResolver.php:64, src/Admin/Components/SubmissionsTable.php:500
+#: src/Helpers/FormDisplayResolver.php:64, src/Admin/Components/SubmissionsTable.php:502
 msgid "Unknown Registration"
 msgstr ""
 
-#: src/Helpers/FormDisplayResolver.php:94, src/Admin/Components/SubmissionsTable.php:481
+#: src/Helpers/FormDisplayResolver.php:94, src/Admin/Components/SubmissionsTable.php:483
 msgid "Unknown Product"
 msgstr ""
 
-#: src/Helpers/FormDisplayResolver.php:98, src/Admin/Components/SubmissionsTable.php:490
+#: src/Helpers/FormDisplayResolver.php:98, src/Admin/Components/SubmissionsTable.php:492
 msgid "Unknown Download"
 msgstr ""
 
 #. translators: %s: form name.
-#: src/Helpers/FormDisplayResolver.php:101, src/Admin/Components/SubmissionsTable.php:520, src/Admin/Components/SubmissionsTable.php:527
+#: src/Helpers/FormDisplayResolver.php:101, src/Admin/Components/SubmissionsTable.php:522, src/Admin/Components/SubmissionsTable.php:529
 msgid "Unknown Form"
 msgstr ""
 
@@ -291,7 +291,7 @@ msgstr ""
 msgid "Form ID"
 msgstr ""
 
-#: src/Privacy/PrivacyManager.php:161, src/Admin/Components/SubmissionsTable.php:81
+#: src/Privacy/PrivacyManager.php:161, src/Admin/Components/SubmissionsTable.php:83
 msgid "Status"
 msgstr ""
 
@@ -307,7 +307,7 @@ msgstr ""
 msgid "Submitted At"
 msgstr ""
 
-#: src/Privacy/PrivacyManager.php:190, src/Admin/Components/SubmissionsTable.php:78
+#: src/Privacy/PrivacyManager.php:190, src/Admin/Components/SubmissionsTable.php:79
 msgid "Email"
 msgstr ""
 
@@ -315,7 +315,7 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: src/Privacy/PrivacyManager.php:192, src/Admin/Pages/LogsPage.php:65
+#: src/Privacy/PrivacyManager.php:192, src/Admin/Components/SubmissionsTable.php:80, src/Admin/Pages/LogsPage.php:65
 msgid "Message"
 msgstr ""
 
@@ -323,7 +323,7 @@ msgstr ""
 msgid "Website URL"
 msgstr ""
 
-#: src/Privacy/PrivacyManager.php:194, src/Admin/Components/SubmissionsTable.php:79
+#: src/Privacy/PrivacyManager.php:194, src/Admin/Components/SubmissionsTable.php:81
 msgid "IP Address"
 msgstr ""
 
@@ -390,7 +390,7 @@ msgstr ""
 msgid "Last %d days"
 msgstr ""
 
-#: src/Admin/Components/DashboardWidget.php:144, src/Integrations/ContactForm7/AdminSettings.php:112
+#: src/Admin/Components/DashboardWidget.php:144, src/Integrations/ContactForm7/AdminSettings.php:114
 msgid "ActiveLayer Settings"
 msgstr ""
 
@@ -412,7 +412,7 @@ msgid "Connect Your Payment Method"
 msgstr ""
 
 #: src/Admin/Components/PaymentMethodNotice.php:48
-msgid "You're on the Free plan. Please add your payment method to keep spam protection running past your free ActiveLayer usage limit. We will never charge you without notifying you first, and your card is only charged when you exceed the free usage limit."
+msgid "You're on the Free plan. Add your payment method and get 100 extra requests on top of your free ActiveLayer usage limit. We will never charge you without notifying you first, and your card is only charged when you exceed the free usage limit."
 msgstr ""
 
 #: src/Admin/Components/PaymentMethodNotice.php:52
@@ -483,11 +483,11 @@ msgstr ""
 msgid "Detection ID"
 msgstr ""
 
-#: src/Admin/Components/SingleSubmissionView.php:200, src/Admin/Components/StatsBlock.php:69, src/Admin/Components/SubmissionsTable.php:200, src/Admin/Pages/DashboardPage.php:281
+#: src/Admin/Components/SingleSubmissionView.php:200, src/Admin/Components/StatsBlock.php:69, src/Admin/Components/SubmissionsTable.php:202, src/Admin/Pages/DashboardPage.php:281
 msgid "Spam"
 msgstr ""
 
-#: src/Admin/Components/SingleSubmissionView.php:200, src/Admin/Components/StatsBlock.php:64, src/Admin/Components/SubmissionsTable.php:193, src/Admin/Pages/DashboardPage.php:287
+#: src/Admin/Components/SingleSubmissionView.php:200, src/Admin/Components/StatsBlock.php:64, src/Admin/Components/SubmissionsTable.php:195, src/Admin/Pages/DashboardPage.php:287
 msgid "Clean"
 msgstr ""
 
@@ -495,7 +495,7 @@ msgstr ""
 msgid "Score"
 msgstr ""
 
-#: src/Admin/Components/SingleSubmissionView.php:180, src/Admin/Components/StatsBlock.php:74, src/Admin/Components/SubmissionsTable.php:207
+#: src/Admin/Components/SingleSubmissionView.php:180, src/Admin/Components/StatsBlock.php:74, src/Admin/Components/SubmissionsTable.php:209
 msgid "Failed"
 msgstr ""
 
@@ -555,19 +555,19 @@ msgstr ""
 msgid "Status:"
 msgstr ""
 
-#: src/Admin/Components/SingleSubmissionView.php:299, src/Admin/Components/SubmissionsTable.php:214, src/Admin/Components/SubmissionsTable.php:691
+#: src/Admin/Components/SingleSubmissionView.php:299, src/Admin/Components/SubmissionsTable.php:216, src/Admin/Components/SubmissionsTable.php:728
 msgid "Trash"
 msgstr ""
 
-#: src/Admin/Components/SingleSubmissionView.php:375, src/Admin/Components/SubmissionsTable.php:663
+#: src/Admin/Components/SingleSubmissionView.php:375, src/Admin/Components/SubmissionsTable.php:700
 msgid "Mark Clean"
 msgstr ""
 
-#: src/Admin/Components/SingleSubmissionView.php:357, src/Admin/Components/SubmissionsTable.php:672
+#: src/Admin/Components/SingleSubmissionView.php:357, src/Admin/Components/SubmissionsTable.php:709
 msgid "Mark Spam"
 msgstr ""
 
-#: src/Admin/Components/SingleSubmissionView.php:339, src/Admin/Components/SubmissionsTable.php:654
+#: src/Admin/Components/SingleSubmissionView.php:339, src/Admin/Components/SubmissionsTable.php:691
 msgid "Recheck"
 msgstr ""
 
@@ -575,197 +575,197 @@ msgstr ""
 msgid "Total"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:77
+#: src/Admin/Components/SubmissionsTable.php:78
 msgid "ID"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:80
+#: src/Admin/Components/SubmissionsTable.php:82
 msgid "Provider"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:82
+#: src/Admin/Components/SubmissionsTable.php:84
 msgid "Processed"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:114, src/Admin/Components/SubmissionsTable.php:611
+#: src/Admin/Components/SubmissionsTable.php:116, src/Admin/Components/SubmissionsTable.php:648
 msgid "Restore"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:115, src/Admin/Components/SubmissionsTable.php:629
+#: src/Admin/Components/SubmissionsTable.php:117, src/Admin/Components/SubmissionsTable.php:666
 msgid "Delete Permanently"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:122
+#: src/Admin/Components/SubmissionsTable.php:124
 msgid "Recheck with API"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:130
+#: src/Admin/Components/SubmissionsTable.php:132
 msgid "Mark as Clean"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:134
+#: src/Admin/Components/SubmissionsTable.php:136
 msgid "Mark as Spam"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:137
+#: src/Admin/Components/SubmissionsTable.php:139
 msgid "Move to Trash"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:138
+#: src/Admin/Components/SubmissionsTable.php:140
 msgid "Delete"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:179
+#: src/Admin/Components/SubmissionsTable.php:181
 msgid "All"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:186
+#: src/Admin/Components/SubmissionsTable.php:188
 msgid "Pending"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:311
+#: src/Admin/Components/SubmissionsTable.php:313
 msgid "No Submissions Yet"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:313
+#: src/Admin/Components/SubmissionsTable.php:315
 msgid "Submissions will appear here once you start receiving entries."
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:315
+#: src/Admin/Components/SubmissionsTable.php:317
 msgid "Make sure ActiveLayer protection is enabled on your forms settings."
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:321
+#: src/Admin/Components/SubmissionsTable.php:323
 msgid "View Setup Guide"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:306
+#: src/Admin/Components/SubmissionsTable.php:308
 msgid "No Submissions Found"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:308
+#: src/Admin/Components/SubmissionsTable.php:310
 msgid "No submissions match your current filters or search."
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:357
+#: src/Admin/Components/SubmissionsTable.php:359
 msgid "Filter by provider"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:360
+#: src/Admin/Components/SubmissionsTable.php:362
 msgid "All Providers"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:367
+#: src/Admin/Components/SubmissionsTable.php:369
 msgid "Filter"
 msgstr ""
 
 #. translators: %s: form name.
 #. translators: %s: form name or identifier.
-#: src/Admin/Components/SubmissionsTable.php:465, src/Admin/Components/SubmissionsTable.php:523, src/Admin/Components/SubmissionsTable.php:527
+#: src/Admin/Components/SubmissionsTable.php:467, src/Admin/Components/SubmissionsTable.php:525, src/Admin/Components/SubmissionsTable.php:529
 msgid "Form name: %s"
 msgstr ""
 
 #. translators: %s: post name.
-#: src/Admin/Components/SubmissionsTable.php:472
+#: src/Admin/Components/SubmissionsTable.php:474
 msgid "Unknown Post"
 msgstr ""
 
 #. translators: %s: post name or identifier.
-#: src/Admin/Components/SubmissionsTable.php:475
+#: src/Admin/Components/SubmissionsTable.php:477
 msgid "Post Name: %s"
 msgstr ""
 
 #. translators: %s: product name.
-#: src/Admin/Components/SubmissionsTable.php:484
+#: src/Admin/Components/SubmissionsTable.php:486
 msgid "Product: %s"
 msgstr ""
 
 #. translators: %s: download name.
-#: src/Admin/Components/SubmissionsTable.php:493
+#: src/Admin/Components/SubmissionsTable.php:495
 msgid "Download: %s"
 msgstr ""
 
 #. translators: %s: customer login or email.
-#: src/Admin/Components/SubmissionsTable.php:504
+#: src/Admin/Components/SubmissionsTable.php:506
 msgid "Customer: %s"
 msgstr ""
 
 #. translators: %s: affiliate login or email.
-#: src/Admin/Components/SubmissionsTable.php:509
+#: src/Admin/Components/SubmissionsTable.php:511
 msgid "Affiliate: %s"
 msgstr ""
 
 #. translators: %s: community member login or email.
-#: src/Admin/Components/SubmissionsTable.php:513
+#: src/Admin/Components/SubmissionsTable.php:515
 msgid "Member: %s"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:563, src/Admin/Components/SubmissionsTable.php:586
+#: src/Admin/Components/SubmissionsTable.php:565, src/Admin/Components/SubmissionsTable.php:623
 msgid "N/A"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:628
+#: src/Admin/Components/SubmissionsTable.php:665
 msgid "Delete this submission permanently?"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:646, src/Admin/Pages/LogsPage.php:76
+#: src/Admin/Components/SubmissionsTable.php:683, src/Admin/Pages/LogsPage.php:76
 msgid "View"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:690
+#: src/Admin/Components/SubmissionsTable.php:727
 msgid "Move this submission to the trash?"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:700
+#: src/Admin/Components/SubmissionsTable.php:737
 msgid "Copy API ID"
 msgstr ""
 
-#: src/Admin/Components/SubmissionsTable.php:823, src/Admin/Components/SubmissionsTable.php:829
+#: src/Admin/Components/SubmissionsTable.php:860, src/Admin/Components/SubmissionsTable.php:866
 msgid "Not processed"
 msgstr ""
 
 #. translators: %s: human readable time difference.
-#: src/Admin/Components/SubmissionsTable.php:842
+#: src/Admin/Components/SubmissionsTable.php:879
 msgid "%s ago"
 msgstr ""
 
 #. translators: %d: number of submissions.
-#: src/Admin/Components/SubmissionsTable.php:876
+#: src/Admin/Components/SubmissionsTable.php:913
 msgid "%d submission queued for recheck."
 msgid_plural "%d submissions queued for recheck."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of submissions.
-#: src/Admin/Components/SubmissionsTable.php:883
+#: src/Admin/Components/SubmissionsTable.php:920
 msgid "%d submission marked as clean."
 msgid_plural "%d submissions marked as clean."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of submissions.
-#: src/Admin/Components/SubmissionsTable.php:890
+#: src/Admin/Components/SubmissionsTable.php:927
 msgid "%d submission marked as spam."
 msgid_plural "%d submissions marked as spam."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of submissions.
-#: src/Admin/Components/SubmissionsTable.php:897
+#: src/Admin/Components/SubmissionsTable.php:934
 msgid "%d submission moved to trash."
 msgid_plural "%d submissions moved to trash."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of submissions.
-#: src/Admin/Components/SubmissionsTable.php:904, src/Admin/Components/SubmissionsTable.php:918
+#: src/Admin/Components/SubmissionsTable.php:941, src/Admin/Components/SubmissionsTable.php:955
 msgid "%d submission deleted permanently."
 msgid_plural "%d submissions deleted permanently."
 msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of submissions.
-#: src/Admin/Components/SubmissionsTable.php:911
+#: src/Admin/Components/SubmissionsTable.php:948
 msgid "%d submission restored."
 msgid_plural "%d submissions restored."
 msgstr[0] ""
@@ -1577,28 +1577,28 @@ msgstr ""
 msgid "Comment Too Long"
 msgstr ""
 
-#: src/Integrations/ContactForm7/AdminSettings.php:77, src/Integrations/GravityForms/GravityFormsIntegration.php:231, src/Integrations/Forminator/Addon/ForminatorAddonFormSettings.php:100
+#: src/Integrations/ContactForm7/AdminSettings.php:79, src/Integrations/GravityForms/GravityFormsIntegration.php:231, src/Integrations/Forminator/Addon/ForminatorAddonFormSettings.php:100
 msgid "ActiveLayer Spam Protection"
 msgstr ""
 
-#: src/Integrations/ContactForm7/AdminSettings.php:81
+#: src/Integrations/ContactForm7/AdminSettings.php:83
 msgid "Enable ActiveLayer anti-spam protection for this form"
 msgstr ""
 
-#: src/Integrations/ContactForm7/AdminSettings.php:91
+#: src/Integrations/ContactForm7/AdminSettings.php:93
 msgid "Enable ActiveLayer spam protection"
 msgstr ""
 
-#: src/Integrations/ContactForm7/AdminSettings.php:97
+#: src/Integrations/ContactForm7/AdminSettings.php:99
 msgid "When enabled, form submissions will be checked for spam using ActiveLayer AI before sending email notifications."
 msgstr ""
 
 #. translators: %s: settings page URL.
-#: src/Integrations/ContactForm7/AdminSettings.php:116
+#: src/Integrations/ContactForm7/AdminSettings.php:118
 msgid "ActiveLayer API key is not configured. Please configure it in %s to enable spam protection."
 msgstr ""
 
-#: src/Integrations/ContactForm7/AdminSettings.php:205, src/Integrations/ElementorForms/AdminSettings.php:247, src/Integrations/FluentForms/AdminSettings.php:74, src/Integrations/FormidableForms/AdminSettings.php:256, src/Integrations/Forminator/AdminSettings.php:161, src/Integrations/FunnelKit/AdminSettings.php:85, src/Integrations/GravityForms/AdminSettings.php:132, src/Integrations/NinjaForms/AdminSettings.php:214, src/Integrations/SureForms/AdminSettings.php:74, src/Integrations/WPForms/AdminSettings.php:142, src/Integrations/WSForm/AdminSettings.php:78
+#: src/Integrations/ContactForm7/AdminSettings.php:207, src/Integrations/ElementorForms/AdminSettings.php:247, src/Integrations/FluentForms/AdminSettings.php:74, src/Integrations/FormidableForms/AdminSettings.php:256, src/Integrations/Forminator/AdminSettings.php:161, src/Integrations/FunnelKit/AdminSettings.php:85, src/Integrations/GravityForms/AdminSettings.php:132, src/Integrations/NinjaForms/AdminSettings.php:214, src/Integrations/SureForms/AdminSettings.php:74, src/Integrations/WPForms/AdminSettings.php:142, src/Integrations/WSForm/AdminSettings.php:78
 msgid "Untitled"
 msgstr ""
 

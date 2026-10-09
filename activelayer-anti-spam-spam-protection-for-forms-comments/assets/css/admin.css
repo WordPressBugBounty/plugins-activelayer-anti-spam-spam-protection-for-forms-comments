@@ -648,6 +648,30 @@
 .wp-list-table .column-processed_at {
   width: 180px;
 }
+.wp-list-table.submissions th,
+.wp-list-table.submissions td {
+  box-sizing: border-box;
+}
+.wp-list-table.submissions .column-email {
+  width: 18%;
+  overflow-wrap: anywhere;
+}
+.wp-list-table.submissions .column-message {
+  width: 27%;
+  overflow-wrap: anywhere;
+}
+.wp-list-table.submissions .column-ip {
+  width: 11%;
+}
+.wp-list-table.submissions .column-provider {
+  width: 14%;
+}
+.wp-list-table.submissions .column-status {
+  width: 8%;
+}
+.wp-list-table.submissions .column-processed_at {
+  width: 16%;
+}
 .wp-list-table tbody tr:nth-child(even) {
   background-color: #fff;
 }
