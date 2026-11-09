@@ -127,6 +127,8 @@ class ApiRequestHandler {
 	/**
 	 * Decode and log the HTTP response.
 	 *
+	 * Recognizes deployed quota responses and explicit quota/authentication causes for local observations.
+	 *
 	 * @since 1.1.0
 	 *
 	 * @param string $endpoint API endpoint for log context.
@@ -163,7 +165,7 @@ class ApiRequestHandler {
 		Logger::log( 'API response ' . $endpoint, $response_log );
 
 		if ( $response_code !== 200 ) {
-			return new WP_Error( 'api_error', sprintf( 'API returned HTTP %d', $response_code ) );
+			return new WP_Error( 'api_error', sprintf( 'API returned HTTP %d', $response_code ), [ 'error_code' => $this->classify_error_code( (int) $response_code, $decoded ) ] );
 		}
 
 		if ( $decode_error !== JSON_ERROR_NONE ) {
@@ -173,6 +175,54 @@ class ApiRequestHandler {
 		}
 
 		return $decoded;
+	}
+
+	/**
+	 * Classify only confirmed authentication failures or HTTP 429 quota exhaustion.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param int   $status HTTP response status.
+	 * @param mixed $body   Decoded response body.
+	 *
+	 * @return string Safe local interruption reason, or empty for other errors.
+	 */
+	private function classify_error_code( int $status, $body ): string {
+
+		if ( $status === 401 ) {
+			return 'not_connected';
+		}
+		if ( $status !== 429 || ! is_array( $body ) ) {
+			return '';
+		}
+		if ( ( $body['error_code'] ?? '' ) === 'quota_exhausted' || $this->is_legacy_quota_exhausted( $body ) ) {
+			return 'quota_exhausted';
+		}
+
+		return '';
+	}
+
+	/**
+	 * Recognize the existing API allowance response without treating throttles as quota.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param array $body Decoded HTTP 429 response.
+	 *
+	 * @return bool Whether the exact legacy response confirms no remaining allowance.
+	 */
+	private function is_legacy_quota_exhausted( array $body ): bool {
+
+		if ( ( $body['error'] ?? '' ) !== 'Rate Limit Exceeded' || ! in_array( $body['message'] ?? '', [ 'Monthly request limit exceeded', 'Lifetime request limit exceeded' ], true ) ) {
+			return false;
+		}
+		foreach ( [ 'limit', 'used', 'remaining' ] as $field ) {
+			if ( ! isset( $body[ $field ] ) || ! is_int( $body[ $field ] ) ) {
+				return false;
+			}
+		}
+
+		return $body['limit'] >= 0 && $body['used'] >= $body['limit'] && $body['remaining'] === 0;
 	}
 
 	/**

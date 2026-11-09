@@ -351,6 +351,116 @@
 		} );
 	} );
 
+	// Onboarding demo: check both server-owned samples, one at a time (the API
+	// allows a single test in flight per account).
+	var demoNote = $( '.onboarding-demo-note' );
+
+	$( '#activelayer-onboarding-demo-run' ).on( 'click', function() {
+		var button = $( this );
+		var cards = $( '#activelayer-onboarding-demo .onboarding-demo-card' );
+		var failed = false;
+		var expired = false;
+		var completed = false;
+
+		// aria-disabled instead of disabled keeps keyboard focus on the button.
+		if ( button.attr( 'aria-disabled' ) === 'true' ) {
+			return;
+		}
+
+		button.attr( 'aria-disabled', 'true' ).text( getString( 'demoChecking' ) );
+		demoNote.removeClass( 'is-done is-error' ).text( getString( 'demoCheckingWith' ) );
+		cards.removeClass( 'is-clean is-spam' ).each( function() {
+			$( this ).find( '.onboarding-demo-badge' ).prop( 'hidden', true );
+			$( this ).find( '.onboarding-demo-foot' ).empty()
+				.append( $( '<span class="spinner is-active"></span>' ), document.createTextNode( getString( 'demoCheckingWith' ) ) );
+		} );
+
+		function showVerdict( card, data ) {
+			var isSpam = data.verdict === 'spam';
+			var foot = card.find( '.onboarding-demo-foot' ).empty();
+
+			// Show the exact text the API checked.
+			if ( data.message ) {
+				card.find( '.onboarding-demo-msg' ).text( data.message );
+			}
+
+			card.addClass( isSpam ? 'is-spam' : 'is-clean' );
+			card.find( '.onboarding-demo-badge' )
+				.removeClass( 'status-clean status-spam' )
+				.addClass( isSpam ? 'status-spam' : 'status-clean' )
+				.text( getString( isSpam ? 'demoSpam' : 'demoClean' ) )
+				.prop( 'hidden', false );
+			foot.append(
+				$( '<span class="dashicons" aria-hidden="true"></span>' ).addClass( isSpam ? 'dashicons-dismiss' : 'dashicons-yes-alt' ),
+				document.createTextNode( getString( isSpam ? 'demoBlocked' : 'demoDelivered' ) )
+			);
+
+			if ( data.score !== null ) {
+				foot.append( $( '<small></small>' ).text( getString( 'demoScore' ).replace( '%s', data.score ) ) );
+			}
+		}
+
+		function check( card ) {
+			return $.post( activelayerAdmin.ajaxUrl, {
+				action: 'activelayer_onboarding_demo',
+				nonce: activelayerAdmin.nonce,
+				sample: card.data( 'sample' )
+			} ).then( function( response ) {
+				// admin-ajax answers -1 when the nonce expired.
+				if ( response === -1 || response === '-1' ) {
+					expired = true;
+				}
+				if ( ! response || ! response.success ) {
+					return $.Deferred().reject().promise();
+				}
+				showVerdict( card, response.data );
+				completed = completed || response.data.demo_completed === true;
+			} ).then( null, function( xhr ) {
+				expired = expired || ( xhr && xhr.status === 403 );
+				failed = true;
+				card.find( '.onboarding-demo-foot' ).text( getString( 'demoFailed' ) );
+				// Keep the chain going so the other sample still runs.
+				return $.Deferred().resolve().promise();
+			} );
+		}
+
+		cards.toArray().reduce( function( chain, card ) {
+			return chain.then( function() {
+				return check( $( card ) );
+			} );
+		}, $.Deferred().resolve().promise() ).then( function() {
+			button.removeAttr( 'aria-disabled' );
+
+			if ( completed ) {
+				var step = button.closest( '.onboarding-step' );
+				step.removeClass( 'onboarding-step--pending' ).addClass( 'onboarding-step--completed' );
+				step.find( '.onboarding-step-icon' )
+					.removeClass( 'onboarding-step-icon--pending' ).addClass( 'onboarding-step-icon--completed' )
+					.empty().append( $( '<span class="dashicons dashicons-yes"></span>' ) );
+			}
+
+			if ( failed ) {
+				button.addClass( 'button-primary' ).text( getString( 'demoRun' ) );
+				demoNote.addClass( 'is-error' ).text( getString( expired ? 'demoReload' : 'demoError' ) );
+				return;
+			}
+
+
+
+			// The note is the live region: lead with each card's verdict for screen readers.
+			var summary = cards.map( function() {
+				var card = $( this );
+				return card.find( '.onboarding-demo-from strong' ).text() + ': ' + card.find( '.onboarding-demo-badge' ).text() + '. ';
+			} ).get().join( '' );
+
+			button.removeClass( 'button-primary' ).text( getString( 'demoRunAgain' ) );
+			demoNote.addClass( 'is-done' ).empty().append(
+				$( '<span class="screen-reader-text"></span>' ).text( summary ),
+				document.createTextNode( getString( 'demoDone' ) )
+			);
+		} );
+	} );
+
 	// Opt-out announce notice dismiss — fires on both the X button and the
 	// CTA link. Fire-and-forget; if the CTA navigation races the request,
 	// the notice simply re-renders on the next page load and remains

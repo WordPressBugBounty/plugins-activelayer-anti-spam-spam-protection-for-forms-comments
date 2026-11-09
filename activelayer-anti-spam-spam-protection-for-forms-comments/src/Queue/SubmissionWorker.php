@@ -2,6 +2,8 @@
 
 namespace ActiveLayer\Queue;
 
+use ActiveLayer\Helpers\SettingsHelper;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -25,6 +27,7 @@ class SubmissionWorker {
 	 * Process submission from queue.
 	 *
 	 * @since 1.1.0
+	 * @since 1.8.0 Report explicit quota or authentication failures and authenticated recovery.
 	 *
 	 * @param string $submission_id Submission ID from storage.
 	 */
@@ -48,7 +51,7 @@ class SubmissionWorker {
 	}
 
 	/**
-	 * Handle submission processing.
+	 * Handle submission processing, including interruption and recovery observations.
 	 *
 	 * @since 1.1.0
 	 *
@@ -56,7 +59,7 @@ class SubmissionWorker {
 	 *
 	 * @throws Exception If API is not configured or processing fails.
 	 */
-	private function handle( string $submission_id ): void {
+	private function handle( string $submission_id ): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh -- Existing fail-open worker lifecycle.
 
 		$storage    = Storage::get_instance();
 		$api_client = new ApiClient();
@@ -96,6 +99,8 @@ class SubmissionWorker {
 
 		// 4. Call appropriate API endpoint.
 		$api_result = $this->call_api( $submission, $api_client );
+		/** This action is documented in src/Integrations/Submission/SyncSubmissionProcessor.php. */
+		do_action( 'activelayer_protection_check_result', $api_result, $submission_id, hash( 'sha256', SettingsHelper::get_api_key() ), $submission['provider'] ?? '', $submission['form_id'] ?? 0 );
 
 		// 5. Update submission with results.
 		$this->update_status( $submission_id, $submission, $api_result, $storage );

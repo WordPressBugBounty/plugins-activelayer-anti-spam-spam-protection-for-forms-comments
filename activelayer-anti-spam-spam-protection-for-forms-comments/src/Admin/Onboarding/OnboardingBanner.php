@@ -106,6 +106,7 @@ class OnboardingBanner {
 	 * Render a single onboarding step.
 	 *
 	 * @since 1.1.0
+	 * @since 1.8.0 Render the demo checks for a pending demo step.
 	 *
 	 * @param array $step Step data from OnboardingManager::get_steps().
 	 */
@@ -134,6 +135,12 @@ class OnboardingBanner {
 					<p class="onboarding-step-description"><?php echo wp_kses_post( $step['description'] ); ?></p>
 				</div>
 
+				<?php
+				if ( ! empty( $step['demo'] ) ) {
+					$this->render_demo( $is_completed );
+				}
+				?>
+
 				<?php if ( ! $is_completed && ! empty( $step['cta_url'] ) ) : ?>
 					<a href="<?php echo esc_url( $step['cta_url'] ); ?>" target="_blank" rel="noopener noreferrer" class="button button-primary onboarding-step-cta">
 						<span><?php echo esc_html( $step['cta_label'] ); ?></span>
@@ -141,6 +148,57 @@ class OnboardingBanner {
 					</a>
 				<?php endif; ?>
 			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render the two demo submissions and the button that checks them.
+	 *
+	 * @param bool $is_completed Whether both demo samples already succeeded.
+	 *
+	 * @since 1.8.0
+	 */
+	private function render_demo( bool $is_completed ): void {
+
+		// Copies of the server-owned samples in antispam-api's TestSpamCheckController::SAMPLES.
+		// After a check the card shows the text the API returns, so the two cannot drift.
+		// Messages stay untranslated: they are the exact text the API checks.
+		$samples = [
+			'clean' => [
+				'initials' => 'SM',
+				'name'     => 'Sarah Mitchell',
+				'email'    => 'sarah.mitchell@example.com',
+				'message'  => "Hi! I'd like a quote for redesigning our bakery's website. Are you free for a quick call next week?",
+			],
+			'spam'  => [
+				'initials' => 'SE',
+				'name'     => 'SEO Expert',
+				'email'    => 'rank-boost@example.net',
+				'message'  => 'Get 1st page Google ranking GUARANTEED!!! 500 backlinks for only $9, visit www.cheap-seo-links.xyz',
+			],
+		];
+
+		?>
+		<div class="onboarding-demo" id="activelayer-onboarding-demo">
+			<?php foreach ( $samples as $key => $sample ) : ?>
+				<div class="onboarding-demo-card" data-sample="<?php echo esc_attr( $key ); ?>">
+					<span class="status-badge onboarding-demo-badge" hidden></span>
+					<div class="onboarding-demo-card__head">
+						<span class="onboarding-demo-avatar" aria-hidden="true"><?php echo esc_html( $sample['initials'] ); ?></span>
+						<div class="onboarding-demo-from">
+							<strong><?php echo esc_html( $sample['name'] ); ?></strong>
+							<span><?php echo esc_html( $sample['email'] ); ?></span>
+						</div>
+					</div>
+					<p class="onboarding-demo-msg"><?php echo esc_html( $sample['message'] ); ?></p>
+					<div class="onboarding-demo-foot"><?php esc_html_e( 'Example message', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></div>
+				</div>
+			<?php endforeach; ?>
+		</div>
+		<div class="onboarding-demo-actions">
+			<button type="button" class="button<?php echo $is_completed ? '' : ' button-primary'; ?>" id="activelayer-onboarding-demo-run"><?php echo $is_completed ? esc_html__( 'Run again', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) : esc_html__( 'Run test', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></button>
+			<p class="onboarding-demo-note" aria-live="polite"><?php esc_html_e( 'Examples only: nothing is saved, emailed, or counted toward your plan.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?></p>
 		</div>
 		<?php
 	}

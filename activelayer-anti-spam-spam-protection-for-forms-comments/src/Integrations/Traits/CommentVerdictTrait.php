@@ -3,8 +3,10 @@
 namespace ActiveLayer\Integrations\Traits;
 
 use ActiveLayer\Integrations\Comments\PluginInitiatedGuard;
+use ActiveLayer\Integrations\Comments\NativeModerationFeedback;
 use ActiveLayer\Logger\Logger;
 use ActiveLayer\Storage\SubmissionCache;
+use ActiveLayer\Storage\Storage;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -32,10 +34,11 @@ trait CommentVerdictTrait {
 	 * Allow clean comment submission.
 	 *
 	 * Finds the comment by submission ID, marks it as clean via meta,
-	 * and auto-approves if the setting is enabled.
+	 * and auto-approves if enabled, preserving upstream spam and trash decisions.
 	 *
 	 * @since 1.2.0
 	 * @since 1.2.0 Wrap WP comment-status calls in plugin-initiated guard to prevent feedback loops.
+	 * @since 1.8.0 Respect external moderation and restore only an owned hold.
 	 *
 	 * @param string $submission_id Submission ID.
 	 *
@@ -53,19 +56,27 @@ trait CommentVerdictTrait {
 		// Get settings to check if auto-approval is enabled.
 		$settings = $this->get_settings();
 
-		// Always update comment meta to mark as clean.
+		// Capture hold ownership before replacing the classification metadata.
+		$owns_hold = get_comment_meta( $comment_id, 'activelayer_status', true ) === 'pending';
+
 		update_comment_meta( $comment_id, 'activelayer_status', 'clean' );
 
-		// Only intervene while the comment is still in the pending state we forced
-		// during preprocess_comment. If another plugin already moved it (spam, trash,
-		// etc.) we respect that decision.
+		if ( metadata_exists( 'comment', $comment_id, NativeModerationFeedback::MODERATION_META_KEY ) ) {
+			return true;
+		}
+
+		// Approval is limited to pending comments with no recorded external decision.
 		$comment = get_comment( $comment_id );
 
 		if ( ! $comment || $comment->comment_approved !== '0' ) {
 			return true;
 		}
 
-		if ( ! empty( $settings['auto_approve_clean'] ) ) {
+		// Older queued submissions may have had an upstream rejection forced to pending.
+		$original_status   = get_comment_meta( $comment_id, 'activelayer_original_status', true );
+		$upstream_rejected = in_array( $original_status, [ 'spam', 'trash' ], true );
+
+		if ( ! empty( $settings['auto_approve_clean'] ) && ! $upstream_rejected ) {
 			PluginInitiatedGuard::run(
 				static function () use ( $comment_id ) {
 					wp_set_comment_status( $comment_id, 'approve' );
@@ -75,9 +86,10 @@ trait CommentVerdictTrait {
 			return true;
 		}
 
-		// Auto-approve disabled: don't impose our pending state on the user — restore
-		// whatever WordPress would have decided without ActiveLayer.
-		$this->restore_original_comment_status( $comment_id );
+		// Restore upstream rejections, or release our hold when auto-approval is disabled.
+		if ( $upstream_rejected || $owns_hold ) {
+			$this->restore_original_comment_status( $comment_id );
+		}
 
 		return true;
 	}
@@ -91,6 +103,7 @@ trait CommentVerdictTrait {
 	 *
 	 * @since 1.2.0
 	 * @since 1.2.0 Wrap WP comment-status calls in plugin-initiated guard to prevent feedback loops.
+	 * @since 1.8.0 Respect external moderation and restore only an owned hold.
 	 *
 	 * @param string $submission_id Submission ID.
 	 *
@@ -108,8 +121,14 @@ trait CommentVerdictTrait {
 		// Get settings to check if auto-spam is enabled.
 		$settings = $this->get_settings();
 
-		// Always update comment meta to mark as spam.
+		// Capture hold ownership before replacing the classification metadata.
+		$owns_hold = get_comment_meta( $comment_id, 'activelayer_status', true ) === 'pending';
+
 		update_comment_meta( $comment_id, 'activelayer_status', 'spam' );
+
+		if ( metadata_exists( 'comment', $comment_id, NativeModerationFeedback::MODERATION_META_KEY ) ) {
+			return true;
+		}
 
 		// Move to spam folder if auto-spam is enabled.
 		if ( ! empty( $settings['auto_spam_detected'] ) ) {
@@ -132,7 +151,7 @@ trait CommentVerdictTrait {
 		// Restore its original status so the user is not silently penalised.
 		$comment = get_comment( $comment_id );
 
-		if ( $comment && $comment->comment_approved === '0' ) {
+		if ( $owns_hold && $comment && $comment->comment_approved === '0' ) {
 			$this->restore_original_comment_status( $comment_id );
 		}
 
@@ -194,11 +213,13 @@ trait CommentVerdictTrait {
 	/**
 	 * Get comment ID by submission ID.
 	 *
-	 * Queries comment meta directly via $wpdb to bypass query filters such as
+	 * Uses the persisted entry ID as a fallback while insertion metadata is being
+	 * finalized. Queries comment meta directly via $wpdb to bypass query filters such as
 	 * WooCommerce's `comments_clauses_without_product_reviews`, which would
 	 * otherwise exclude product reviews from generic `get_comments()` calls.
 	 *
 	 * @since 1.2.0
+	 * @since 1.8.0 Resolve persisted entry IDs before correlation meta is finalized.
 	 *
 	 * @param string $submission_id Submission ID.
 	 *
@@ -217,16 +238,35 @@ trait CommentVerdictTrait {
 			)
 		);
 
-		return $comment_id ? (int) $comment_id : null;
+		if ( $comment_id ) {
+			return (int) $comment_id;
+		}
+
+		// The worker may run after insertion but before temporary meta is replaced.
+		$submission = Storage::get_instance()->find( $submission_id );
+
+		$provider = $submission['provider'] ?? '';
+
+		if ( ! $submission || $provider !== $this->get_slug() ) {
+			return null;
+		}
+
+		$entry_id = (int) ( $submission['entry_id'] ?? 0 );
+
+		return $entry_id > 0 && get_comment( $entry_id ) ? $entry_id : null;
 	}
 
 	/**
 	 * Handle submission failure fallback.
 	 *
 	 * Restores the comment to its original status when submission processing
-	 * fails, and cleans up all ActiveLayer comment meta.
+	 * fails while the comment remains in our pending hold. Keeps the submission
+	 * link and original status for retries without undoing later manual moderation.
+	 * Tracking mode leaves native moderation and notification timing unchanged.
 	 *
 	 * @since 1.2.0
+	 * @since 1.8.0 Retain retry linkage and skip status restoration for tracking submissions.
+	 * @since 1.8.0 Preserve external decisions when releasing a failed check.
 	 *
 	 * @param string $submission_id Submission ID.
 	 * @param array  $submission    Submission data.
@@ -243,15 +283,20 @@ trait CommentVerdictTrait {
 			return;
 		}
 
-		$this->restore_original_comment_status( $comment_id );
+		$comment = get_comment( $comment_id );
+
+		$settings = $this->get_settings();
+
+		// Tracking mode never owns a moderation hold or a deferred notification.
+		if ( ! metadata_exists( 'comment', $comment_id, NativeModerationFeedback::MODERATION_META_KEY ) && empty( $settings['tracking_mode'] ) && $comment && $comment->comment_approved === '0' && get_comment_meta( $comment_id, 'activelayer_status', true ) === 'pending' ) {
+			$this->restore_original_comment_status( $comment_id );
+		}
 
 		delete_comment_meta( $comment_id, 'activelayer_status' );
-		delete_comment_meta( $comment_id, 'activelayer_submission_id' );
-		delete_comment_meta( $comment_id, 'activelayer_original_status' );
 		wp_cache_delete( 'activelayer_comment_id_' . md5( $submission_id ), SubmissionCache::CACHE_GROUP );
 
 		Logger::log(
-			'Comment submission failed - restored original status',
+			'Comment submission failed - released pending verification',
 			[
 				'submission_id' => $submission_id,
 				'comment_id'    => $comment_id,

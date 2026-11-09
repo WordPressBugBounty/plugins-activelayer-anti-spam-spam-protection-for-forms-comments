@@ -21,6 +21,13 @@ class SubmissionCache {
 	public const CACHE_GROUP = 'activelayer';
 
 	/**
+	 * Object cache and transient key for the non-trashed submission count.
+	 *
+	 * @since 1.8.0
+	 */
+	public const SUBMISSION_COUNT_CACHE_KEY = 'activelayer_submission_count';
+
+	/**
 	 * Cache key used to version list caches.
 	 *
 	 * @since 1.0.0
@@ -44,6 +51,52 @@ class SubmissionCache {
 	public function get_cache_group(): string {
 
 		return self::CACHE_GROUP;
+	}
+
+	/**
+	 * Read the menu count, falling back to a transient without persistent caching.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @return int|null Cached count, including zero, or null on a cache miss.
+	 */
+	public function get_submission_count(): ?int {
+
+		$count = wp_cache_get( self::SUBMISSION_COUNT_CACHE_KEY, self::CACHE_GROUP );
+
+		if ( $count !== false ) {
+			return (int) $count;
+		}
+
+		if ( wp_using_ext_object_cache() ) {
+			return null;
+		}
+
+		$count = get_transient( self::SUBMISSION_COUNT_CACHE_KEY );
+
+		if ( $count === false ) {
+			return null;
+		}
+
+		wp_cache_set( self::SUBMISSION_COUNT_CACHE_KEY, (int) $count, self::CACHE_GROUP, 5 * MINUTE_IN_SECONDS );
+
+		return (int) $count;
+	}
+
+	/**
+	 * Cache the menu count for five minutes, persisting it on standard hosting.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param int $count Non-trashed submission count.
+	 */
+	public function set_submission_count( int $count ): void {
+
+		wp_cache_set( self::SUBMISSION_COUNT_CACHE_KEY, $count, self::CACHE_GROUP, 5 * MINUTE_IN_SECONDS );
+
+		if ( ! wp_using_ext_object_cache() ) {
+			set_transient( self::SUBMISSION_COUNT_CACHE_KEY, $count, 5 * MINUTE_IN_SECONDS );
+		}
 	}
 
 	/**
@@ -200,6 +253,8 @@ class SubmissionCache {
 		}
 
 		wp_cache_delete( 'queue_stats', self::CACHE_GROUP );
+		wp_cache_delete( self::SUBMISSION_COUNT_CACHE_KEY, self::CACHE_GROUP );
+		delete_transient( self::SUBMISSION_COUNT_CACHE_KEY );
 		wp_cache_delete( 'daily_counts_7', self::CACHE_GROUP );
 		wp_cache_delete( 'daily_counts_30', self::CACHE_GROUP );
 		wp_cache_delete( 'table_exists', self::CACHE_GROUP );

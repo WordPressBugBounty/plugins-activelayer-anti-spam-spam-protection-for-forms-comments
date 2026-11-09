@@ -118,16 +118,28 @@ class SubscriptionStats {
 	 * Fetch subscription stats from API and cache them.
 	 *
 	 * @since 1.0.0
+	 * @since 1.8.0 Cache the requesting credential scope and notify local tracking after a successful response.
 	 *
 	 * @return array Subscription stats.
 	 */
 	private function fetch_and_cache_stats(): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
+		$scope = hash( 'sha256', SettingsHelper::get_api_key() );
 		$stats = $this->get_subscription_stats();
 
 		if ( $stats['success'] ?? false ) {
-			// Cache successful response.
+			// Bind successful statistics to the credential captured before the HTTP request.
+			$stats['credential_scope'] = $scope;
+
 			set_transient( self::CACHE_KEY, $stats, self::CACHE_EXPIRATION );
+			/**
+		 * Report freshly authenticated capacity to local interruption tracking.
+		 *
+		 * @since 1.8.0
+		 *
+		 * @param array $stats Successful fresh subscription statistics.
+		 */
+		do_action( 'activelayer_subscription_stats_updated', $stats );
 
 			Logger::log(
                 'Subscription stats fetched',
@@ -169,6 +181,7 @@ class SubscriptionStats {
 	 *
 	 * @since 1.0.0
 	 * @since 1.3.0 Mapped has_payment_method from the API response.
+	 * @since 1.8.0 Preserve the explicit lifetime bonus breakdown when provided.
 	 *
 	 * @return array Subscription stats or error.
 	 */
@@ -210,20 +223,24 @@ class SubscriptionStats {
 		$period_type = $period['type'] ?? 'monthly';
 
 		return [
-			'success'            => (bool) ( $response['success'] ?? false ),
-			'plan_name'          => $data['plan']['name'] ?? 'Unknown',
-			'plan_id'            => $data['plan']['id'] ?? 0,
-			'requests_limit'     => $data['usage']['total_requests'] ?? 0,
-			'requests_used'      => $data['usage']['used_requests'] ?? 0,
-			'requests_remaining' => $data['usage']['remaining_requests'] ?? 0,
-			'usage_percentage'   => $data['usage']['usage_percentage'] ?? 0,
-			'period_type'        => $period_type,
-			'period_month'       => $period['month'] ?? 0,
-			'period_year'        => $period['year'] ?? 0,
+			'success'                  => (bool) ( $response['success'] ?? false ),
+			'plan_name'                => $data['plan']['name'] ?? 'Unknown',
+			'plan_id'                  => $data['plan']['id'] ?? 0,
+			'requests_limit'           => $data['usage']['total_requests'] ?? 0,
+			'requests_used'            => $data['usage']['used_requests'] ?? 0,
+			'requests_remaining'       => $data['usage']['remaining_requests'] ?? 0,
+			'usage_percentage'         => $data['usage']['usage_percentage'] ?? 0,
+			'period_type'              => $period_type,
+			'period_month'             => $period['month'] ?? 0,
+			'period_year'              => $period['year'] ?? 0,
 			// Null when the API omits the field (unknown card state) — consumers treat null as "do not prompt".
-			'has_payment_method' => isset( $data['has_payment_method'] ) ? (bool) $data['has_payment_method'] : null,
-			'timestamp'          => $response['timestamp'] ?? '',
-			'raw_response'       => $response,
+			'has_payment_method'       => isset( $data['has_payment_method'] ) ? (bool) $data['has_payment_method'] : null,
+			// Missing fields identify an older API, not a confirmed zero bonus balance.
+			'bonus_requests_granted'   => isset( $data['bonus']['granted_requests'] ) ? (int) $data['bonus']['granted_requests'] : null,
+			'bonus_requests_used'      => isset( $data['bonus']['used_requests'] ) ? (int) $data['bonus']['used_requests'] : null,
+			'bonus_requests_remaining' => isset( $data['bonus']['remaining_requests'] ) ? (int) $data['bonus']['remaining_requests'] : null,
+			'timestamp'                => $response['timestamp'] ?? '',
+			'raw_response'             => $response,
 		];
 	}
 
@@ -234,12 +251,13 @@ class SubscriptionStats {
 	 * to keep stats updated without blocking the main request.
 	 *
 	 * @since 1.0.0
+	 * @since 1.8.0 Find pending refreshes across all scheduler groups.
 	 */
 	public function schedule_refresh(): void {
 
 		// Schedule immediate background fetch (skip if one is already pending).
 		if ( function_exists( 'as_enqueue_async_action' ) ) {
-			if ( function_exists( 'as_has_scheduled_action' ) && as_has_scheduled_action( 'activelayer_refresh_subscription_stats', [], 'activelayer' ) ) {
+			if ( function_exists( 'as_has_scheduled_action' ) && as_has_scheduled_action( 'activelayer_refresh_subscription_stats', [] ) ) {
 				return;
 			}
 

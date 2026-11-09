@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitd05dd8ea3c55d69a47c9fadb35a84df0
+class ComposerStaticInit97c9975edc5ff0c25b23cc512c8e4173
 {
     public static $prefixLengthsPsr4 = array (
         'A' =>
@@ -39,6 +39,7 @@ class ComposerStaticInitd05dd8ea3c55d69a47c9fadb35a84df0
         'ActiveLayer\\Admin\\Components\\SubmissionsTable' => __DIR__ . '/../..' . '/src/Admin/Components/SubmissionsTable.php',
         'ActiveLayer\\Admin\\Components\\UsageLimitNotice' => __DIR__ . '/../..' . '/src/Admin/Components/UsageLimitNotice.php',
         'ActiveLayer\\Admin\\Onboarding\\OnboardingBanner' => __DIR__ . '/../..' . '/src/Admin/Onboarding/OnboardingBanner.php',
+        'ActiveLayer\\Admin\\Onboarding\\OnboardingDemo' => __DIR__ . '/../..' . '/src/Admin/Onboarding/OnboardingDemo.php',
         'ActiveLayer\\Admin\\Onboarding\\OnboardingManager' => __DIR__ . '/../..' . '/src/Admin/Onboarding/OnboardingManager.php',
         'ActiveLayer\\Admin\\Onboarding\\WelcomeScreen' => __DIR__ . '/../..' . '/src/Admin/Onboarding/WelcomeScreen.php',
         'ActiveLayer\\Admin\\Pages\\DashboardPage' => __DIR__ . '/../..' . '/src/Admin/Pages/DashboardPage.php',
@@ -52,6 +53,7 @@ class ComposerStaticInitd05dd8ea3c55d69a47c9fadb35a84df0
         'ActiveLayer\\Api\\ApiClient' => __DIR__ . '/../..' . '/src/Api/ApiClient.php',
         'ActiveLayer\\Api\\ApiRequestHandler' => __DIR__ . '/../..' . '/src/Api/ApiRequestHandler.php',
         'ActiveLayer\\Api\\ConnectClient' => __DIR__ . '/../..' . '/src/Api/ConnectClient.php',
+        'ActiveLayer\\Api\\SiteHeartbeat' => __DIR__ . '/../..' . '/src/Api/SiteHeartbeat.php',
         'ActiveLayer\\ClientSignals\\BehavioralSignals' => __DIR__ . '/../..' . '/src/ClientSignals/BehavioralSignals.php',
         'ActiveLayer\\ClientSignals\\Behavioral\\DeviceSignals' => __DIR__ . '/../..' . '/src/ClientSignals/Behavioral/DeviceSignals.php',
         'ActiveLayer\\ClientSignals\\Behavioral\\InteractionSignals' => __DIR__ . '/../..' . '/src/ClientSignals/Behavioral/InteractionSignals.php',
@@ -84,6 +86,7 @@ class ComposerStaticInitd05dd8ea3c55d69a47c9fadb35a84df0
         'ActiveLayer\\ClientSignals\\HoneypotSignals' => __DIR__ . '/../..' . '/src/ClientSignals/HoneypotSignals.php',
         'ActiveLayer\\ClientSignals\\Parsing\\SignalParser' => __DIR__ . '/../..' . '/src/ClientSignals/Parsing/SignalParser.php',
         'ActiveLayer\\ClientSignals\\ScriptLoader' => __DIR__ . '/../..' . '/src/ClientSignals/ScriptLoader.php',
+        'ActiveLayer\\Compatibility\\CubeWPElementorCompatibility' => __DIR__ . '/../..' . '/src/Compatibility/CubeWPElementorCompatibility.php',
         'ActiveLayer\\Connect\\ConnectFlow' => __DIR__ . '/../..' . '/src/Connect/ConnectFlow.php',
         'ActiveLayer\\Helpers\\AppUrlHelper' => __DIR__ . '/../..' . '/src/Helpers/AppUrlHelper.php',
         'ActiveLayer\\Helpers\\ArrayHelper' => __DIR__ . '/../..' . '/src/Helpers/ArrayHelper.php',
@@ -114,6 +117,10 @@ class ComposerStaticInitd05dd8ea3c55d69a47c9fadb35a84df0
         'ActiveLayer\\Integrations\\ContactForm7\\AdminSettings' => __DIR__ . '/../..' . '/src/Integrations/ContactForm7/AdminSettings.php',
         'ActiveLayer\\Integrations\\ContactForm7\\ContactForm7Integration' => __DIR__ . '/../..' . '/src/Integrations/ContactForm7/ContactForm7Integration.php',
         'ActiveLayer\\Integrations\\ContactForm7\\SubmissionHandler' => __DIR__ . '/../..' . '/src/Integrations/ContactForm7/SubmissionHandler.php',
+        'ActiveLayer\\Integrations\\CubeWP\\AdminSettings' => __DIR__ . '/../..' . '/src/Integrations/CubeWP/AdminSettings.php',
+        'ActiveLayer\\Integrations\\CubeWP\\CubeWPIntegration' => __DIR__ . '/../..' . '/src/Integrations/CubeWP/CubeWPIntegration.php',
+        'ActiveLayer\\Integrations\\CubeWP\\EditorPanel' => __DIR__ . '/../..' . '/src/Integrations/CubeWP/EditorPanel.php',
+        'ActiveLayer\\Integrations\\CubeWP\\SubmissionHandler' => __DIR__ . '/../..' . '/src/Integrations/CubeWP/SubmissionHandler.php',
         'ActiveLayer\\Integrations\\EasyDigitalDownloads\\Admin\\AdminController' => __DIR__ . '/../..' . '/src/Integrations/EasyDigitalDownloads/Admin/AdminController.php',
         'ActiveLayer\\Integrations\\EasyDigitalDownloads\\EasyDigitalDownloadsIntegration' => __DIR__ . '/../..' . '/src/Integrations/EasyDigitalDownloads/EasyDigitalDownloadsIntegration.php',
         'ActiveLayer\\Integrations\\EasyDigitalDownloads\\Registration\\RegistrationAdminSettings' => __DIR__ . '/../..' . '/src/Integrations/EasyDigitalDownloads/Registration/RegistrationAdminSettings.php',
@@ -180,6 +187,10 @@ class ComposerStaticInitd05dd8ea3c55d69a47c9fadb35a84df0
         'ActiveLayer\\Logger\\Logger' => __DIR__ . '/../..' . '/src/Logger/Logger.php',
         'ActiveLayer\\Plugin' => __DIR__ . '/../..' . '/src/Plugin.php',
         'ActiveLayer\\Privacy\\PrivacyManager' => __DIR__ . '/../..' . '/src/Privacy/PrivacyManager.php',
+        'ActiveLayer\\Protection\\AdminStatus' => __DIR__ . '/../..' . '/src/Protection/AdminStatus.php',
+        'ActiveLayer\\Protection\\EpisodeStore' => __DIR__ . '/../..' . '/src/Protection/EpisodeStore.php',
+        'ActiveLayer\\Protection\\NativeObserver' => __DIR__ . '/../..' . '/src/Protection/NativeObserver.php',
+        'ActiveLayer\\Protection\\ProtectionMonitor' => __DIR__ . '/../..' . '/src/Protection/ProtectionMonitor.php',
         'ActiveLayer\\Queue\\FailedSubmissionRetrier' => __DIR__ . '/../..' . '/src/Queue/FailedSubmissionRetrier.php',
         'ActiveLayer\\Queue\\FeedbackWorker' => __DIR__ . '/../..' . '/src/Queue/FeedbackWorker.php',
         'ActiveLayer\\Queue\\QueueManager' => __DIR__ . '/../..' . '/src/Queue/QueueManager.php',
@@ -192,6 +203,7 @@ class ComposerStaticInitd05dd8ea3c55d69a47c9fadb35a84df0
         'ActiveLayer\\Storage\\Status\\SubmissionStatusManager' => __DIR__ . '/../..' . '/src/Storage/Status/SubmissionStatusManager.php',
         'ActiveLayer\\Storage\\Storage' => __DIR__ . '/../..' . '/src/Storage/Storage.php',
         'ActiveLayer\\Storage\\SubmissionCache' => __DIR__ . '/../..' . '/src/Storage/SubmissionCache.php',
+        'ActiveLayer\\Storage\\SubmissionId' => __DIR__ . '/../..' . '/src/Storage/SubmissionId.php',
         'ActiveLayer\\Storage\\SubmissionRepository' => __DIR__ . '/../..' . '/src/Storage/SubmissionRepository.php',
         'ActiveLayer\\Subscription\\SubscriptionStats' => __DIR__ . '/../..' . '/src/Subscription/SubscriptionStats.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
@@ -200,9 +212,9 @@ class ComposerStaticInitd05dd8ea3c55d69a47c9fadb35a84df0
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitd05dd8ea3c55d69a47c9fadb35a84df0::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitd05dd8ea3c55d69a47c9fadb35a84df0::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitd05dd8ea3c55d69a47c9fadb35a84df0::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit97c9975edc5ff0c25b23cc512c8e4173::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit97c9975edc5ff0c25b23cc512c8e4173::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit97c9975edc5ff0c25b23cc512c8e4173::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -2,6 +2,9 @@
 
 namespace ActiveLayer;
 
+use ActiveLayer\Protection\ProtectionMonitor;
+use ActiveLayer\Compatibility\CubeWPElementorCompatibility;
+
 use ActiveLayer\Abilities\Abilities;
 use ActiveLayer\ClientSignals\ScriptLoader;
 use ActiveLayer\Integrations\IntegrationRegistry;
@@ -14,6 +17,7 @@ use ActiveLayer\Integrations\FormidableForms\FormidableFormsIntegration;
 use ActiveLayer\Integrations\Forminator\ForminatorIntegration;
 use ActiveLayer\Integrations\FluentForms\FluentFormsIntegration;
 use ActiveLayer\Integrations\SureForms\SureFormsIntegration;
+use ActiveLayer\Integrations\CubeWP\CubeWPIntegration;
 use ActiveLayer\Integrations\WSForm\WSFormIntegration;
 use ActiveLayer\Integrations\GravityForms\GravityFormsIntegration;
 use ActiveLayer\Integrations\ElementorForms\ElementorFormsIntegration;
@@ -95,6 +99,8 @@ class Plugin {
 	 * Initialize plugin.
 	 *
 	 * @since 1.0.0
+	 * @since 1.8.0 Guard the CubeWP/Elementor missing-document compatibility issue.
+	 * @since 1.8.0 Register independent local interruption observers before integrations.
 	 * @since 1.1.0 Added frontend script loader initialization.
 	 * @since 1.2.0 Wire NativeModerationFeedback listener for native comment moderation.
 	 * @since 1.3.0 Run UpgradeRunner first to detect opt-out announce state.
@@ -103,6 +109,10 @@ class Plugin {
 	public function init(): void {
 
 		UpgradeRunner::run();
+
+		( new ProtectionMonitor() )->hooks();
+
+		( new CubeWPElementorCompatibility() )->hooks();
 
 		// Initialize integrations.
 		$this->init_integrations();
@@ -157,6 +167,7 @@ class Plugin {
 	 * @since 1.4.0 Registered MemberPressIntegration (membership-signup spam protection).
 	 * @since 1.5.0 Registered FunnelKitIntegration (opt-in form spam protection).
 	 * @since 1.5.0 Registered EasyDigitalDownloadsIntegration (registration spam protection).
+	 * @since 1.8.0 Registered CubeWP Forms submission protection.
 	 */
 	private function load_builtin_integrations(): void {
 
@@ -168,6 +179,7 @@ class Plugin {
 			FormidableFormsIntegration::class,
 			FluentFormsIntegration::class,
 			SureFormsIntegration::class,
+			CubeWPIntegration::class,
 			WSFormIntegration::class,
 			WooCommerceIntegration::class,
 			BuddyPressIntegration::class,

@@ -63,6 +63,7 @@ class FailedSubmissionRetrier {
 	 * Ensure the recurring retry action is scheduled.
 	 *
 	 * @since 1.0.0
+	 * @since 1.8.0 Check maintenance actions across groups and request unique scheduling.
 	 */
 	public static function maybe_schedule(): void {
 
@@ -74,7 +75,7 @@ class FailedSubmissionRetrier {
 			return;
 		}
 
-		if ( as_has_scheduled_action( self::HOOK, [], 'activelayer' ) ) {
+		if ( as_has_scheduled_action( self::HOOK, [] ) ) {
 			return;
 		}
 
@@ -105,7 +106,8 @@ class FailedSubmissionRetrier {
 			$interval,
 			self::HOOK,
 			[],
-			'activelayer'
+			'activelayer',
+			true
 		);
 	}
 

@@ -10,6 +10,7 @@ use ActiveLayer\Admin\Components\ConnectionBar;
 use ActiveLayer\Admin\Components\PluginInstaller;
 use ActiveLayer\Admin\Components\SubmissionsTable;
 use ActiveLayer\Admin\Components\UsageLimitNotice;
+use ActiveLayer\Admin\Onboarding\OnboardingDemo;
 use ActiveLayer\Admin\Onboarding\OnboardingManager;
 use ActiveLayer\Admin\Onboarding\WelcomeScreen;
 use ActiveLayer\Admin\Pages\DashboardPage;
@@ -23,6 +24,7 @@ use ActiveLayer\Connect\ConnectFlow;
 use ActiveLayer\Integrations\IntegrationRegistry;
 use ActiveLayer\Helpers\SettingsHelper;
 use ActiveLayer\Helpers\UpgradeHelper;
+use ActiveLayer\Storage\Storage;
 /**
  * Admin Pages Controller.
  *
@@ -128,6 +130,9 @@ class AdminPages {
 
 		// Full-screen welcome screen shown after first activation.
 		WelcomeScreen::hooks();
+
+		// "See ActiveLayer in action" demo checks in the onboarding banner.
+		OnboardingDemo::hooks();
 	}
 
 
@@ -300,6 +305,10 @@ class AdminPages {
 	 */
 	public function add_menu_pages(): void {
 
+		global $menu;
+
+		$count_badge = $this->get_submission_count_badge();
+
 		// Main menu page (redirects to dashboard).
 		add_menu_page(
 			__( 'Dashboard', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
@@ -310,6 +319,15 @@ class AdminPages {
 			'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzkiIGhlaWdodD0iMzkiIHZpZXdCb3g9IjAgMCAzOSAzOSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTEzLjk4NjMgMjguMzgyOUMxNC40MzUxIDI5LjIwNzYgMTQuMTYwMiAzMC4xNTUxIDEzLjQ0NjcgMzAuNTUyN0MxMi43MzMyIDMwLjk1MDMgMTEuODMwNSAzMC43NDE5IDExLjM4MDUgMjkuOTc2QzguMjYwNjMgMjQuNTYxMSA2Ljk0NzQ5IDE4LjEwOTIgNy4wNTQ5IDExLjg4ODdDNy4xNTMzNSAxMC4wNTI2IDkuODcwNDEgMTAuMDQyNCA5Ljk1NjA4IDExLjkwNDFDMTAuMDAyMSAxNy44MTI2IDExLjAzNTIgMjMuMjMxMyAxMy45ODc2IDI4LjM4NDJMMTMuOTg2MyAyOC4zODI5WiIgZmlsbD0iI2E3YWFhZCIvPgo8cGF0aCBkPSJNNC4zMzMxMSAyNy40MDczQzIuODM1ODUgMjMuMjk5MSAxLjkxMDEzIDE5LjgwNzIgMS45ODY4NSAxNS41MTM2QzEuOTkzMjQgMTUuMTc5OSAyLjEwMDY1IDE0Ljg1IDIuMzE5MjkgMTQuNTk4MUMzLjE0MjcyIDEzLjY0ODEgNC45Nzg4MSAxNC4xNDA0IDQuOTc4ODEgMTUuNjg1QzUuMTM2MDggMTkuNDMgNS43Nzc5NSAyMi44Njk1IDcuMTQ5OTEgMjYuMzYxNEM3Ljc0NzAyIDI4LjA3NDggNS4wNTkzNyAyOS4yMDYzIDQuMzMzMTEgMjcuNDA3M1oiIGZpbGw9IiNhN2FhYWQiLz4KPHBhdGggZD0iTTIzLjM3NiAzLjk4ODRDMjQuMDgxIDMuNzc4NTggMjQuODMxMSAzLjc3ODUyIDI1LjUzNjEgMy45ODg0QzI4LjQxMjIgNC44NDQ1OCAzMS45MDk3IDUuOTI2NCAzNC41NDMgNi43ODEzN0MzNS44MDI5IDcuMTkwNzUgMzYuNTI3MyA4LjcwMDYyIDM2LjUyNzMgMTAuNDI5OEMzNi41MjczIDIwLjQyMzIgMzQuNjE5MyAyOS4yODI2IDI1LjA0MSAzNC41MzA0QzI0LjY3ODIgMzQuNzI5IDI0LjIzMjkgMzQuNzI5MSAyMy44NzAxIDM0LjUzMDRDMTQuMjkxOCAyOS4yODI2IDEyLjM4MzggMjAuNDIzMyAxMi4zODM4IDEwLjQyOThDMTIuMzgzOCA4LjcwMDQyIDEzLjEwODkgNy4xOTA1NSAxNC4zNjkxIDYuNzgxMzdDMTcuMDAyNSA1LjkyNjM5IDIwLjQ5OTkgNC44NDQ1OCAyMy4zNzYgMy45ODg0Wk0zMS4yMzkzIDEzLjIzNzRDMzAuNjEzMSAxMi42OTk0IDI5LjY3MDkgMTIuNzcwOSAyOS4xMzI4IDEzLjM5NTZMMjIuNzM4MyAyMC4zODFMMjAuMzI0MiAxNy44MzUxQzE5Ljc4NjEgMTcuMjEwMiAxOC44NDI2IDE3LjEzODggMTguMjE3OCAxNy42NzY5QzE3LjU5MTYgMTguMjE1IDE3LjUyMDUgMTkuMTU4NSAxOC4wNTg2IDE5Ljc4MzNMMjEuNjA0NSAyMy42NDU2QzIxLjg4NzcgMjMuOTc1IDIyLjMwMTMgMjQuMTY1MSAyMi43MzYzIDI0LjE2NTJMMjIuNzM5MyAyNC4xNjYxQzIzLjE3NDMgMjQuMTY2MSAyMy41ODc4IDIzLjk3NSAyMy44NzExIDIzLjY0NTZMMzEuMzk3NSAxNS4zNDM5QzMxLjkzNTYgMTQuNzE3NyAzMS44NjQxIDEzLjc3NTUgMzEuMjM5MyAxMy4yMzc0WiIgZmlsbD0iI2E3YWFhZCIvPgo8L3N2Zz4K',
 			30
 		);
+
+		// Append after registration to keep page hooks independent of the count.
+		foreach ( $menu as $position => $item ) {
+			if ( $item[2] === 'activelayer' ) {
+				$menu[ $position ][0] .= $count_badge; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+
+				break;
+			}
+		}
 
 		// Dashboard page (default landing page).
 		add_submenu_page(
@@ -325,7 +343,7 @@ class AdminPages {
 		add_submenu_page(
 			'activelayer',
 			__( 'Submissions', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
-			__( 'Submissions', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+			__( 'Submissions', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) . $count_badge,
 			'manage_activelayer',
 			'activelayer-submissions',
 			[ $this, 'render_submissions_page' ]
@@ -391,13 +409,50 @@ class AdminPages {
 	}
 
 	/**
-	 * Enqueue admin assets.
+	 * Build the accessible menu badge using native plugin-counter styling.
+	 *
+	 * The update-plugins classes retain the submenu badge across color-scheme
+	 * hover states, unlike awaiting-mod moderation bubbles.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @return string Badge HTML, or an empty string when no badge is needed.
+	 */
+	private function get_submission_count_badge(): string {
+
+		if ( ! current_user_can( 'manage_activelayer' ) ) {
+			return '';
+		}
+
+		$count = Storage::get_instance()->get_submission_count();
+
+		if ( $count === 0 ) {
+			return '';
+		}
+
+		$formatted_count = number_format_i18n( $count );
+		/* translators: %s: number of submissions outside the trash. */
+		$label = sprintf( _n( '%s submission', '%s submissions', $count, 'activelayer-anti-spam-spam-protection-for-forms-comments' ), $formatted_count );
+
+		return ' <span class="update-plugins activelayer-submission-count" title="' . esc_attr( $label ) . '"><span class="plugin-count" aria-hidden="true">' . esc_html( $formatted_count ) . '</span><span class="screen-reader-text">' . esc_html( $label ) . '</span></span>';
+	}
+
+	/**
+	 * Enqueue admin assets with native counter styling and stable menu placement.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param string $hook Current admin page.
 	 */
 	public function enqueue_assets( string $hook ): void {
+
+		// Keep native counter styling and show the Submissions count in every flyout.
+		// Hide only the duplicate flyout heading and the top label on plugin pages.
+		wp_add_inline_style(
+			'admin-menu',
+			'#toplevel_page_activelayer .wp-submenu-head .activelayer-submission-count,
+			#toplevel_page_activelayer.wp-has-current-submenu .wp-menu-name .activelayer-submission-count { display: none; }'
+		);
 
 		$is_activelayer_page = strpos( $hook, 'activelayer' ) !== false;
 
@@ -457,6 +512,20 @@ class AdminPages {
 					'activating'               => __( 'Activating...', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 					'installError'             => __( 'Installation failed. Please try again.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 					'copied'                   => __( 'Copied!', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+					'demoRun'                  => __( 'Run test', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+					'demoRunAgain'             => __( 'Run again', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+					'demoChecking'             => __( 'Checking…', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+					'demoCheckingWith'         => __( 'Checking with ActiveLayer…', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+					'demoClean'                => __( 'Clean', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+					'demoSpam'                 => __( 'Spam', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+					'demoDelivered'            => __( 'Would reach your inbox', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+					'demoBlocked'              => __( 'Would be filtered out', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+					/* translators: %s: spam score number. */
+					'demoScore'                => __( 'score %s', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+					'demoFailed'               => __( 'Couldn\'t check this message', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+					'demoError'                => __( 'Couldn\'t run the test right now. Please try again in a minute.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+					'demoReload'               => __( 'Your session expired. Reload the page and run the test again.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+					'demoDone'                 => __( 'That\'s how ActiveLayer checks every protected form on your site. Demo complete! Next, receive your first real submission.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 				],
 			]
 		);

@@ -273,16 +273,19 @@ class IntegrationRegistry {
 	 * for each installed integration. Comments integration is excluded
 	 * as it has no per-form concept. Paused integrations (plugin active
 	 * but not enabled) return a null count to distinguish from enabled
-	 * integrations with zero protected forms.
+	 * integrations with zero protected forms. Settings-only counts describe
+	 * configured protection even before the first API key has been saved.
 	 *
 	 * @since 1.1.0
+	 *
+	 * @param bool $settings_only Whether to count configured protection without requiring a stored API key.
 	 *
 	 * @return array {
 	 *     @type array  $integrations Per-slug counts: [ 'slug' => [ 'name' => string, 'count' => int|null ] ].
 	 *     @type int    $total        Total protected forms across all integrations.
 	 * }
 	 */
-	public function get_protected_forms_summary(): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+	public function get_protected_forms_summary( bool $settings_only = false ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
 		$summary = [
 			'integrations' => [],
@@ -306,7 +309,8 @@ class IntegrationRegistry {
 			}
 
 			// Null count for paused integrations; actual count when enabled.
-			$count = $integration->is_enabled()
+			$enabled = $settings_only ? $integration->is_setting_enabled() : $integration->is_enabled();
+			$count   = $enabled
 				? count( array_filter( array_column( $admin_settings->get_forms_list(), 'enabled' ) ) )
 				: null;
 

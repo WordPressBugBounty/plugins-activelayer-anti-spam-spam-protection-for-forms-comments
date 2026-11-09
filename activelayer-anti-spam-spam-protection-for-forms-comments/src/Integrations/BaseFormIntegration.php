@@ -212,6 +212,7 @@ abstract class BaseFormIntegration {
 	 * Process form submission.
 	 *
 	 * @since 1.0.0
+	 * @since 1.8.0 Observe eligible locally skipped submissions before quota guards.
 	 * @since 1.1.0 Added environment signals extraction.
 	 * @since 1.2.0 Stripped-signals detection delegated to SignalsStrippedDetector enricher.
 	 * @since 1.2.0 Preparation delegated to enrich_meta()/prepare_submission_data().
@@ -225,6 +226,17 @@ abstract class BaseFormIntegration {
 	public function process_submission( array $form_data, array &$meta ): string {
 
 		$meta = $this->enrich_meta( $meta );
+
+		/**
+		 * Observe an eligible submission without passing its submitted values.
+		 *
+		 * @since 1.8.0
+		 *
+		 * @param string $provider Integration slug.
+		 * @param mixed  $form_id  Local form identity.
+		 * @param array  $form     Optional form configuration.
+		 */
+		do_action( 'activelayer_protection_observe', $this->slug, $meta['form_id'] ?? 0, [] );
 
 		if ( UpgradeHelper::is_quota_exhausted_cached() ) {
 			Logger::log( 'Quota exhausted - skipping submission', [ 'provider' => $this->slug ] );
@@ -270,7 +282,6 @@ abstract class BaseFormIntegration {
 	 */
 	abstract protected function normalize_form_data( array $raw_data ): array;
 
-
 	/**
 	 * Get form metadata.
 	 *
@@ -286,6 +297,7 @@ abstract class BaseFormIntegration {
 	 * Run synchronous verification for raw submission data.
 	 *
 	 * @since 1.0.0
+	 * @since 1.8.0 Observe eligible locally skipped submissions before quota guards.
 	 * @since 1.1.0 Added environment signals extraction.
 	 * @since 1.2.0 Stripped-signals detection delegated to SignalsStrippedDetector enricher.
 	 * @since 1.2.0 Synchronous flow delegated to SyncSubmissionProcessor.
@@ -305,6 +317,9 @@ abstract class BaseFormIntegration {
 
 		$meta = $this->enrich_meta( $meta );
 
+		/** This action is documented in src/Integrations/BaseFormIntegration.php. */
+		do_action( 'activelayer_protection_observe', $this->slug, $meta['form_id'] ?? 0, [] );
+
 		if ( UpgradeHelper::is_quota_exhausted_cached() ) {
 			Logger::log( 'Quota exhausted - skipping sync submission', [ 'provider' => $this->slug ] );
 
@@ -318,7 +333,6 @@ abstract class BaseFormIntegration {
 
 		return $this->sync_processor->process( $normalized_data, $meta, $this->slug );
 	}
-
 
 	/**
 	 * Get integration name.

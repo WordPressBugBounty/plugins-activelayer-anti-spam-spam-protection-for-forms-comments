@@ -259,6 +259,7 @@ class FormidableFormsIntegration extends BaseFormIntegration {
 	 * Run synchronous verification when entry storage is disabled.
 	 *
 	 * @since 1.0.0
+	 * @since 1.8.0 Preserve provider validation failures before observation.
 	 *
 	 * @param array|string $errors Existing validation errors.
 	 * @param mixed        $form   Form object or identifier.
@@ -267,7 +268,7 @@ class FormidableFormsIntegration extends BaseFormIntegration {
 	 */
 	public function maybe_handle_sync_submission( $errors, $form ) { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.CyclomaticComplexity.MaxExceeded
 
-		if ( ! $this->is_enabled() ) {
+		if ( ! empty( $errors ) || ! $this->is_enabled() ) {
 			return $errors;
 		}
 

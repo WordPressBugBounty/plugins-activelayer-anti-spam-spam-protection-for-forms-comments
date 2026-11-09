@@ -35,6 +35,13 @@ class OnboardingManager {
 	const OPTION_COMPLETED = 'activelayer_onboarding_completed';
 
 	/**
+	 * Option key for successfully checked demo sample keys.
+	 *
+	 * @since 1.8.0
+	 */
+	const OPTION_DEMO_SAMPLES = 'activelayer_onboarding_demo_samples';
+
+	/**
 	 * Whether the banner should be shown.
 	 *
 	 * Checks capability, dismissed state, and completed state.
@@ -60,7 +67,7 @@ class OnboardingManager {
 		// Auto-complete if user already has submissions.
 		$steps = $this->get_steps();
 
-		if ( ! empty( $steps['step_3']['completed'] ) ) {
+		if ( ! empty( $steps['step_4']['completed'] ) ) {
 			$this->mark_completed();
 
 			return false;
@@ -75,6 +82,7 @@ class OnboardingManager {
 	 * @since 1.1.0
 	 * @since 1.2.0 Build register URL via AppUrlHelper.
 	 * @since 1.3.0 Step 2 auto-completes when API key connected; reframed as informational review; step CTA now builds a one-click Connect URL.
+	 * @since 1.8.0 Separate the demo and first real submission into steps 3 and 4.
 	 *
 	 * @return array Step data keyed by step identifier.
 	 */
@@ -96,9 +104,11 @@ class OnboardingManager {
 		// With defaults-flip to opt-out, all forms protect automatically.
 		$step_2_completed = $step_1_completed;
 
-		// Step 3: check if any submission exists.
+		// Only a real stored submission completes onboarding.
 		$stats            = Storage::get_instance()->get_queue_stats();
-		$step_3_completed = ( $stats['total'] ?? 0 ) > 0;
+		$step_4_completed = ( $stats['total'] ?? 0 ) > 0;
+		$samples          = (array) get_option( self::OPTION_DEMO_SAMPLES, [] );
+		$step_3_completed = ! array_diff( OnboardingDemo::SAMPLES, $samples );
 
 		return [
 			'step_1' => [
@@ -127,15 +137,44 @@ class OnboardingManager {
 				'cta_url'     => '',
 				'cta_label'   => '',
 			],
-			'step_3' => [
-				'number'      => 3,
+			'step_3' => $this->get_step_3( $step_1_completed, $step_3_completed ),
+			'step_4' => [
+				'number'      => 4,
 				'title'       => __( 'Receive your first submission', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 				'description' => __( 'Submissions will appear automatically as your forms receive entries.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
-				'completed'   => $step_3_completed,
+				'completed'   => $step_4_completed,
 				'cta_url'     => '',
 				'cta_label'   => '',
 			],
 		];
+	}
+
+	/**
+	 * Build step 3: the optional demo for connected sites.
+	 *
+	 * Both server-owned samples must succeed to complete this step.
+	 * Demo checks never create real submissions.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param bool $is_connected Whether step 1 (connected, validated key) is complete.
+	 * @param bool $is_completed Whether both demo samples have succeeded.
+	 *
+	 * @return array Step data.
+	 */
+	private function get_step_3( bool $is_connected, bool $is_completed ): array {
+
+		$step = [
+			'number'      => 3,
+			'title'       => __( 'See ActiveLayer in action', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+			'description' => __( 'Here are two example contact form messages. Can you tell which one is spam? Run the test to see how ActiveLayer handles them.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+			'completed'   => $is_completed,
+			'cta_url'     => '',
+			'cta_label'   => '',
+			'demo'        => $is_connected,
+		];
+
+		return $step;
 	}
 
 	/**

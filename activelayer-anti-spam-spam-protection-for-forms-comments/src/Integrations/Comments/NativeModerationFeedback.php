@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * bulk "Mark as spam", row actions, programmatic `wp_set_comment_status()`)
  * to ActiveLayer's feedback pipeline. Resolves the comment to a stored
  * submission via `activelayer_submission_id` comment meta and delegates to
- * {@see SubmissionActionHandler::correct()}, which atomically synchronizes
+ * {@see SubmissionActionHandler::correct()}, which synchronizes
  * the local submissions table and queues async API feedback.
  *
  * Covers both providers that store the comment-meta link: WordPress Comments
@@ -33,6 +33,15 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @package ActiveLayer\Integrations\Comments
  */
 class NativeModerationFeedback {
+
+	/**
+	 * Comment meta recording a moderation decision made outside automatic verdicts.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @var string
+	 */
+	public const MODERATION_META_KEY = 'activelayer_external_moderation';
 
 	/**
 	 * Submission action handler.
@@ -85,10 +94,12 @@ class NativeModerationFeedback {
 	 * Resolves the comment to an ActiveLayer submission via comment meta, maps
 	 * the new WordPress status to an internal verdict, and dispatches a feedback
 	 * correction via {@see SubmissionActionHandler::correct()} when appropriate.
-	 * No-ops when the transition is plugin-initiated, the status is unmappable,
-	 * the comment has no linked submission, or no API verdict has been recorded.
+	 * Records external moderation before deciding whether classification feedback
+	 * is available. Initial insertion and plugin-initiated transitions are ignored.
 	 *
 	 * @since 1.2.0
+	 * @since 1.8.0 Preserve native moderation during classification corrections.
+	 * @since 1.8.0 Record external moderation before verdict and feedback checks.
 	 *
 	 * @param string     $new_status New WordPress comment status.
 	 * @param string     $old_status Previous status.
@@ -103,13 +114,7 @@ class NativeModerationFeedback {
 			return;
 		}
 
-		if ( ! is_object( $comment ) || empty( $comment->comment_ID ) ) {
-			return;
-		}
-
-		$mapped = self::map_wp_status( (string) $new_status, (string) $old_status );
-
-		if ( $mapped === null ) {
+		if ( ! is_object( $comment ) || empty( $comment->comment_ID ) || $old_status === 'new' ) {
 			return;
 		}
 
@@ -126,14 +131,20 @@ class NativeModerationFeedback {
 			return;
 		}
 
-		// No API verdict yet → nothing to correct, skip silently.
-		if ( empty( $submission['verdict'] ) ) {
+		// Preserve external decisions even before a verdict, including Hold and Trash.
+		update_comment_meta( (int) $comment->comment_ID, self::MODERATION_META_KEY, (string) $new_status );
+
+		$mapped = self::map_wp_status( (string) $new_status, (string) $old_status );
+
+		// A moderation decision is not necessarily classification feedback.
+		if ( $mapped === null || empty( $submission['verdict'] ) ) {
 			return;
 		}
 
 		// Use the existing correction handler: it validates the transition,
-		// updates local status atomically, and queues async feedback.
-		$corrected = $this->action_handler->correct( $submission_id, $mapped );
+		// updates local status and queues async feedback. Keep the native moderation
+		// decision intact, including an unspam that restores pending status.
+		$corrected = $this->action_handler->correct( $submission_id, $mapped, false );
 
 		if ( $corrected ) {
 			Logger::log(

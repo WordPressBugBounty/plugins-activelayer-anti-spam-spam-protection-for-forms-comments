@@ -2,6 +2,10 @@
 
 namespace ActiveLayer\Admin\Components;
 
+use ActiveLayer\Protection\AdminStatus;
+use ActiveLayer\Protection\EpisodeStore;
+use ActiveLayer\Protection\ProtectionMonitor;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -101,6 +105,7 @@ class DashboardWidget {
 	 * Render the dashboard widget content.
 	 *
 	 * @since 1.1.0
+	 * @since 1.8.0 Include local observations in both connected and disconnected states.
 	 */
 	public function render(): void {
 
@@ -112,9 +117,10 @@ class DashboardWidget {
 	}
 
 	/**
-	 * Render the connected state: chart + stats.
+	 * Render the connected state: historical missed checks, chart and stats.
 	 *
 	 * @since 1.1.0
+	 * @since 1.8.0 Render recorded misses inside the connected widget.
 	 */
 	private function render_connected(): void {
 
@@ -123,6 +129,7 @@ class DashboardWidget {
 
 		?>
 		<div class="activelayer-dash-widget activelayer-dash-widget--connected">
+			<?php ( new AdminStatus( new ProtectionMonitor() ) )->dashboard(); ?>
 			<div class="activelayer-dash-widget-actions">
 				<select class="activelayer-dash-widget-timespan">
 					<?php foreach ( self::ALLOWED_DAYS as $days ) : ?>
@@ -168,7 +175,7 @@ class DashboardWidget {
 	}
 
 	/**
-	 * Render the disconnected state: connection prompt.
+	 * Render one left-aligned connection prompt with optional local missed-check history.
 	 *
 	 * @since 1.1.0
 	 * @since 1.2.0 Build register URL via AppUrlHelper.
@@ -177,21 +184,35 @@ class DashboardWidget {
 	private function render_disconnected(): void {
 
 		$settings_url = admin_url( 'admin.php?page=activelayer-settings' );
+		$summary      = ( new EpisodeStore() )->summary( ( new ProtectionMonitor() )->scope() );
 
 		?>
 		<div class="activelayer-dash-widget activelayer-dash-widget--disconnected">
+			<?php if ( ! empty( $summary['count'] ) ) : ?>
+				<p class="activelayer-dash-widget-heading">
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: %s: recorded unchecked submission count. */
+							_n( '%s submission not checked by ActiveLayer', '%s submissions not checked by ActiveLayer', $summary['count'], 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+							number_format_i18n( $summary['count'] )
+						)
+					);
+					?>
+				</p>
+			<?php endif; ?>
 			<p class="activelayer-dash-widget-message">
-				<?php esc_html_e( 'Connect your site to ActiveLayer to start protecting your forms from spam.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?>
+				<?php esc_html_e( 'Connect your site to start checking new submissions for spam.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?>
 			</p>
 			<div class="activelayer-dash-widget-cta">
 				<a href="<?php echo esc_url( $settings_url ); ?>" class="button button-primary">
-					<?php esc_html_e( 'Connect Your Account', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?>
+					<?php esc_html_e( 'Connect ActiveLayer', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?>
 				</a>
 				<a href="<?php echo esc_url( ( new ConnectFlow() )->start( 'dashboard_widget', 'create_account' ) ); ?>"
 					target="_blank"
 					rel="noopener noreferrer"
 					class="activelayer-dash-widget-cta__secondary">
-					<?php esc_html_e( 'Create Free Account', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?>
+					<?php esc_html_e( 'Create free account', 'activelayer-anti-spam-spam-protection-for-forms-comments' ); ?>
 				</a>
 			</div>
 		</div>

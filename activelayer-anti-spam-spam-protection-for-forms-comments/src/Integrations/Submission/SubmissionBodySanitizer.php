@@ -22,6 +22,7 @@ class SubmissionBodySanitizer {
 	 * passing the value here.
 	 *
 	 * @since 1.4.0
+	 * @since 1.8.0 Remove malformed UTF-8 without iconv notices or losing valid fragments.
 	 *
 	 * @param mixed $value Raw submission body value.
 	 *
@@ -35,7 +36,13 @@ class SubmissionBodySanitizer {
 			return '';
 		}
 
-		return wp_check_invalid_utf8( $value, true );
+		if ( preg_match( '//u', $value ) === 1 ) {
+			return $value;
+		}
+
+		// The JSON flag is available on PHP 7.2+ and drops only malformed UTF-8 bytes.
+		// Unlike WordPress' iconv strip path, it retains valid content without notices.
+		return (string) json_decode( wp_json_encode( $value, JSON_INVALID_UTF8_IGNORE ) );
 	}
 
 	/**

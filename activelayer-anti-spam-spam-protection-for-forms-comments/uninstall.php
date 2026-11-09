@@ -37,6 +37,7 @@ if ( ! defined( 'ACTIVELAYER_CACHE_GROUP' ) ) {
  * - activelayer_api_key_validated (API key validation cache)
  * - activelayer_onboarding_dismissed (Onboarding banner dismissed state)
  * - activelayer_onboarding_completed (Onboarding banner completed state)
+ * - activelayer_onboarding_demo_samples (Successful onboarding demo sample keys)
  * - activelayer_storage_schema_version (Database schema version)
  * - activelayer_usage_banner_dismissed (Usage limit banner dismissed state)
  * - activelayer_logs (Ring buffer log entries)
@@ -76,10 +77,16 @@ if ( ! defined( 'ACTIVELAYER_CACHE_GROUP' ) ) {
  */
 $activelayer_option_names = [
 	// Core.
+	'activelayer_protection_schema',
+	'activelayer_protection_scope',
+	'activelayer_protection_rejected_scope',
+	'activelayer_protection_installation',
+	'activelayer_protection_retry',
 	'activelayer_global_settings',
 	'activelayer_api_key_validated',
 	'activelayer_onboarding_dismissed',
 	'activelayer_onboarding_completed',
+	'activelayer_onboarding_demo_samples',
 	'activelayer_storage_schema_version',
 	'activelayer_usage_banner_dismissed',
 	'activelayer_logs',
@@ -133,6 +140,7 @@ if ( ! function_exists( 'activelayer_uninstall_site_data' ) ) {
 	 * exactly like the rest of this file.
 	 *
 	 * @since 1.6.1
+	 * @since 1.8.0 Remove local interruption counters, schedules and per-user dismissal state.
 	 *
 	 * @param string[] $option_names Fixed core/integration option names to delete.
 	 *
@@ -178,6 +186,15 @@ if ( ! function_exists( 'activelayer_uninstall_site_data' ) ) {
 		$activelayer_table_to_drop = esc_sql( $wpdb->prefix . 'activelayer_submissions' );
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange -- Required for uninstall cleanup, table name sanitized.
 		$wpdb->query( "DROP TABLE IF EXISTS `{$activelayer_table_to_drop}`" );
+
+		// Remove interruption history and per-user dismissal state for this blog.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Required per-site uninstall cleanup.
+		$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}activelayer_protection_gaps, {$wpdb->prefix}activelayer_protection_events" );
+		delete_metadata( 'user', 0, 'activelayer_protection_dismissed_' . get_current_blog_id(), '', true );
+		delete_transient( 'activelayer_exhausted_scope' );
+		delete_transient( 'activelayer_protection_schema_retry' );
+		wp_clear_scheduled_hook( 'activelayer_protection_maintenance' );
+		wp_clear_scheduled_hook( 'activelayer_protection_sync' );
 
 		// Clear ActiveLayer cache entries.
 		if ( function_exists( 'wp_cache_delete' ) ) {

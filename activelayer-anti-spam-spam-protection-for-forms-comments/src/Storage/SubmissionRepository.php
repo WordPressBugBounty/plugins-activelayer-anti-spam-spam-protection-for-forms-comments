@@ -175,6 +175,7 @@ class SubmissionRepository {
 	 * creation (e.g., WordPress comment ID which is only available after insertion).
 	 *
 	 * @since 1.1.0
+	 * @since 1.8.0 Reject noncanonical submission identifiers before writing linkage.
 	 *
 	 * @param string $id       Submission ID.
 	 * @param string $entry_id Provider entry identifier.
@@ -182,6 +183,10 @@ class SubmissionRepository {
 	 * @return bool True on success, false on failure.
 	 */
 	public function update_entry_id( string $id, string $entry_id ): bool {
+
+		if ( ! SubmissionId::is_valid( $id ) ) {
+			return false;
+		}
 
 		if ( ! $this->schema_manager->table_exists() ) {
 			return false;
@@ -282,12 +287,17 @@ class SubmissionRepository {
 	 *
 	 * @since 1.0.0
 	 * @since 1.7.0 Keep database reads and cache fills in the same generation.
+	 * @since 1.8.0 Reject noncanonical submission identifiers before cache or SQL access.
 	 *
 	 * @param string $id Submission ID.
 	 *
 	 * @return array|null Submission data or null if not found or table is absent.
 	 */
 	public function find( string $id ): ?array {
+
+		if ( ! SubmissionId::is_valid( $id ) ) {
+			return null;
+		}
 
 		$generation = $this->cache->get_submission_cache_generation();
 		$cached     = $this->cache->get_submission( $id, $generation );
@@ -518,6 +528,47 @@ class SubmissionRepository {
 	}
 
 	/**
+	 * Count non-trashed submissions, caching across requests for five minutes.
+	 *
+	 * A transient provides persistence when no external object cache is installed.
+	 * SubmissionCache invalidates both cache layers when submissions change.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @return int Number of submissions outside the trash.
+	 */
+	public function get_submission_count(): int {
+
+		$count = $this->cache->get_submission_count();
+
+		if ( $count !== null ) {
+			return $count;
+		}
+
+		if ( ! $this->schema_manager->table_exists() ) {
+			return 0;
+		}
+
+		global $wpdb;
+
+		$table_name = esc_sql( $this->schema_manager->get_table_name() );
+		$count      = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Cached through SubmissionCache and invalidated on submission mutations.
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM `$table_name` WHERE status != %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				'trash'
+			)
+		);
+
+		if ( $count === null ) {
+			return 0;
+		}
+
+		$this->cache->set_submission_count( (int) $count );
+
+		return (int) $count;
+	}
+
+	/**
 	 * Get daily submission counts grouped by status.
 	 *
 	 * @since 1.1.0
@@ -535,12 +586,17 @@ class SubmissionRepository {
 	 * Delete submission by ID.
 	 *
 	 * @since 1.0.0
+	 * @since 1.8.0 Reject noncanonical submission identifiers before deletion.
 	 *
 	 * @param string $id Submission ID.
 	 *
 	 * @return bool True on success, false on failure or when table is absent.
 	 */
 	public function delete( string $id ): bool {
+
+		if ( ! SubmissionId::is_valid( $id ) ) {
+			return false;
+		}
 
 		if ( ! $this->schema_manager->table_exists() ) {
 			return false;

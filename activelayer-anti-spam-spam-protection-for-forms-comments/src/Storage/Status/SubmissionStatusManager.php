@@ -10,6 +10,7 @@ use ActiveLayer\Helpers\RequestHelper;
 use ActiveLayer\Storage\Query\SubmissionQueryBuilder;
 use ActiveLayer\Storage\SchemaManager;
 use ActiveLayer\Storage\SubmissionCache;
+use ActiveLayer\Storage\SubmissionId;
 
 /**
  * Handles status updates and transitions for submissions.
@@ -66,6 +67,7 @@ class SubmissionStatusManager {
 	 *
 	 * @since 1.0.0
 	 * @since 1.3.0 Fires the activelayer_submission_status_changed action after a successful update.
+	 * @since 1.8.0 Reject noncanonical submission identifiers before database access.
 	 *
 	 * @param string $id     Submission ID.
 	 * @param string $status New status (clean|spam|failed).
@@ -75,7 +77,7 @@ class SubmissionStatusManager {
 	 */
 	public function update_status( string $id, string $status, array $extra = [] ): bool { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
-		if ( ! $this->schema_manager->table_exists() ) {
+		if ( ! SubmissionId::is_valid( $id ) || ! $this->schema_manager->table_exists() ) {
 			return false;
 		}
 
@@ -146,6 +148,7 @@ class SubmissionStatusManager {
 	 * Move a submission to trash while preserving its previous status.
 	 *
 	 * @since 1.0.0
+	 * @since 1.8.0 Reject noncanonical submission identifiers before database access.
 	 *
 	 * @param string      $id             Submission ID.
 	 * @param string|null $current_status Current status of the submission (optional, will be fetched if not provided).
@@ -154,7 +157,7 @@ class SubmissionStatusManager {
 	 */
 	public function move_to_trash( string $id, ?string $current_status = null ): bool { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
-		if ( ! $this->schema_manager->table_exists() ) {
+		if ( ! SubmissionId::is_valid( $id ) || ! $this->schema_manager->table_exists() ) {
 			return false;
 		}
 
@@ -200,6 +203,7 @@ class SubmissionStatusManager {
 	 * Restore a trashed submission to its previous status.
 	 *
 	 * @since 1.0.0
+	 * @since 1.8.0 Reject noncanonical submission identifiers before database access.
 	 *
 	 * @param string      $id              Submission ID.
 	 * @param string|null $previous_status Previous status to restore to (optional, will be fetched if not provided).
@@ -208,7 +212,7 @@ class SubmissionStatusManager {
 	 */
 	public function restore_from_trash( string $id, ?string $previous_status = null ): bool { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
-		if ( ! $this->schema_manager->table_exists() ) {
+		if ( ! SubmissionId::is_valid( $id ) || ! $this->schema_manager->table_exists() ) {
 			return false;
 		}
 
@@ -252,6 +256,7 @@ class SubmissionStatusManager {
 	 * Mark a submission as failed and increment its retry counter.
 	 *
 	 * @since 1.0.0
+	 * @since 1.8.0 Reject noncanonical submission identifiers before database access.
 	 *
 	 * @param string $id    Submission ID.
 	 * @param array  $extra Optional extra data to persist.
@@ -260,7 +265,7 @@ class SubmissionStatusManager {
 	 */
 	public function mark_failed( string $id, array $extra = [] ): bool { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
 
-		if ( ! $this->schema_manager->table_exists() ) {
+		if ( ! SubmissionId::is_valid( $id ) || ! $this->schema_manager->table_exists() ) {
 			return false;
 		}
 
@@ -317,6 +322,7 @@ class SubmissionStatusManager {
 	 * as a claim marker; the final timestamp is overwritten by update_status().
 	 *
 	 * @since 1.1.0
+	 * @since 1.8.0 Reject noncanonical submission identifiers before database access.
 	 *
 	 * @param string $id Submission ID.
 	 *
@@ -324,7 +330,7 @@ class SubmissionStatusManager {
 	 */
 	public function claim_for_processing( string $id ): bool {
 
-		if ( ! $this->schema_manager->table_exists() ) {
+		if ( ! SubmissionId::is_valid( $id ) || ! $this->schema_manager->table_exists() ) {
 			return false;
 		}
 
@@ -353,6 +359,8 @@ class SubmissionStatusManager {
 	 * Reset a failed submission back to pending for retry.
 	 *
 	 * @since 1.0.0
+	 * @since 1.8.0 Reject noncanonical submission identifiers before database access.
+	 * @since 1.8.0 Preserve the update result before cache invalidation can run other queries.
 	 *
 	 * @param string $id Submission ID.
 	 *
@@ -360,7 +368,7 @@ class SubmissionStatusManager {
 	 */
 	public function reset_for_retry( string $id ): bool {
 
-		if ( ! $this->schema_manager->table_exists() ) {
+		if ( ! SubmissionId::is_valid( $id ) || ! $this->schema_manager->table_exists() ) {
 			return false;
 		}
 
@@ -369,7 +377,7 @@ class SubmissionStatusManager {
 		$table_name = esc_sql( $this->schema_manager->get_table_name() );
 
 		// Atomically reset only if still in 'failed' status to prevent duplicate resets.
-		$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$result = $wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->prepare(
 				"UPDATE `$table_name` SET status = 'pending', processed_at = NULL, verdict = NULL, api_response = NULL WHERE id = %d AND status = 'failed'", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				(int) $id
@@ -378,7 +386,7 @@ class SubmissionStatusManager {
 
 		$this->cache->clear_submission_cache( $id );
 
-		return $wpdb->rows_affected > 0;
+		return $result > 0;
 	}
 
 	/**
@@ -386,12 +394,17 @@ class SubmissionStatusManager {
 	 *
 	 * @since 1.0.0
 	 * @since 1.7.0 Keep database reads and cache fills in the same generation.
+	 * @since 1.8.0 Reject noncanonical submission identifiers before database access.
 	 *
 	 * @param string $id Submission ID.
 	 *
 	 * @return array|null Submission data or null if not found.
 	 */
 	private function find_submission( string $id ): ?array {
+
+		if ( ! SubmissionId::is_valid( $id ) ) {
+			return null;
+		}
 
 		$generation = $this->cache->get_submission_cache_generation();
 		$cached     = $this->cache->get_submission( $id, $generation );

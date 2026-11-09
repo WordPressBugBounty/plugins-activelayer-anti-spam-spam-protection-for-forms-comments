@@ -6,7 +6,7 @@
  * Requires at least: 5.5
  * Requires PHP:      7.2
  * Author:            ActiveLayer Team
- * Version:           1.7.2
+ * Version:           1.8.0
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       activelayer-anti-spam-spam-protection-for-forms-comments
@@ -26,6 +26,7 @@
  * along with this plugin. If not, see <https://www.gnu.org/licenses/>.
  */
 
+use ActiveLayer\Api\SiteHeartbeat;
 use ActiveLayer\Helpers\SettingsHelper;
 use ActiveLayer\Plugin;
 use ActiveLayer\Queue\QueueManager;
@@ -44,7 +45,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-const ACTIVELAYER_PLUGIN_VERSION = '1.7.2';
+const ACTIVELAYER_PLUGIN_VERSION = '1.8.0';
 
 /**
  * Plugin file.
@@ -104,6 +105,8 @@ function activelayer_plugin_load() {
 
 	// Initialize queue manager (classes auto-loaded via composer).
 	QueueManager::init();
+
+	SiteHeartbeat::init();
 
 	// Initialize main plugin (classes auto-loaded via composer).
 	$plugin = Plugin::get_instance();
@@ -231,8 +234,12 @@ function activelayer_plugin_deactivate() {
 		as_unschedule_all_actions( 'activelayer_send_feedback' );
 	}
 
+	wp_clear_scheduled_hook( 'activelayer_protection_maintenance' );
 	SubmissionCleanup::unschedule();
 	wp_clear_scheduled_hook( 'activelayer_cleanup_submissions' );
+
+	SiteHeartbeat::unschedule();
+	wp_clear_scheduled_hook( 'activelayer_site_heartbeat' );
 
 	QueueWatchdog::unschedule_watchdog();
 	delete_option( QueueWatchdog::get_last_run_option() );

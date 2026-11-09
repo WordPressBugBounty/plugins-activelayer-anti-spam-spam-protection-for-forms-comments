@@ -3,11 +3,13 @@
 namespace ActiveLayer\Integrations\Comments;
 
 use ActiveLayer\Helpers\SettingsHelper;
+use ActiveLayer\Helpers\UpgradeHelper;
 use ActiveLayer\Helpers\RequestHelper;
 use ActiveLayer\Integrations\Submission\SubmissionBodySanitizer;
 use ActiveLayer\Logger\Logger;
 use ActiveLayer\Storage\Storage;
 use Exception;
+use WP_Comment;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -39,8 +41,8 @@ class SubmissionHandler {
 	 * Request-scoped set keyed by submission ID. Used by the
 	 * `pre_comment_approved` filter to force `0` (pending) for comments
 	 * we intercepted in `preprocess_comment`, preventing WordPress
-	 * auto-approval (e.g., previously-approved author, disallowed-keys
-	 * list) before the queue worker runs.
+	 * auto-approval (e.g., a previously-approved author) before the queue
+	 * worker runs. Upstream spam and trash decisions remain unchanged.
 	 *
 	 * @since 1.2.0
 	 *
@@ -53,13 +55,38 @@ class SubmissionHandler {
 	 *
 	 * Request-scoped map keyed by submission ID. Holds the value
 	 * `wp_allow_comment()` chose for the submission so we can restore it
-	 * later when a verdict comes back with auto-action disabled.
+	 * later when auto-action is disabled or a clean verdict conflicts with
+	 * an upstream spam or trash decision.
 	 *
 	 * @since 1.2.0
 	 *
 	 * @var array<string, string>
 	 */
 	private $native_decisions = [];
+
+	/**
+	 * Request-local payloads awaiting a successful native comment insertion.
+	 *
+	 * Keys are temporary correlation tokens, never persisted submission IDs.
+	 * A processed marker prevents the insertion and comment_post hooks from
+	 * creating or queueing the same submission twice.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @var array<string, array>
+	 */
+	private $staged_submissions = [];
+
+	/**
+	 * Comments being finalized before WordPress sends its insertion notifications.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @var array<int, true>
+	 */
+	private $finalizing_comment_ids = [];
+
+
 
 	/**
 	 * Constructor.
@@ -89,6 +116,7 @@ class SubmissionHandler {
 	 * @since 1.0.0
 	 * @since 1.2.0 Added native-status capture and force-pending filters on `pre_comment_approved`.
 	 * @since 1.2.0 Suppress core moderator notification while awaiting async verdict via `notify_moderator`.
+	 * @since 1.8.0 Finalize persisted submissions on wp_insert_comment before queueing.
 	 */
 	private function hooks(): void {
 
@@ -102,9 +130,11 @@ class SubmissionHandler {
 		add_filter( 'pre_comment_approved', [ $this, 'force_pending_status' ], 99, 2 );
 
 		// Hook into comment insertion to get the comment ID.
+		add_action( 'wp_insert_comment', [ $this, 'handle_comment_inserted' ], 10, 2 );
 		add_action( 'comment_post', [ $this, 'handle_comment_post' ], 10, 3 );
 
 		add_filter( 'notify_moderator', [ $this, 'maybe_suppress_moderator_notification' ], 10, 2 );
+		add_filter( 'notify_post_author', [ $this, 'maybe_suppress_author_notification' ], 10, 2 );
 	}
 
 	/**
@@ -113,6 +143,8 @@ class SubmissionHandler {
 	 * @since 1.0.0
 	 * @since 1.2.0 Skip review comment type and track pending submissions for force-pending filter.
 	 * @since 1.5.0 Skip edd_review comment type (handled by EDD Reviews integration).
+	 * @since 1.8.0 Stage payloads in memory until native insertion succeeds.
+	 * @since 1.8.0 Always exclude logged-in administrators before validation and tracking.
 	 *
 	 * @param array $commentdata Comment data array.
 	 *
@@ -136,6 +168,11 @@ class SubmissionHandler {
 
 		if ( ! SettingsHelper::has_api_key( $global_settings ) ) {
 			// No API key configured - skip tracking and API calls.
+			return $commentdata;
+		}
+
+		// Administrators are always excluded, including in tracking mode.
+		if ( in_array( 'administrator', wp_get_current_user()->roles, true ) ) {
 			return $commentdata;
 		}
 
@@ -206,41 +243,35 @@ class SubmissionHandler {
 			return $commentdata;
 		}
 
+		if ( UpgradeHelper::is_quota_exhausted_cached() ) {
+			return $commentdata;
+		}
+
+		$existing_token = $commentdata['comment_meta']['activelayer_submission_id'] ?? '';
+
+		if ( isset( $this->staged_submissions[ $existing_token ] ) ) {
+			return $commentdata;
+		}
+
 		try {
-			$commentdata['comment_meta'] = $commentdata['comment_meta'] ?? [];
-
-			// Normalize comment data for API.
-			$normalized_data = $this->normalize_form_data( $commentdata );
-
-			// Get comment metadata.
-			$meta = $this->get_form_meta( $commentdata );
-
-			// Store original comment data for later use.
+			// Keep preprocessing request-local: WordPress can still reject the comment.
+			$token                               = wp_generate_uuid4();
+			$normalized_data                     = $this->normalize_form_data( $commentdata );
 			$normalized_data['_wp_comment_data'] = $commentdata;
+			$this->staged_submissions[ $token ]  = [
+				'form_data'     => $normalized_data,
+				'meta'          => $this->get_form_meta( $commentdata ),
+				'tracking_mode' => $tracking_mode_enabled,
+				'processed'     => false,
+			];
+			$commentdata['comment_meta']['activelayer_submission_id'] = $token;
 
-			// Process submission.
-			$submission_id = $this->process_submission_direct( $normalized_data, $meta );
-
-			$queue_failed = ! empty( $meta['queue_failed'] );
-
-			if ( ! $queue_failed ) {
-				// Store submission ID so wp_insert_comment auto-propagates it as comment meta.
-				$commentdata['comment_meta']['activelayer_submission_id'] = $submission_id;
-
-				// In tracking mode, let WordPress handle comment approval normally.
-				// In normal mode, set comment as pending for moderation until API verification.
-				if ( ! $tracking_mode_enabled ) {
-					$commentdata['comment_approved']                = 0;
-					$this->pending_submission_ids[ $submission_id ] = true;
-				}
+			if ( ! $tracking_mode_enabled ) {
+				$commentdata['comment_approved']        = 0;
+				$this->pending_submission_ids[ $token ] = true;
 			}
-		} catch ( \Exception $e ) {
-			Logger::log(
-				'Comment submission handling failed',
-				[
-					'error' => $e->getMessage(),
-				]
-			);
+		} catch ( \Exception $exception ) {
+			Logger::log( 'Comment staging failed', [ 'error' => $exception->getMessage() ] );
 		}
 
 		return $commentdata;
@@ -251,11 +282,10 @@ class SubmissionHandler {
 	 *
 	 * Runs after `wp_check_comment_data()` decides the native approval
 	 * status. When we intercepted this submission in `handle_submission`,
-	 * override WordPress auto-approval (previously-approved author,
-	 * disallowed-keys, etc.) so the comment stays pending until the
-	 * queue worker delivers a verdict.
+	 * override WordPress auto-approval (e.g. a previously-approved author)
+	 * so the comment stays pending until the queue worker delivers a verdict.
 	 *
-	 * Preserves `WP_Error` returns so upstream short-circuits are not lost.
+	 * Preserves upstream spam, trash, and `WP_Error` decisions.
 	 * Not applied in tracking mode (no submission ID tracked).
 	 *
 	 * @since 1.2.0
@@ -267,7 +297,7 @@ class SubmissionHandler {
 	 */
 	public function force_pending_status( $approved, $commentdata ) {
 
-		if ( is_wp_error( $approved ) || ! is_array( $commentdata ) ) {
+		if ( is_wp_error( $approved ) || in_array( $approved, [ 'spam', 'trash' ], true ) || ! is_array( $commentdata ) ) {
 			return $approved;
 		}
 
@@ -318,12 +348,18 @@ class SubmissionHandler {
 	 *
 	 * @since 1.0.0
 	 * @since 1.2.0 Persist captured native approval decision as `activelayer_original_status` meta.
+	 * @since 1.8.0 Finalize staged comments idempotently without updating product reviews or temporary token IDs.
 	 *
 	 * @param int|mixed       $comment_id  Comment ID (can be int or string).
 	 * @param int|string|bool $approved    Comment approval status (can be 1, 0, 'spam', 'trash', true, false).
 	 * @param array           $commentdata Comment data.
 	 */
 	public function handle_comment_post( $comment_id, $approved, array $commentdata ): void {
+
+		// Product reviews are finalized by their dedicated integrations.
+		if ( in_array( $commentdata['comment_type'] ?? '', [ 'review', 'edd_review' ], true ) ) {
+			return;
+		}
 
 		// Ensure comment_id is an integer.
 		$comment_id = (int) $comment_id;
@@ -342,6 +378,25 @@ class SubmissionHandler {
 
 		$submission_id = (string) $commentdata['comment_meta']['activelayer_submission_id'];
 
+		if ( isset( $this->staged_submissions[ $submission_id ] ) ) {
+			$this->process_inserted_comment( $comment_id, $approved, $submission_id );
+
+			return;
+		}
+
+		$this->finalize_legacy_comment( $comment_id, $submission_id );
+	}
+
+	/**
+	 * Link a legacy submission without interpreting a temporary token as an ID.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param int    $comment_id    Persisted native comment ID.
+	 * @param string $submission_id Legacy submission identifier.
+	 */
+	private function finalize_legacy_comment( int $comment_id, string $submission_id ): void {
+
 		add_comment_meta( $comment_id, 'activelayer_status', 'pending' );
 
 		// Persist the native pre-override approval decision so we can restore it
@@ -355,8 +410,135 @@ class SubmissionHandler {
 			unset( $this->native_decisions[ $submission_id ] );
 		}
 
-		// Store comment ID as entry_id in submission for admin edit links.
-		Storage::get_instance()->update_entry_id( $submission_id, (string) $comment_id );
+		// Only persisted numeric IDs may reach storage; casting a replayed UUID
+		// to an integer could overwrite an unrelated submission with that prefix.
+		if ( ctype_digit( $submission_id ) ) {
+			Storage::get_instance()->update_entry_id( $submission_id, (string) $comment_id );
+		}
+	}
+
+	/**
+	 * Finalize preprocessed comments even when the caller bypasses comment_post.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param int        $comment_id Native comment ID.
+	 * @param WP_Comment $comment    Successfully inserted comment.
+	 */
+	public function handle_comment_inserted( $comment_id, $comment ): void {
+
+		$token = (string) get_comment_meta( (int) $comment_id, 'activelayer_submission_id', true );
+
+		if ( ! isset( $this->staged_submissions[ $token ] ) ) {
+			return;
+		}
+
+		$this->process_inserted_comment( (int) $comment_id, $comment->comment_approved, $token );
+	}
+
+	/**
+	 * Persist and queue a submission only after its native comment exists.
+	 *
+	 * The stored entry ID and original moderation decision are available before
+	 * enqueueing, allowing a concurrent worker to act before token replacement.
+	 * Queue failures preserve linkage for retries and restore native moderation.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param int        $comment_id Native comment ID.
+	 * @param int|string $approved   Native insertion status.
+	 * @param string     $token      Request-local correlation token.
+	 */
+	private function process_inserted_comment( int $comment_id, $approved, string $token ): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+
+		$staged = $this->staged_submissions[ $token ];
+
+		if ( $staged['processed'] ) {
+			return;
+		}
+
+		$this->staged_submissions[ $token ]['processed'] = true;
+		$this->finalizing_comment_ids[ $comment_id ]     = true;
+		$meta             = $staged['meta'];
+		$meta['entry_id'] = (string) $comment_id;
+		$submission_id    = '';
+		$queue_failed     = true;
+
+		update_comment_meta( $comment_id, 'activelayer_status', 'pending' );
+		update_comment_meta( $comment_id, 'activelayer_original_status', $this->native_decisions[ $token ] ?? (string) ( $staged['form_data']['_wp_comment_data']['comment_approved'] ?? $approved ) );
+
+		try {
+			$submission_id = $this->process_submission_direct( $staged['form_data'], $meta );
+			$queue_failed  = ! empty( $meta['queue_failed'] );
+		} catch ( \Exception $exception ) {
+			Logger::log(
+				'Inserted comment could not be queued',
+				[
+					'comment_id' => $comment_id,
+					'error'      => $exception->getMessage(),
+				]
+			);
+			$submission    = Storage::get_instance()->find_by_entry_id( $this->integration->get_slug(), (string) $comment_id );
+			$submission_id = (string) ( $submission['id'] ?? '' );
+		}
+
+		unset( $this->native_decisions[ $token ] );
+		$this->staged_submissions[ $token ] = [ 'processed' => true ];
+
+		if ( $submission_id === '' ) {
+			$this->integration->handle_submission_failed( $token, [ 'provider' => $this->integration->get_slug() ] );
+			delete_comment_meta( $comment_id, 'activelayer_submission_id' );
+			delete_comment_meta( $comment_id, 'activelayer_original_status' );
+			unset( $this->pending_submission_ids[ $token ], $this->finalizing_comment_ids[ $comment_id ] );
+
+			return;
+		}
+
+		update_comment_meta( $comment_id, 'activelayer_submission_id', $submission_id );
+		unset( $this->pending_submission_ids[ $token ] );
+
+		if ( ! $staged['tracking_mode'] ) {
+			$this->pending_submission_ids[ $submission_id ] = true;
+		}
+
+		if ( $queue_failed ) {
+			Storage::get_instance()->mark_failed(
+				$submission_id,
+				[
+					'api_response' => [
+						'success' => false,
+						'error'   => 'queue_unavailable',
+					],
+				]
+			);
+			$this->integration->handle_submission_failed( $submission_id, [ 'provider' => $this->integration->get_slug() ] );
+			unset( $this->pending_submission_ids[ $submission_id ] );
+		}
+
+		unset( $this->finalizing_comment_ids[ $comment_id ] );
+	}
+
+	/**
+	 * Defer author mail triggered by synchronous status restoration to core.
+	 *
+	 * The later comment_post hook sends fallback notifications once. Comments
+	 * awaiting a verdict stay suppressed in the insertion request; the worker
+	 * request has no request-local hold and sends normal status notifications.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param bool $maybe_notify Current notification decision.
+	 * @param int  $comment_id   Native comment ID.
+	 *
+	 * @return bool Whether the author should be notified now.
+	 */
+	public function maybe_suppress_author_notification( $maybe_notify, $comment_id ): bool {
+
+		if ( isset( $this->finalizing_comment_ids[ (int) $comment_id ] ) ) {
+			return false;
+		}
+
+		return $this->maybe_suppress_moderator_notification( $maybe_notify, $comment_id );
 	}
 
 	/**

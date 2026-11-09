@@ -9,6 +9,7 @@ use ActiveLayer\Admin\Onboarding\OnboardingBanner;
 use ActiveLayer\Admin\Onboarding\OnboardingManager;
 use ActiveLayer\Helpers\NoticeHelper;
 use ActiveLayer\Storage\Storage;
+use ActiveLayer\Storage\SubmissionId;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -135,17 +136,17 @@ class SubmissionsPage {
 	 * Render submissions page.
 	 *
 	 * @since 1.0.0
+	 * @since 1.8.0 Reject noncanonical request identifiers before rendering.
 	 */
 	public function render(): void {
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display only, no action taken
 		$requested_action = isset( $_GET['action'] ) ? sanitize_key( wp_unslash( $_GET['action'] ) ) : '';
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Display only, no action taken
-		$requested_id = isset( $_GET['id'] ) ? absint( wp_unslash( $_GET['id'] ) ) : 0;
+		$requested_id     = $this->get_requested_submission_id();
 
 		// Check if we're viewing a single submission.
 		if ( $requested_action === 'view' ) {
-			if ( $requested_id <= 0 ) {
+			if ( $requested_id === '' ) {
 				wp_die( esc_html__( 'Submission ID is invalid.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ) );
 			}
 
@@ -310,6 +311,7 @@ class SubmissionsPage {
 	 * Handle single row actions.
 	 *
 	 * @since 1.0.0
+	 * @since 1.8.0 Validate request identifiers before dispatching actions.
 	 */
 	public function handle_single_actions(): void { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh, Generic.Metrics.CyclomaticComplexity.MaxExceeded
 
@@ -322,10 +324,9 @@ class SubmissionsPage {
 			return;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Sanitized immediately.
-		$submission_id = isset( $_GET['id'] ) ? absint( wp_unslash( $_GET['id'] ) ) : 0;
+		$submission_id = $this->get_requested_submission_id();
 
-		if ( $submission_id <= 0 ) {
+		if ( $submission_id === '' ) {
 			return;
 		}
 
@@ -445,6 +446,27 @@ class SubmissionsPage {
 
 		wp_safe_redirect( $redirect_url );
 		exit;
+	}
+
+	/**
+	 * Read a canonical persisted ID without coercing a different request value into it.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @return string Canonical positive decimal ID, or an empty string for invalid input.
+	 */
+	private function get_requested_submission_id(): string {
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Raw identity is validated by SubmissionId below; action nonces are checked separately.
+		$id = isset( $_GET['id'] ) ? wp_unslash( $_GET['id'] ) : '';
+
+		if ( ! is_string( $id ) && ! is_int( $id ) ) {
+			return '';
+		}
+
+		$id = (string) $id;
+
+		return SubmissionId::is_valid( $id ) ? $id : '';
 	}
 
 	/**

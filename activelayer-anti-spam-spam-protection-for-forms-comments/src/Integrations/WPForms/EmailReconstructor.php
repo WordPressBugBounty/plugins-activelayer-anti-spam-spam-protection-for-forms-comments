@@ -48,6 +48,15 @@ class EmailReconstructor {
 	private $allow_emails_temporarily = false;
 
 	/**
+	 * Entries whose native notifications this instance held during the request.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @var array<int, int> Entry IDs mapped to their form IDs.
+	 */
+	private $held_entries = [];
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -79,6 +88,7 @@ class EmailReconstructor {
 	 * @since 1.0.0
 	 * @since 1.4.0 Bail outside live form processing (admin un-spam re-fire, manual resend).
 	 * @since 1.7.0 Release notifications in async mode when the queue cannot deliver a verdict.
+	 * @since 1.8.0 Remember held entries for queue failure recovery and preserve earlier disable filters during replay.
 	 *
 	 * @param bool   $disable       Current disable status.
 	 * @param object $notifications Notifications object.
@@ -123,7 +133,7 @@ class EmailReconstructor {
 		}
 
 		if ( $this->integration->has_queue_failure( $form_data, $entry_id ) ) {
-			return false;
+			return $disable;
 		}
 
 		// In asynchronous mode the queue is the only path to a verdict, and WPForms sends
@@ -148,10 +158,74 @@ class EmailReconstructor {
 		// Allow emails if we're temporarily allowing them (during reconstruction).
 		// Only check this AFTER we verified ActiveLayer is enabled for this form.
 		if ( $this->allow_emails_temporarily ) {
-			return false;
+			return $disable;
+		}
+
+		// Only own notifications that another filter has not already disabled.
+		if ( ! $disable && $entry_id > 0 ) {
+			$this->held_entries[ $entry_id ] = (int) ( $form_data['id'] ?? 0 );
 		}
 
 		// ActiveLayer is enabled for this form - disable emails until API verification.
+		return true;
+	}
+
+	/**
+	 * Release notifications held earlier in this request when processing fails.
+	 *
+	 * WPForms has already passed its native email phase before the submission
+	 * complete hook attempts to enqueue verification. Replay the original data
+	 * without requiring an ActiveLayer storage row, and retain WPForms' handling
+	 * of recipients, conditional logic, and uploaded attachments. Notification
+	 * filters retain the live entry context, and all throwables leave the entry
+	 * retryable while restoring the previous interception state.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param array $fields    Processed form fields.
+	 * @param array $entry     Original entry data.
+	 * @param array $form_data Form configuration from live processing.
+	 * @param int   $entry_id  WPForms entry ID.
+	 *
+	 * @return bool Whether a held notification pipeline was released successfully.
+	 */
+	public function release_held_notifications( array $fields, array $entry, array $form_data, int $entry_id ): bool {
+
+		$form_id = (int) ( $form_data['id'] ?? 0 );
+
+		if ( ! isset( $this->held_entries[ $entry_id ] ) || $this->held_entries[ $entry_id ] !== $form_id ) {
+			return false;
+		}
+
+		if ( $this->notifications_already_released( $entry_id ) ) {
+			unset( $this->held_entries[ $entry_id ] );
+
+			return true;
+		}
+
+		$previous_allow                 = $this->allow_emails_temporarily;
+		$this->allow_emails_temporarily = true;
+
+		try {
+			wpforms()->obj( 'process' )->entry_email( $fields, $entry, $form_data, $entry_id, 'entry' );
+		} catch ( \Throwable $e ) {
+			Logger::log(
+				'WPForms: queue failure notification release failed',
+				[
+					'form_id'  => $form_id,
+					'entry_id' => $entry_id,
+					'error'    => $e->getMessage(),
+				]
+			);
+
+			return false;
+		} finally {
+			$this->allow_emails_temporarily = $previous_allow;
+		}
+
+		$this->mark_notifications_released( $entry_id, $form_id );
+		unset( $this->held_entries[ $entry_id ] );
+
 		return true;
 	}
 

@@ -151,6 +151,7 @@ class UpgradeHelper {
 	 * must be avoided.
 	 *
 	 * @since 1.1.0
+	 * @since 1.8.0 Read the credential-scoped quota marker.
 	 *
 	 * @return bool True if cached stats show usage >= 100%.
 	 */
@@ -158,6 +159,10 @@ class UpgradeHelper {
 
 		if ( ! SettingsHelper::has_api_key() ) {
 			return false;
+		}
+
+		if ( get_transient( 'activelayer_exhausted_scope' ) === hash( 'sha256', SettingsHelper::get_api_key() ) ) {
+			return true;
 		}
 
 		$cached = get_transient( SubscriptionStats::CACHE_KEY );

@@ -566,6 +566,23 @@ class WPFormsIntegration extends BaseFormIntegration {
 	}
 
 	/**
+	 * Release native notifications held before a submission failed to process or enqueue.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param array $fields    Processed form fields.
+	 * @param array $entry     Original entry data.
+	 * @param array $form_data Form configuration from live processing.
+	 * @param int   $entry_id  WPForms entry ID.
+	 *
+	 * @return bool Whether a held notification pipeline was released successfully.
+	 */
+	public function release_held_notifications( array $fields, array $entry, array $form_data, int $entry_id ): bool {
+
+		return $this->email_reconstructor->release_held_notifications( $fields, $entry, $form_data, $entry_id );
+	}
+
+	/**
 	 * Mark a WPForms entry as spam.
 	 *
 	 * Updates the entry status to 'spam' in the WPForms entries table and names

@@ -3,7 +3,7 @@ Contributors: smub, dimitrism, ernest35
 Tags: anti-spam, antispam, spam protection, contact form, comment spam
 Requires at least: 5.5
 Tested up to: 7.1
-Stable tag: 1.7.2
+Stable tag: 1.8.0
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -16,7 +16,7 @@ Intelligent spam protection for WordPress forms, comments, and reviews. No CAPTC
 
 ActiveLayer is an intelligent anti-spam solution that stops **contact form spam**, **comment spam**, and registration spam without CAPTCHAs, puzzles, or extra steps for your visitors. Your forms stay fast and frictionless while unwanted messages get caught automatically.
 
-Your time and attention are expensive — stop spending them on spam. ActiveLayer protects popular form builders like **WPForms**, **Contact Form 7**, **Gravity Forms**, **Elementor Forms**, **Fluent Forms**, **WS Form**, and **FunnelKit Funnel Builder**, plus **native WordPress comments**, **WooCommerce** (product reviews and customer registration), **Easy Digital Downloads** (store reviews and customer registration), **AffiliateWP**, **MemberPress**, and **BuddyPress / BuddyBoss signup forms**, all from a single plugin. With 18 integrations, you manage all your spam protection from one settings page.
+Your time and attention are expensive — stop spending them on spam. ActiveLayer protects popular form builders like **WPForms**, **Contact Form 7**, **Gravity Forms**, **Elementor Forms**, **Fluent Forms**, **WS Form**, **CubeWP Forms**, and **FunnelKit Funnel Builder**, plus **native WordPress comments**, **WooCommerce** (product reviews and customer registration), **Easy Digital Downloads** (store reviews and customer registration), **AffiliateWP**, **MemberPress**, and **BuddyPress / BuddyBoss signup forms**, all from a single plugin. With 19 integrations, you manage all your spam protection from one settings page.
 
 **[Create a free account and get started](https://activelayer.com/?utm_source=wprepo&utm_medium=link&utm_campaign=liteplugin)**
 
@@ -79,6 +79,7 @@ Running a community on **BuddyPress** or **BuddyBoss Platform**? ActiveLayer hoo
 * **Formidable Forms integration** - Notification interception and replay, sync fallback option
 * **Forminator integration** - Form submission interception with per-form toggles and notification management
 * **Ninja Forms integration** - Email action capture, clean verdict replay, spam suppression
+* **CubeWP Forms integration** - Synchronous spam blocking for AJAX and REST submissions, shared client signals, and per-form controls in ActiveLayer and the CubeWP editor
 * **SureForms integration** - Spam protection for SureForms with per-form control
 * **WS Form integration** - Synchronous spam blocking before WS Form saves entries or runs actions, with per-form control
 * **WordPress Comments protection** - Auto-approve clean comments, auto-spam detected ones, fail-open restore
@@ -114,6 +115,7 @@ Running a community on **BuddyPress** or **BuddyBoss Platform**? ActiveLayer hoo
 * [Formidable Forms](https://wordpress.org/plugins/formidable/)
 * [Forminator](https://wordpress.org/plugins/forminator/)
 * [Ninja Forms](https://wordpress.org/plugins/ninja-forms/)
+* [CubeWP Forms](https://wordpress.org/plugins/cubewp-forms/)
 * [SureForms](https://wordpress.org/plugins/sureforms/)
 * [WS Form](https://wordpress.org/plugins/ws-form/)
 * WordPress Comments (built-in)
@@ -151,7 +153,7 @@ No. ActiveLayer is a completely CAPTCHA-free anti-spam solution. Spam checks hap
 
 = Which form builders does ActiveLayer support? =
 
-ActiveLayer works with WPForms (Lite and Pro), Contact Form 7, Gravity Forms, Elementor Forms (Pro), Fluent Forms, Formidable Forms, Forminator, Ninja Forms, SureForms, WS Form, FunnelKit Funnel Builder (opt-in forms), native WordPress comments, WooCommerce, Easy Digital Downloads, BuddyPress / BuddyBoss Platform signup forms, AffiliateWP affiliate registration, and MemberPress membership registration — 18 integrations in total. All are managed from a single settings page with per-form control.
+ActiveLayer works with WPForms (Lite and Pro), Contact Form 7, Gravity Forms, Elementor Forms (Pro), Fluent Forms, Formidable Forms, Forminator, Ninja Forms, SureForms, WS Form, CubeWP Forms, FunnelKit Funnel Builder (opt-in forms), native WordPress comments, WooCommerce, Easy Digital Downloads, BuddyPress / BuddyBoss Platform signup forms, AffiliateWP affiliate registration, and MemberPress membership registration — 19 integrations in total (BuddyPress and BuddyBoss have separate controls). All are managed from a single settings page with per-form control.
 
 = Do visitors have to wait for the spam check? =
 
@@ -212,11 +214,16 @@ This plugin connects to the ActiveLayer API to analyze form submissions and comm
 * Site URL and WordPress locale
 * Behavioral and environment signals (if enabled in settings)
 
+**Site connection data:** When the API key is verified, and once a week while an API key is configured, the plugin sends the site URL, WordPress version, active plugin identifiers, names and versions, client-signal settings, integration enablement, and available protected-form counts. No submission content is included in these connection requests.
+
 **Service provider:** ActiveLayer ([activelayer.com](https://activelayer.com/))
 * [Terms of Service](https://activelayer.com/terms)
 * [Privacy Policy](https://activelayer.com/privacy)
 
 == Upgrade Notice ==
+
+= 1.8.0 =
+Adds CubeWP Forms protection, protection status notices, and a free onboarding demo. Fixes WPForms notification delivery, comment moderation, and CubeWP/Elementor compatibility. Recommended for all users.
 
 = 1.7.2 =
 Fixes a critical error when creating new Contact Form 7 forms. Recommended for sites using Contact Form 7.
@@ -259,6 +266,19 @@ WooCommerce integration: spam protection for Product Reviews and Customer Regist
 Five new form integrations (Gravity Forms, Elementor Forms, Fluent Forms, Forminator, SureForms), global Sync Mode, client-side behavioral and environment signals, Tools page with bulk delete, conditional frontend script loading, and security hardening. Recommended upgrade for all users.
 
 == Changelog ==
+
+= 1.8.0 =
+* Added: CubeWP Forms spam protection for native forms and the Elementor widget, with controls to enable or disable protection for each form.
+* Added: Submission counts next to ActiveLayer and Submissions in the WordPress admin menu.
+* Added: A free onboarding demo with sample messages to try spam detection, plus a separate step for receiving your first real submission.
+* Added: Protection status notices when your site is disconnected or has reached its checking allowance, helping you identify submissions that were not checked.
+* Improved: The dashboard shows available bonus checks and makes reconnecting a disconnected site easier.
+* Fixed: Administrators' comments are no longer checked for spam, matching the protection setting description.
+* Fixed: Comment and WooCommerce review checks preserve spam, trash, and approval decisions made by WordPress, Akismet, other plugins, and moderators.
+* Fixed: Marking a comment as Clean or Spam in ActiveLayer updates the matching WordPress comment while respecting moderation settings.
+* Fixed: Fixed cases where comments stayed on hold or moderation notifications were sent more than once after a failed spam check.
+* Fixed: WPForms notification emails are no longer lost when a spam check cannot be processed, and retries do not send duplicate emails.
+* Fixed: A compatibility issue with CubeWP Framework 1.1.31 and Elementor that could cause frontend pages to crash.
 
 = 1.7.2 =
 * Added: Submissions — new Message column after Email shows up to 200 characters of each message for quicker review.

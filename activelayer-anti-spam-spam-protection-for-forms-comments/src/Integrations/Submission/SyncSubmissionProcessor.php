@@ -2,6 +2,8 @@
 
 namespace ActiveLayer\Integrations\Submission;
 
+use ActiveLayer\Helpers\SettingsHelper;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -60,6 +62,7 @@ class SyncSubmissionProcessor {
 	 * Run the synchronous submission flow.
 	 *
 	 * @since 1.2.0
+	 * @since 1.8.0 Report explicit quota or authentication failures and authenticated recovery.
 	 *
 	 * @param array  $normalized_data Prepared submission payload.
 	 * @param array  $meta            Submission metadata (must include tracking_mode).
@@ -94,6 +97,18 @@ class SyncSubmissionProcessor {
 
 		$client     = $this->api_client ?? new ApiClient();
 		$api_result = $this->call_check_endpoint( $client, $normalized_data );
+		/**
+		 * Report an authenticated check outcome using only local submission identity.
+		 *
+		 * @since 1.8.0
+		 *
+		 * @param array  $result        Parsed success or explicit machine-readable failure.
+		 * @param string $submission_id Local stored submission identifier.
+		 * @param string $scope         Local credential fingerprint.
+		 * @param string $provider      Integration slug.
+		 * @param mixed  $form_id       Local form identity.
+		 */
+		do_action( 'activelayer_protection_check_result', $api_result, $submission_id, hash( 'sha256', SettingsHelper::get_api_key() ), $provider_slug, $meta['form_id'] ?? 0 );
 
 		if ( empty( $api_result['success'] ) ) {
 			$this->storage->update_status(

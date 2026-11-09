@@ -29,6 +29,8 @@ class SubmissionQueryBuilder {
 	 * @since 1.5.0 Added `edd_registration` provider (EDD Registration sub-integration).
 	 * @since 1.5.0 Added `edd_reviews` provider (EDD Reviews sub-integration).
 	 *
+	 * @since 1.8.0 Added the CubeWP Forms provider.
+	 *
 	 * @var array
 	 */
 	private $allowed_providers = [
@@ -40,6 +42,7 @@ class SubmissionQueryBuilder {
 		'forminator',
 		'fluent_forms',
 		'sureforms',
+		'cubewp_forms',
 		'gravity_forms',
 		'elementor_forms',
 		'wc_reviews',

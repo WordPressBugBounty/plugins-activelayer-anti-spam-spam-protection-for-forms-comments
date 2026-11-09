@@ -9,7 +9,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 use ActiveLayer\ClientSignals\EnvironmentSignals;
 use ActiveLayer\Helpers\RequestHelper;
 use ActiveLayer\Helpers\SettingsHelper;
+use ActiveLayer\Integrations\IntegrationRegistry;
 use ActiveLayer\Logger\Logger;
+use WP_Error;
 
 /**
  * Simple API Client for ActiveLayer Service.
@@ -65,6 +67,50 @@ class ApiClient {
 
 		// Parse response.
 		return $this->parse_response( $response );
+	}
+
+	/**
+	 * Check one of the API's server-owned onboarding samples.
+	 *
+	 * The API picks the text, skips quota and detection logging, and guarantees
+	 * the sample's expected verdict, so no submission data is ever sent.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param string $sample Sample key: 'spam' or 'clean'.
+	 *
+	 * @return array {
+	 *     @type bool        $success Whether a valid test verdict was returned.
+	 *     @type string      $verdict spam|clean (on success).
+	 *     @type float|null  $score   Spam score, when the API reports one.
+	 *     @type string|null $message The exact text the API checked, when reported.
+	 * }
+	 */
+	public function check_test_sample( string $sample ): array { // phpcs:ignore Generic.Metrics.CyclomaticComplexity.TooHigh
+
+		$response = $this->handler->request( '/test-spam', [ 'sample' => $sample ] );
+
+		// Accept only a test response for the requested sample; a WP_Error or a
+		// real /check-shaped reply never counts as a demo verdict.
+		$is_valid = is_array( $response )
+			&& isset( $response['is_test'], $response['sample'], $response['is_spam'] )
+			&& $response['is_test'] === true
+			&& $response['sample'] === $sample
+			&& is_bool( $response['is_spam'] );
+
+		if ( ! $is_valid ) {
+			return [ 'success' => false ];
+		}
+
+		$score   = $response['score'] ?? null;
+		$message = $response['message'] ?? null;
+
+		return [
+			'success' => true,
+			'verdict' => $response['is_spam'] ? 'spam' : 'clean',
+			'score'   => is_numeric( $score ) ? (float) $score : null,
+			'message' => is_string( $message ) ? wp_strip_all_tags( $message ) : null,
+		];
 	}
 
 	/**
@@ -182,11 +228,13 @@ class ApiClient {
 	 * connection time server-side on receipt.
 	 *
 	 * @since 1.6.0
+	 * @since 1.8.0 Added the protection state.
 	 *
 	 * @return array {
 	 *     @type string $site_url   Site home URL.
 	 *     @type string $wp_version WordPress core version.
 	 *     @type array  $plugins    Active plugins as { slug, name, version } items.
+	 *     @type array  $settings   Protection state, see get_protection_state().
 	 * }
 	 */
 	private function get_site_metadata(): array {
@@ -218,7 +266,67 @@ class ApiClient {
 			'site_url'   => esc_url_raw( home_url() ),
 			'wp_version' => get_bloginfo( 'version' ),
 			'plugins'    => $plugins,
+			'settings'   => $this->get_protection_state(),
 		];
+	}
+
+	/**
+	 * Collect the current protection state for the site.
+	 *
+	 * Answers "is protection actually on here", which cannot be derived from
+	 * the plugin list: every toggle defaults to enabled, so only the site
+	 * itself knows whether someone turned one off.
+	 *
+	 * Only integrations whose form plugin is active are reported; an
+	 * integration for an absent plugin says nothing about protection.
+	 *
+	 * Counts reflect configured protection, including the first verification
+	 * request before the API key is persisted locally.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @return array {
+	 *     @type array $client_signals  Honeypot, behavioral and environment flags.
+	 *     @type array $integrations    Active-plugin integrations as slug => { enabled, protected_forms }.
+	 *     @type int   $protected_forms Total forms with protection enabled.
+	 * }
+	 */
+	private function get_protection_state(): array {
+
+		$state = [
+			'client_signals' => [
+				'honeypot'    => SettingsHelper::is_honeypot_tracking_enabled(),
+				'behavioral'  => SettingsHelper::is_behavioral_tracking_enabled(),
+				'environment' => SettingsHelper::is_environment_tracking_enabled(),
+			],
+		];
+
+		$registry = IntegrationRegistry::get_instance();
+		$status   = $registry->get_status();
+
+		// An unpopulated registry would otherwise be reported as "nothing
+		// protected", which is worse than reporting nothing at all.
+		if ( empty( $status['total_registered'] ) ) {
+			return $state;
+		}
+
+		$forms = $registry->get_protected_forms_summary( true );
+
+		$state['integrations']    = [];
+		$state['protected_forms'] = (int) ( $forms['total'] ?? 0 );
+
+		foreach ( $status['integrations'] as $slug => $integration ) {
+			if ( empty( $integration['plugin_active'] ) ) {
+				continue;
+			}
+
+			$state['integrations'][ $slug ] = [
+				'enabled'         => (bool) $integration['enabled'],
+				'protected_forms' => $forms['integrations'][ $slug ]['count'] ?? null,
+			];
+		}
+
+		return $state;
 	}
 
 	/**
@@ -376,7 +484,10 @@ class ApiClient {
 	/**
 	 * Parse API response.
 	 *
+	 * Preserves explicit quota_exhausted and HTTP 401 not_connected causes for local observations.
+	 *
 	 * @since 1.0.0
+	 * @since 1.8.0 Accept non-array HTTP error metadata.
 	 *
 	 * @param array|WP_Error $response API response.
 	 *
@@ -389,6 +500,7 @@ class ApiClient {
 				'success'        => false,
 				'verdict'        => null,
 				'error'          => $response->get_error_message(),
+				'error_code'     => $this->get_response_error_code( $response ),
 				'execution_time' => 0,
 				'raw_response'   => null,
 			];
@@ -401,6 +513,22 @@ class ApiClient {
 			'detection_id'   => $response['detection_id'] ?? null,
 			'raw_response'   => $response,
 		];
+	}
+
+	/**
+	 * Extract structured failure metadata without assuming the HTTP error data type.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param WP_Error $response HTTP failure.
+	 *
+	 * @return mixed Explicit error code, or an empty string when unavailable.
+	 */
+	private function get_response_error_code( WP_Error $response ) {
+
+		$error_data = $response->get_error_data();
+
+		return is_array( $error_data ) ? ( $error_data['error_code'] ?? '' ) : '';
 	}
 
 	/**

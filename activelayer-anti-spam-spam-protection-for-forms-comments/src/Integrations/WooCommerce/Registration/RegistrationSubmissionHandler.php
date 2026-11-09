@@ -148,10 +148,11 @@ class RegistrationSubmissionHandler {
 	 * block-based flow as well as the classic shortcode.
 	 *
 	 * @since 1.2.0
+	 * @since 1.8.0 Share native checkout exclusion with the no-key observer.
 	 *
 	 * @return bool
 	 */
-	private static function is_store_api_checkout_context(): bool {
+	public static function is_store_api_checkout_context(): bool {
 
 		if ( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST ) {
 			return false;

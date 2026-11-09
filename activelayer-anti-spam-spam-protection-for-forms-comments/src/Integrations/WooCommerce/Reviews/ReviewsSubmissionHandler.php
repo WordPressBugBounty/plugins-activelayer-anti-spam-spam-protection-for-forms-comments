@@ -51,7 +51,8 @@ class ReviewsSubmissionHandler {
 	 *
 	 * Request-scoped map keyed by submission ID. Holds the value
 	 * `wp_allow_comment()` chose for the review so we can restore it
-	 * later when a verdict comes back with auto-action disabled.
+	 * later when auto-action is disabled or a clean verdict conflicts with
+	 * an upstream spam or trash decision.
 	 *
 	 * @since 1.2.0
 	 *
@@ -175,7 +176,7 @@ class ReviewsSubmissionHandler {
 	 * override WordPress/WooCommerce auto-approval so the review stays
 	 * pending until the queue worker delivers a verdict.
 	 *
-	 * Preserves `WP_Error` returns so upstream short-circuits are not lost.
+	 * Preserves upstream spam, trash, and `WP_Error` decisions.
 	 *
 	 * @since 1.2.0
 	 *
@@ -186,7 +187,7 @@ class ReviewsSubmissionHandler {
 	 */
 	public function force_pending_status( $approved, $commentdata ) {
 
-		if ( is_wp_error( $approved ) || ! is_array( $commentdata ) ) {
+		if ( is_wp_error( $approved ) || in_array( $approved, [ 'spam', 'trash' ], true ) || ! is_array( $commentdata ) ) {
 			return $approved;
 		}
 
@@ -234,12 +235,18 @@ class ReviewsSubmissionHandler {
 	 * Handle comment post action to store comment ID.
 	 *
 	 * @since 1.2.0
+	 * @since 1.8.0 Ignore ordinary comments owned by the WP Comments integration.
 	 *
 	 * @param int|mixed       $comment_id  Comment ID.
 	 * @param int|string|bool $approved    Comment approval status.
 	 * @param array           $commentdata Comment data.
 	 */
 	public function handle_comment_post( $comment_id, $approved, array $commentdata ): void {
+
+		// Each integration owns only its own comment types and correlation tokens.
+		if ( ( $commentdata['comment_type'] ?? '' ) !== 'review' ) {
+			return;
+		}
 
 		$comment_id = (int) $comment_id;
 

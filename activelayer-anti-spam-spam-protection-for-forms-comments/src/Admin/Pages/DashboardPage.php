@@ -2,6 +2,10 @@
 
 namespace ActiveLayer\Admin\Pages;
 
+use ActiveLayer\Protection\ProtectionMonitor;
+
+use ActiveLayer\Protection\AdminStatus;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -200,6 +204,7 @@ class DashboardPage {
 	 * Render the dashboard page.
 	 *
 	 * @since 1.1.0
+	 * @since 1.8.0 Include local observations separately from spam-check analytics.
 	 */
 	public function render(): void {
 
@@ -214,6 +219,7 @@ class DashboardPage {
 			<div class="activelayer-dashboard-grid">
 				<div class="activelayer-dashboard-main">
 					<?php
+					( new AdminStatus( new ProtectionMonitor() ) )->dashboard();
 					$this->render_stats_section();
 					$this->render_integrations_overview( $has_api_key );
 					$this->render_upgrade_banner();
@@ -354,6 +360,7 @@ class DashboardPage {
 	 * @since 1.3.0 Added BuddyBoss icon mapping (assets/images/icons/BuddyBoss.png).
 	 * @since 1.4.0 Added AffiliateWP icon mapping (assets/images/icons/AffiliateWP.png).
 	 * @since 1.4.0 Added MemberPress and WS Form icon mappings.
+	 * @since 1.8.0 Added the CubeWP Forms icon.
 	 *
 	 * @param bool $has_api_key Whether an API key is configured.
 	 */
@@ -375,6 +382,7 @@ class DashboardPage {
 			'Forminator'       => 'Forminator.png',
 			'Fluent Forms'     => 'FluentForms.png',
 			'SureForms'        => 'SureForms.png',
+			'CubeWP Forms'     => 'CubeWPForms.gif',
 			'Gravity Forms'    => 'GravityForms.png',
 			'Elementor Forms'  => 'ElementorForms.png',
 			'BuddyPress'       => 'BuddyPress.png',

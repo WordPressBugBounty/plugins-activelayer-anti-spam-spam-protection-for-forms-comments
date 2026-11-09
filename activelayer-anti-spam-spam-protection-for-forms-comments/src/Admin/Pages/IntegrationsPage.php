@@ -783,6 +783,7 @@ style="display:none"<?php endif; ?>
 	 * @since 1.3.0 Added BuddyBoss icon mapping (assets/images/icons/BuddyBoss.png).
 	 * @since 1.4.0 Added AffiliateWP icon mapping (assets/images/icons/AffiliateWP.png).
 	 * @since 1.4.0 Added MemberPress and WS Form icon mappings.
+	 * @since 1.8.0 Added the CubeWP Forms icon.
 	 * @since 1.5.0 Added FunnelKit icon mapping.
 	 *
 	 * @param string $name Integration name.
@@ -801,6 +802,7 @@ style="display:none"<?php endif; ?>
 			'Forminator'             => 'Forminator.png',
 			'Fluent Forms'           => 'FluentForms.png',
 			'SureForms'              => 'SureForms.png',
+			'CubeWP Forms'           => 'CubeWPForms.gif',
 			'Gravity Forms'          => 'GravityForms.png',
 			'Elementor Forms'        => 'ElementorForms.png',
 			'BuddyPress'             => 'BuddyPress.png',

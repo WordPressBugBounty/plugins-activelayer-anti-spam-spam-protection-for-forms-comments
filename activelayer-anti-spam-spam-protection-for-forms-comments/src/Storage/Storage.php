@@ -365,6 +365,18 @@ class Storage {
 	}
 
 	/**
+	 * Get the cached count of submissions outside the trash.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @return int Non-trashed submission count.
+	 */
+	public function get_submission_count(): int {
+
+		return $this->repository->get_submission_count();
+	}
+
+	/**
 	 * Get daily submission counts grouped by status.
 	 *
 	 * @since 1.1.0

@@ -3,6 +3,9 @@
 namespace ActiveLayer\Integrations\NinjaForms;
 
 use ActiveLayer\ClientSignals\Fields\FieldRenderer;
+use ActiveLayer\ClientSignals\Fields\EnvironmentField;
+use ActiveLayer\ClientSignals\Fields\BehavioralField;
+use ActiveLayer\ClientSignals\Fields\HoneypotField;
 use ActiveLayer\Integrations\BaseFormIntegration;
 use ActiveLayer\Helpers\RequestHelper;
 use ActiveLayer\Helpers\SettingsHelper;
@@ -146,6 +149,9 @@ class NinjaFormsIntegration extends BaseFormIntegration {
 	 */
 	private function hooks(): void {
 
+		// Ninja Forms validates its nonce before exposing the decoded native payload.
+		add_filter( 'ninja_forms_submit_data', [ $this, 'capture_client_signals' ], 5 );
+
 		// Capture outgoing email attempts.
 		add_filter(
 			'ninja_forms_action_email_send',
@@ -207,6 +213,53 @@ class NinjaFormsIntegration extends BaseFormIntegration {
 			10,
 			2
 		);
+	}
+
+	/**
+	 * Expose native client-signal extra data to the shared request enrichers.
+	 *
+	 * Ninja Forms serializes its model rather than the HTML form. Its validated
+	 * submit-data filter runs before either synchronous or queued processing.
+	 * Preserve WordPress request slashing and any existing top-level values.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param array $data Decoded native submission payload.
+	 *
+	 * @return array Unchanged native submission payload.
+	 */
+	public function capture_client_signals( array $data ): array {
+
+		if ( ! $this->is_form_protected( (int) ( $data['id'] ?? 0 ) ) ) {
+			return $data;
+		}
+
+		$signals = $data['extra']['activelayer_client_signals'] ?? null;
+
+		if ( is_array( $signals ) ) {
+			$this->promote_client_signals( $signals );
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Copy whitelisted string signals without replacing existing request values.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param array $signals Native decoded client-signal extra data.
+	 */
+	private function promote_client_signals( array $signals ): void {
+
+		$fields = array_flip( [ EnvironmentField::FIELD_NAME, BehavioralField::FIELD_NAME, HoneypotField::get_field_name() ] );
+
+		foreach ( array_intersect_key( array_filter( $signals, 'is_string' ), $fields ) as $field => $value ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Native provider verifies the nonce before this filter.
+			if ( ! array_key_exists( $field, $_POST ) ) {
+				$_POST[ $field ] = wp_slash( $value );
+			}
+		}
 	}
 
 	/**

@@ -53,6 +53,7 @@ class SubmissionCleanup {
 	 * Ensure the recurring cleanup action is scheduled.
 	 *
 	 * @since 1.1.0
+	 * @since 1.8.0 Check maintenance actions across groups and request unique scheduling.
 	 */
 	public static function maybe_schedule(): void {
 
@@ -64,11 +65,11 @@ class SubmissionCleanup {
 			return;
 		}
 
-		if ( as_has_scheduled_action( self::HOOK, [], 'activelayer' ) ) {
+		if ( as_has_scheduled_action( self::HOOK, [] ) ) {
 			return;
 		}
 
-		as_schedule_recurring_action( time() + DAY_IN_SECONDS, DAY_IN_SECONDS, self::HOOK, [], 'activelayer' );
+		as_schedule_recurring_action( time() + DAY_IN_SECONDS, DAY_IN_SECONDS, self::HOOK, [], 'activelayer', true );
 	}
 
 	/**
@@ -105,6 +106,7 @@ class SubmissionCleanup {
 	 * Cancel the scheduled recurring cleanup action.
 	 *
 	 * @since 1.1.0
+	 * @since 1.8.0 Include cleanup actions with missing or damaged groups.
 	 */
 	public static function unschedule(): void {
 
@@ -112,6 +114,6 @@ class SubmissionCleanup {
 			return;
 		}
 
-		as_unschedule_all_actions( self::HOOK, [], 'activelayer' );
+		as_unschedule_all_actions( self::HOOK );
 	}
 }

@@ -2,6 +2,8 @@
 
 namespace ActiveLayer\Admin\Components;
 
+use ActiveLayer\Protection\AdminStatus;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -52,9 +54,14 @@ class UsageLimitNotice {
 	 * Display usage limit admin notice.
 	 *
 	 * @since 1.1.0
+	 * @since 1.8.0 Avoid duplicate notices while an observed interruption is presented.
 	 * @since 1.3.0 Rendered as a native WP notice: notice-warning + is-dismissible while nearing the limit, sticky notice-error when exhausted.
 	 */
 	public static function display_usage_notice(): void {
+
+		if ( ! current_user_can( 'manage_activelayer' ) || AdminStatus::active() ) {
+			return;
+		}
 
 		$stats = self::get_notice_stats();
 
@@ -124,14 +131,15 @@ class UsageLimitNotice {
 	}
 
 	/**
-	 * Build the banner message based on usage state.
+	 * Build a concrete usage warning or an explicit exhausted-plan message.
 	 *
 	 * Only reached for free-plan users without a payment method. Both at the
-	 * warning threshold and once exhausted, the message prompts the user to add
-	 * a payment method, linking to the billing page.
+	 * warning threshold and once exhausted, the message links to plans on the
+	 * billing page. Counts reflect the latest cached subscription statistics.
 	 *
 	 * @since 1.1.0
 	 * @since 1.3.0 Simplified to the free no-card flow: add-payment-method prompt at both thresholds.
+	 * @since 1.8.0 Show concrete usage counts and explain when new submissions are not checked.
 	 *
 	 * @param array $stats Subscription stats.
 	 *
@@ -146,15 +154,23 @@ class UsageLimitNotice {
 		if ( UpgradeHelper::is_usage_exhausted( $stats ) ) {
 			return sprintf(
 				/* translators: 1: opening anchor tag, 2: closing anchor tag. */
-				__( 'ActiveLayer free plan limit reached. Please %1$sadd your payment method%2$s to continue receiving spam protection.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+				__( '<strong>ActiveLayer free plan limit reached</strong>. New submissions aren\'t being checked for spam. %1$sSee plans%2$s to keep protecting your site.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 				$link_open,
 				$link_close
 			);
 		}
 
-		return sprintf(
+		$usage = sprintf(
+			/* translators: 1: percentage used, 2: total free checks, 3: checks remaining. */
+			__( 'You\'ve used %1$s%% of your %2$s free checks. %3$s left.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+			number_format_i18n( (float) ( $stats['usage_percentage'] ?? 0 ) ),
+			number_format_i18n( (int) ( $stats['requests_limit'] ?? 0 ) ),
+			number_format_i18n( max( 0, (int) ( $stats['requests_remaining'] ?? 0 ) ) )
+		);
+
+		return $usage . ' ' . sprintf(
 			/* translators: 1: opening anchor tag, 2: closing anchor tag. */
-			__( 'You\'re nearing your ActiveLayer free plan limit. Please %1$sadd your payment method%2$s to continue receiving spam protection.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
+			__( '%1$sSee plans%2$s to keep protecting your site.', 'activelayer-anti-spam-spam-protection-for-forms-comments' ),
 			$link_open,
 			$link_close
 		);

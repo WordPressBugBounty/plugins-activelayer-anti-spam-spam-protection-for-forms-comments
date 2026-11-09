@@ -47,9 +47,10 @@ class SubmissionHandler {
 	 * @since 1.0.0
 	 * @since 1.4.0 Attach payment signals to submission context.
 	 * @since 1.4.0 Skip administrative re-processing (WPForms "Mark as Not Spam").
+	 * @since 1.8.0 Replay held notifications when the queue rejects a submission or processing throws.
 	 *
 	 * @param array     $fields    Form fields data.
-	 * @param array     $entry     Entry data (unused for wpforms_process_complete).
+	 * @param array     $entry     Original entry data for notification recovery.
 	 * @param array     $form_data Form configuration.
 	 * @param int|mixed $entry_id  WPForms entry ID (can be int or string depending on WPForms version).
 	 */
@@ -118,6 +119,7 @@ class SubmissionHandler {
 
 			if ( ! empty( $meta['queue_failed'] ) ) {
 				$this->integration->register_queue_failure( (int) $form_data['id'], $entry_id );
+				$this->integration->release_held_notifications( $fields, $entry, $form_data, $entry_id );
 
 				if ( $entry_id ) {
 					wpforms()->obj( 'entry_meta' )->add(
@@ -144,8 +146,10 @@ class SubmissionHandler {
 					]
 				);
 			}
-		} catch ( \Exception $e ) {
-			// Silently fail - don't interrupt form submission.
+		} catch ( \Throwable $e ) {
+			// Preserve fail-open delivery even when storage or enqueueing throws.
+			$this->integration->register_queue_failure( (int) ( $form_data['id'] ?? 0 ), $entry_id );
+			$this->integration->release_held_notifications( $fields, $entry, $form_data, $entry_id );
 			Logger::log(
 				'Failed to queue submission',
 				[

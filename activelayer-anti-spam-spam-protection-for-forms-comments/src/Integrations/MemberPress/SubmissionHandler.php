@@ -220,10 +220,11 @@ class SubmissionHandler {
 	 * the gate — storage rejects an empty form_id, which would fail open.
 	 *
 	 * @since 1.4.0
+	 * @since 1.8.0 Expose metadata-only eligibility to the no-key observer.
 	 *
 	 * @return int|string Membership post ID, or the `mepr_signup` sentinel.
 	 */
-	private function resolve_membership_id() {
+	public function resolve_membership_id() {
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Anonymous MemberPress signups carry no nonce; see validate_signup().
 		if ( isset( $_POST['mepr_product_id'] ) && is_scalar( $_POST['mepr_product_id'] ) && (int) $_POST['mepr_product_id'] > 0 ) {
@@ -241,10 +242,11 @@ class SubmissionHandler {
 	 * charge to zero (e.g. a 100%-off coupon) keeps the spam gate active.
 	 *
 	 * @since 1.4.1
+	 * @since 1.8.0 Expose metadata-only eligibility to the no-key observer.
 	 *
 	 * @return string Sanitized coupon code, or '' when absent.
 	 */
-	private function resolve_coupon_code(): string {
+	public function resolve_coupon_code(): string {
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing -- Anonymous MemberPress signups carry no nonce; see validate_signup().
 		if ( isset( $_POST['mepr_coupon_code'] ) && is_scalar( $_POST['mepr_coupon_code'] ) ) {

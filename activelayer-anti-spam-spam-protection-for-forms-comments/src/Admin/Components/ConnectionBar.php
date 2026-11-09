@@ -8,6 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use ActiveLayer\Connect\ConnectFlow;
 use ActiveLayer\Helpers\SettingsHelper;
+use ActiveLayer\Protection\AdminStatus;
 
 /**
  * Displays a persistent admin notice when no API key is configured.
@@ -45,6 +46,7 @@ class ConnectionBar {
 	 * @since 1.1.0
 	 * @since 1.2.0 Build register URL via AppUrlHelper.
 	 * @since 1.3.0 CTA now builds a one-click Connect URL.
+	 * @since 1.8.0 Suppress duplicate connection prompts during an active interruption.
 	 */
 	public static function display_notice(): void {
 
@@ -58,7 +60,7 @@ class ConnectionBar {
 			return;
 		}
 
-		if ( SettingsHelper::has_api_key() ) {
+		if ( SettingsHelper::has_api_key() || AdminStatus::active() ) {
 			return;
 		}
 

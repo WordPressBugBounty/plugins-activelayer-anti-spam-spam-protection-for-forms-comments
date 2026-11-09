@@ -2,6 +2,8 @@
 
 namespace ActiveLayer\Admin\Components;
 
+use ActiveLayer\Protection\AdminStatus;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -137,10 +139,11 @@ class ReviewRequestNotice {
 	 * Render the review request notice on admin screens.
 	 *
 	 * @since 1.3.0
+	 * @since 1.8.0 Suppress review requests during an observed current interruption.
 	 */
 	public static function render(): void {
 
-		if ( self::get_status() !== self::STATUS_SHOW ) {
+		if ( ! current_user_can( 'manage_activelayer' ) || self::get_status() !== self::STATUS_SHOW || AdminStatus::active() ) {
 			return;
 		}
 

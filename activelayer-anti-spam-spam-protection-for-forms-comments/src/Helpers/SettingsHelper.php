@@ -151,6 +151,7 @@ class SettingsHelper {
 	 * this helper to the subscription service.
 	 *
 	 * @since 1.3.0
+	 * @since 1.8.0 Notify local interruption tracking after credential verification.
 	 *
 	 * @param string $api_key Verified API key to persist.
 	 *
@@ -170,6 +171,12 @@ class SettingsHelper {
 				'verified_at' => time(),
 			]
 		);
+		/**
+		 * Fires after the currently saved credential has been verified.
+		 *
+		 * @since 1.8.0
+		 */
+		do_action( 'activelayer_key_connected' );
 	}
 
 	/**

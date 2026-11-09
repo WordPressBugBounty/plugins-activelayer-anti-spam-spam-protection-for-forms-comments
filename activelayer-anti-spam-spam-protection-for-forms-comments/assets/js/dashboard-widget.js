@@ -577,7 +577,7 @@
     }
   };
 
-  // node_modules/chart.js/dist/chunks/helpers.dataset.js
+  // node_modules/chart.js/dist/chunks/index.js
   function noop() {
   }
   var uid = /* @__PURE__ */ (() => {
@@ -2533,10 +2533,12 @@
       canvas.style.height = `${chart.height}px`;
       canvas.style.width = `${chart.width}px`;
     }
-    if (chart.currentDevicePixelRatio !== pixelRatio || canvas.height !== deviceHeight || canvas.width !== deviceWidth) {
+    const canvasHeight = Math.floor(deviceHeight);
+    const canvasWidth = Math.floor(deviceWidth);
+    if (chart.currentDevicePixelRatio !== pixelRatio || canvas.height !== canvasHeight || canvas.width !== canvasWidth) {
       chart.currentDevicePixelRatio = pixelRatio;
-      canvas.height = deviceHeight;
-      canvas.width = deviceWidth;
+      canvas.height = canvasHeight;
+      canvas.width = canvasWidth;
       chart.ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
       return true;
     }
@@ -3519,7 +3521,7 @@
     for (const parsed of items) {
       const stacks = parsed._stacks;
       if (!stacks || stacks[axis] === void 0 || stacks[axis][datasetIndex] === void 0) {
-        return;
+        continue;
       }
       delete stacks[axis][datasetIndex];
       if (stacks[axis]._visualValues !== void 0 && stacks[axis]._visualValues[datasetIndex] !== void 0) {
@@ -6481,7 +6483,9 @@
         translation: [
           titleX,
           titleY
-        ]
+        ],
+        strokeColor: title.strokeColor,
+        strokeWidth: title.strokeWidth
       });
     }
     draw(chartArea) {
@@ -7185,7 +7189,7 @@
     }
     return false;
   }
-  var version = "4.5.1";
+  var version = "4.6.1";
   var KNOWN_POSITIONS = [
     "top",
     "bottom",
@@ -8838,7 +8842,7 @@
     const meta = chart.getDatasetMeta(index2);
     const clip = getDatasetClipArea(chart, meta);
     if (target && line.points.length) {
-      clipArea(ctx, area);
+      clipArea(ctx, clipToIndexBounds(area, meta.iScale));
       doFill(ctx, {
         line,
         target,
@@ -8851,6 +8855,22 @@
       });
       unclipArea(ctx);
     }
+  }
+  function clipToIndexBounds(area, iScale) {
+    if (!iScale || iScale.getPointPositionForValue) {
+      return area;
+    }
+    const p1 = iScale.getPixelForValue(iScale.min);
+    const p2 = iScale.getPixelForValue(iScale.max);
+    const lo = Math.min(p1, p2);
+    const hi = Math.max(p1, p2);
+    return iScale.isHorizontal() ? __spreadProps(__spreadValues({}, area), {
+      left: Math.max(area.left, lo),
+      right: Math.min(area.right, hi)
+    }) : __spreadProps(__spreadValues({}, area), {
+      top: Math.max(area.top, lo),
+      bottom: Math.min(area.bottom, hi)
+    });
   }
   function doFill(ctx, cfg) {
     const { line, target, above, below, area, scale, clip } = cfg;
@@ -11833,12 +11853,12 @@
    * Released under the MIT License
    *)
 
-chart.js/dist/chunks/helpers.dataset.js:
+chart.js/dist/chunks/index.js:
 chart.js/dist/chart.js:
   (*!
-   * Chart.js v4.5.1
+   * Chart.js v4.6.1
    * https://www.chartjs.org
-   * (c) 2025 Chart.js Contributors
+   * (c) 2026 Chart.js Contributors
    * Released under the MIT License
    *)
 */
